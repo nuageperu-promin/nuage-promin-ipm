@@ -1,0 +1,12 @@
+# Dependencias de Python requeridas por los módulos solse_pe_*
+# (ver instructions.txt para el detalle completo, incluidas las
+# librerías de sistema operativo que requirements.txt no cubre)
+
+Pillow
+lxml
+PySimpleSOAP
+future
+tornado
+xmlsec
+lxml[html_clean]
+pandas
