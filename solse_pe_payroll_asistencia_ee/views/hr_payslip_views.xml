@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_hr_payslip_form_asistencia" model="ir.ui.view">
+		<field name="name">hr.payslip.form.asistencia.ee</field>
+		<field name="model">hr.payslip</field>
+		<field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+		<field name="arch" type="xml">
+			<!-- La vista EE trae DOS botones compute_sheet (con y sin
+			     líneas, hr_payslip_views.xml:84-85), así que se ancla
+			     ANTES del botón Cancelar, que es único (:86). -->
+			<xpath expr="//button[@name='action_payslip_cancel']" position="before">
+				<button name="accion_cargar_asistencias" type="object"
+						string="Cargar asistencias"
+						invisible="state != 'draft' or credit_note"
+						help="Concilia las checadas del módulo de Asistencias:
+detecta faltas (días laborables sin marca ni justificación) y tardanzas
+según la tolerancia de la compañía."/>
+			</xpath>
+			<xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']"
+				   position="after">
+				<field name="is_paid" string="Pagado"
+					   help="Desmarcado = los días de esta línea se descuentan
+del básico al treintavo. En Enterprise lo decide la estructura
+(tipos de entrada no pagados); la conciliación de asistencias crea
+las líneas FALTA con un tipo que ya está declarado así."/>
+			</xpath>
+			<xpath expr="//notebook" position="inside">
+				<page string="Asistencias" name="pagina_asistencias">
+					<field name="asistencia_resumen" readonly="1"
+						   placeholder="Use «Cargar asistencias» para conciliar el periodo."/>
+				</page>
+			</xpath>
+		</field>
+	</record>
+</odoo>

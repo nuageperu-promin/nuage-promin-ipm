@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 9: Liquidación de Beneficios Sociales (cese)
+	     Estructura propia (no replicada). Requiere version con
+	     contract_date_end (fecha de cese) y, deseable, reason_low_id.
+	     Alcance v1:
+	     - Vacaciones truncas: récord desde el último aniversario al cese
+	       (INAFECTA a aportes, AFECTA a renta -> INN + BAR5). Limitación:
+	       no descuenta días ya gozados del periodo (override por input).
+	     - Gratificación trunca + bonificación Ley 30334 (INN + BAR5).
+	     - CTS trunca del periodo en curso (INN, inafecta a todo).
+	     - La remuneración de los días del mes de cese NO va aquí: la
+	       nómina MENSUAL del mes de cese la prorratea sola (RB_001 usa
+	       contract_date_end) y con ella corren aportes y retención 5ta
+	       del mes. Limitación v1: sin regularización fina de 5ta al cese.
+	================================================================ -->
+	<data noupdate="0">
+
+		<record id="input_type_vac_trunca" model="hr.payslip.input.type">
+			<field name="code">VAC_TRUNCA_001</field>
+			<field name="name">Importe Vacaciones truncas (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_grati_trunca" model="hr.payslip.input.type">
+			<field name="code">GRATI_TRUNCA_001</field>
+			<field name="name">Importe Gratificación trunca (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_cts_trunca" model="hr.payslip.input.type">
+			<field name="code">CTS_TRUNCA_001</field>
+			<field name="name">Importe CTS trunca (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="regla_vac_trunca_001" model="hr.salary.rule">
+			<field name="name">Vacaciones truncas</field>
+			<field name="code">VAC_TRUNCA_001</field>
+			<field name="sequence">10</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">D.Leg. 713 art. 22-23: remuneración computable (sueldo +
+asignación familiar) por el récord trunco del periodo vacacional en
+curso: meses completos/12 + días/360 desde el último aniversario del
+ingreso hasta el cese, por el factor de días de vacaciones del régimen
+(general 30/30, MYPE 15/30). Inafecta a aportes, afecta a renta de 5ta.
+Limitación v1: no descuenta días ya gozados del periodo trunco (usar el
+input VAC_TRUNCA_001 para ajustar en esos casos).</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(version.contract_date_end)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('VAC_TRUNCA_001') and inputs['VAC_TRUNCA_001'].amount > 0:
+    result = inputs['VAC_TRUNCA_001'].amount
+else:
+    factores = payslip._rule_parameter('pe_regimen_factores')
+    clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+    factor_vac = factores.get(clave_regimen, (1.0, 30, 30))[2] / 30.0
+
+    computable = version.wage
+    tiene_af = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' in nombre_relacion:
+            limite_edad = pariente.max_age or 18
+            if pariente.age &lt; limite_edad or pariente.disability:
+                tiene_af = True
+                break
+    if tiene_af:
+        computable += payslip._rule_parameter('pe_asig_familiar')
+
+    fecha_cese = version.contract_date_end
+    inicio_contrato = version.contract_date_start or fecha_cese
+    # Último aniversario del ingreso, no posterior al cese
+    aniversario = inicio_contrato
+    while aniversario + relativedelta(years=1) &lt;= fecha_cese:
+        aniversario = aniversario + relativedelta(years=1)
+
+    meses = 0
+    dias = 0
+    cursor = date(aniversario.year, aniversario.month, 1)
+    if aniversario.day > 1:
+        fin_mes_parcial = cursor + relativedelta(months=1, days=-1)
+        if fin_mes_parcial &lt;= fecha_cese:
+            dias += min(30, (fin_mes_parcial - aniversario).days + 1)
+        cursor = cursor + relativedelta(months=1)
+    while cursor &lt;= fecha_cese:
+        fin_mes = cursor + relativedelta(months=1, days=-1)
+        if fin_mes &lt;= fecha_cese:
+            meses += 1
+        else:
+            dias += (fecha_cese - cursor).days + 1
+        cursor = cursor + relativedelta(months=1)
+
+    result = computable * factor_vac * (meses / 12.0 + dias / 360.0)
+			</field>
+		</record>
+
+		<record id="regla_grati_trunca_001" model="hr.salary.rule">
+			<field name="name">Gratificación trunca</field>
+			<field name="code">GRATI_TRUNCA_001</field>
+			<field name="sequence">20</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Ley 27735 art. 7: sextos por los meses calendario COMPLETOS
+laborados del semestre en curso al cese, por el factor del régimen.
+Inafecta a aportes (Ley 30334), afecta a renta.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+factores = payslip._rule_parameter('pe_regimen_factores')
+clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+result = bool(version.contract_date_end) and (
+    factores.get(clave_regimen, (1.0, 30, 30))[0] > 0)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('GRATI_TRUNCA_001') and inputs['GRATI_TRUNCA_001'].amount > 0:
+    result = inputs['GRATI_TRUNCA_001'].amount
+else:
+    factores = payslip._rule_parameter('pe_regimen_factores')
+    clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+    factor = factores.get(clave_regimen, (1.0, 30, 30))[0]
+
+    computable = version.wage
+    tiene_af = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' in nombre_relacion:
+            limite_edad = pariente.max_age or 18
+            if pariente.age &lt; limite_edad or pariente.disability:
+                tiene_af = True
+                break
+    if tiene_af:
+        computable += payslip._rule_parameter('pe_asig_familiar')
+
+    fecha_cese = version.contract_date_end
+    anio = fecha_cese.year
+    if fecha_cese.month &lt;= 6:
+        inicio_semestre = date(anio, 1, 1)
+    else:
+        inicio_semestre = date(anio, 7, 1)
+    inicio_contrato = version.contract_date_start or inicio_semestre
+    inicio_computo = inicio_contrato if inicio_contrato > inicio_semestre else inicio_semestre
+
+    meses = 0
+    cursor = date(inicio_computo.year, inicio_computo.month, 1)
+    if inicio_computo.day > 1:
+        cursor = cursor + relativedelta(months=1)
+    while cursor &lt;= fecha_cese:
+        fin_mes = cursor + relativedelta(months=1, days=-1)
+        if fin_mes &lt;= fecha_cese:
+            meses += 1
+        cursor = cursor + relativedelta(months=1)
+
+    result = computable * factor * min(meses, 6) / 6.0
+			</field>
+		</record>
+
+		<record id="regla_bono_grati_trunca_001" model="hr.salary.rule">
+			<field name="name">Bonificación extraordinaria s/ gratificación trunca</field>
+			<field name="code">BONO_GRATI_TRUNCA_001</field>
+			<field name="sequence">21</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = result_rules['GRATI_TRUNCA_001']['total'] > 0</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if employee.management_eps:
+    tasa = payslip._rule_parameter('pe_grati_bono_eps')
+else:
+    tasa = payslip._rule_parameter('pe_grati_bono_essalud')
+result = result_rules['GRATI_TRUNCA_001']['total'] * tasa
+			</field>
+		</record>
+
+		<record id="regla_cts_trunca_001" model="hr.salary.rule">
+			<field name="name">CTS trunca</field>
+			<field name="code">CTS_TRUNCA_001</field>
+			<field name="sequence">30</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">TUO Ley CTS: computable (sueldo + AF + 1/6 de la gratificación
+percibida en el periodo CTS en curso, de boletas validadas; la
+bonificación extraordinaria NO computa) por
+meses/12 + días/360 desde el inicio del periodo (nov o may) hasta el
+cese, por el factor del régimen. Se paga directamente al trabajador en
+la liquidación (no al depósito bancario). Inafecta a aportes y renta.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+factores = payslip._rule_parameter('pe_regimen_factores')
+clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+result = bool(version.contract_date_end) and (
+    factores.get(clave_regimen, (1.0, 30, 30))[1] > 0)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('CTS_TRUNCA_001') and inputs['CTS_TRUNCA_001'].amount > 0:
+    result = inputs['CTS_TRUNCA_001'].amount
+else:
+    factores = payslip._rule_parameter('pe_regimen_factores')
+    clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+    factor = factores.get(clave_regimen, (1.0, 30, 30))[1] / 30.0
+
+    fecha_cese = version.contract_date_end
+    anio = fecha_cese.year
+    if fecha_cese.month &lt;= 4:
+        inicio_periodo = date(anio - 1, 11, 1)
+    elif fecha_cese.month &lt;= 10:
+        inicio_periodo = date(anio, 5, 1)
+    else:
+        inicio_periodo = date(anio, 11, 1)
+
+    computable = version.wage
+    tiene_af = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' in nombre_relacion:
+            limite_edad = pariente.max_age or 18
+            if pariente.age &lt; limite_edad or pariente.disability:
+                tiene_af = True
+                break
+    if tiene_af:
+        computable += payslip._rule_parameter('pe_asig_familiar')
+    grati_percibida = payslip._sum('GRATI_001', inicio_periodo, fecha_cese)
+    computable += grati_percibida / 6.0
+
+    inicio_contrato = version.contract_date_start or inicio_periodo
+    inicio_computo = inicio_contrato if inicio_contrato > inicio_periodo else inicio_periodo
+
+    meses = 0
+    dias = 0
+    cursor = date(inicio_computo.year, inicio_computo.month, 1)
+    if inicio_computo.day > 1:
+        fin_mes_parcial = cursor + relativedelta(months=1, days=-1)
+        if fin_mes_parcial &lt;= fecha_cese:
+            dias += min(30, (fin_mes_parcial - inicio_computo).days + 1)
+        cursor = cursor + relativedelta(months=1)
+    while cursor &lt;= fecha_cese:
+        fin_mes = cursor + relativedelta(months=1, days=-1)
+        if fin_mes &lt;= fecha_cese:
+            meses += 1
+        else:
+            dias += (fecha_cese - cursor).days + 1
+        cursor = cursor + relativedelta(months=1)
+
+    result = computable * factor * (meses / 12.0 + dias / 360.0)
+			</field>
+		</record>
+
+		<record id="regla_bar5_liq" model="hr.salary.rule">
+			<field name="name">Base afecta a renta de 5ta (liquidación)</field>
+			<field name="code">BAR5_001</field>
+			<field name="sequence">105</field>
+			<field name="category_id" ref="hr_salary_rule_category_bas_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="note">Vacaciones truncas + gratificación trunca + bonificación:
+afectas a renta. La CTS trunca NO (inafecta). Alimenta el acumulado
+anual del método de retención mensual.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+result = (
+    result_rules['VAC_TRUNCA_001']['total']
+    + result_rules['GRATI_TRUNCA_001']['total']
+    + result_rules['BONO_GRATI_TRUNCA_001']['total']
+)
+			</field>
+		</record>
+
+		<record id="regla_gross_liq" model="hr.salary.rule">
+			<field name="name">Total liquidación</field>
+			<field name="code">GROSS</field>
+			<field name="sequence">100</field>
+			<field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001']</field>
+		</record>
+
+		<record id="regla_net_liq" model="hr.salary.rule">
+			<field name="name">Neto de liquidación</field>
+			<field name="code">NET</field>
+			<field name="sequence">200</field>
+			<field name="category_id" ref="hr_payroll.NET"/>
+			<field name="struct_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001'] - categories['DED']</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable específico de la liquidación -->
+	<data noupdate="1">
+		<record id="mapeo_vac_trunca_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_vac_trunca_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="prefijo_debito">6215</field>
+		</record>
+		<record id="mapeo_grati_trunca_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_grati_trunca_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="prefijo_debito">6214</field>
+		</record>
+		<record id="mapeo_bono_grati_trunca_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_bono_grati_trunca_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="prefijo_debito">6214</field>
+		</record>
+		<record id="mapeo_cts_trunca_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_cts_trunca_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="prefijo_debito">6291</field>
+		</record>
+		<record id="mapeo_net_liq" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_net_liq"/>
+			<field name="estructura_id" ref="hr_payroll_structure_liquidacion"/>
+			<field name="prefijo_credito">4111</field>
+			<field name="nota">Liquidación por pagar al trabajador</field>
+		</record>
+	</data>
+</odoo>

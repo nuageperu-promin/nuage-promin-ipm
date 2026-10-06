@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 7: Transversales
+	     A) Estructura Quincenal/Adelanto: anticipo del sueldo (activo
+	        1411, no es remuneración adicional: sin aportes, sin BAR5).
+	     B) Descuento del adelanto en la nómina mensual (recupera 1411).
+	     C) Descuento judicial (mandato de alimentos, tope legal 60%
+	        del disponible, art. 648 CPC).
+	     D) Cuota sindical (tasa por convenio, parámetro).
+	================================================================ -->
+	<data noupdate="0">
+
+		<!-- ============ A) Adelanto quincenal ============ -->
+		<record id="input_type_adel_001" model="hr.payslip.input.type">
+			<field name="code">ADEL_001</field>
+			<field name="name">Importe Adelanto (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="regla_adel_001" model="hr.salary.rule">
+			<field name="name">Adelanto de remuneración</field>
+			<field name="code">ADEL_001</field>
+			<field name="sequence">10</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_quincenal_adelanto"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Anticipo a cuenta del sueldo del mes: porcentaje de adelanto
+de la versión del empleado (campo "Porcentaje de adelanto") sobre el
+básico. NO es remuneración adicional: no genera aportes ni renta (esos
+se calculan completos en la nómina mensual, que descuenta este anticipo
+vía DESC_ADEL_001). Contablemente es un activo (14x) hasta su descuento.
+Input ADEL_001 fuerza el importe.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = version.advance_percent > 0 or (
+    inputs.get('ADEL_001') and inputs['ADEL_001'].amount > 0)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('ADEL_001') and inputs['ADEL_001'].amount > 0:
+    result = inputs['ADEL_001'].amount
+else:
+    result = version.wage * version.advance_percent / 100.0
+			</field>
+		</record>
+
+		<record id="regla_gross_adel" model="hr.salary.rule">
+			<field name="name">Total adelanto</field>
+			<field name="code">GROSS</field>
+			<field name="sequence">100</field>
+			<field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="struct_id" ref="hr_payroll_structure_quincenal_adelanto"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001']</field>
+		</record>
+
+		<record id="regla_net_adel" model="hr.salary.rule">
+			<field name="name">Neto a pagar</field>
+			<field name="code">NET</field>
+			<field name="sequence">200</field>
+			<field name="category_id" ref="hr_payroll.NET"/>
+			<field name="struct_id" ref="hr_payroll_structure_quincenal_adelanto"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001'] - categories['DED']</field>
+		</record>
+
+		<!-- ============ B) Descuento del adelanto (nómina mensual) ============ -->
+		<record id="regla_desc_adel_001" model="hr.salary.rule">
+			<field name="name">Descuento de adelanto</field>
+			<field name="code">DESC_ADEL_001</field>
+			<field name="sequence">135</field>
+			<field name="category_id" ref="hr_payroll.DED"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0701')])]"/>
+			<field name="note">Recupera el adelanto quincenal pagado en el mismo mes
+(boletas de adelanto VALIDADAS del periodo, vía ADEL_001). Se descuenta
+después de aportes y renta: el adelanto no reduce las bases legales.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = payslip._sum('ADEL_001', payslip.date_from, payslip.date_to) > 0
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+result = payslip._sum('ADEL_001', payslip.date_from, payslip.date_to)
+			</field>
+		</record>
+
+		<!-- ============ C) Descuento judicial ============ -->
+		<record id="regla_dj_001" model="hr.salary.rule">
+			<field name="name">Descuento judicial</field>
+			<field name="code">DJ_001</field>
+			<field name="sequence">140</field>
+			<field name="category_id" ref="hr_payroll.DED"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0703')])]"/>
+			<field name="note">Retención por mandato judicial (alimentos u otros) según la
+ficha del empleado: porcentaje sobre el DISPONIBLE (ingresos menos
+descuentos de ley ya calculados) o importe fijo, con tope legal del 60%
+del disponible (art. 648 inc. 6 CPC). El pasivo se registra a nombre de
+la persona beneficiaria (campo Beneficiario).</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = employee.exists_beneficiary and (
+    employee.judicial_discount_percent > 0 or employee.judicial_discount > 0)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+disponible = categories['ING_001'] - categories['DED']
+if employee.judicial_discount_percent > 0:
+    descuento = disponible * employee.judicial_discount_percent / 100.0
+else:
+    descuento = employee.judicial_discount
+tope_legal = disponible * 0.60
+result = max(min(descuento, tope_legal), 0.0)
+			</field>
+		</record>
+
+		<!-- ============ D) Cuota sindical ============ -->
+		<record id="regla_sind_001" model="hr.salary.rule">
+			<field name="name">Cuota sindical</field>
+			<field name="code">SIND_001</field>
+			<field name="sequence">145</field>
+			<field name="category_id" ref="hr_payroll.DED"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0702')])]"/>
+			<field name="note">Descuento por planilla de la cuota sindical (trabajadores con
+el check "Sindicalizado" en la versión): tasa del parámetro
+pe_cuota_sindical sobre la remuneración básica del periodo. AJUSTAR la
+tasa al estatuto del sindicato del cliente.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = version.unionized</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+basico = result_rules['RB_001']['total'] or result_rules['RBS_002']['total']
+result = basico * payslip._rule_parameter('pe_cuota_sindical')
+			</field>
+		</record>
+	</data>
+
+	<!-- Parámetro de cuota sindical -->
+	<data noupdate="0">
+		<record id="param_pe_cuota_sindical" model="hr.rule.parameter">
+			<field name="name">Cuota sindical - Tasa (según estatuto, ajustar por cliente)</field>
+			<field name="code">pe_cuota_sindical</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">otros</field>
+		</record>
+	</data>
+	<data noupdate="1">
+		<record id="param_pe_cuota_sindical_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_cuota_sindical"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.01</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable -->
+	<data noupdate="1">
+		<record id="mapeo_adel_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_adel_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_quincenal_adelanto"/>
+			<field name="prefijo_debito">1411</field>
+			<field name="nota">Adelanto: activo por cobrar al personal</field>
+		</record>
+		<record id="mapeo_net_adel" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_net_adel"/>
+			<field name="estructura_id" ref="hr_payroll_structure_quincenal_adelanto"/>
+			<field name="prefijo_credito">4111</field>
+		</record>
+		<record id="mapeo_desc_adel_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_desc_adel_001"/>
+			<field name="prefijo_credito">1411</field>
+			<field name="nota">Recupera el activo del adelanto</field>
+		</record>
+		<record id="mapeo_dj_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_dj_001"/>
+			<field name="prefijo_credito">4610</field>
+			<field name="nota">Por pagar a la persona beneficiaria del mandato</field>
+		</record>
+		<record id="mapeo_sind_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_sind_001"/>
+			<field name="prefijo_credito">4699</field>
+			<field name="nota">Por pagar al sindicato</field>
+		</record>
+	</data>
+</odoo>

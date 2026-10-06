@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!--Se cambio la vista de tree a list para v18-->
+    <!-- nueva vista lista lote -->
+    <record id="detalle_fact_cliente_tree" model="ir.ui.view">
+        <field name="name">account.move.cpe.sale.list</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="id" invisible="1"/>              
+                <field name="l10n_latam_document_number"/>
+                <field name="nro_ruc_dni" string="Nro RUC/DNI" optional="show"/>
+                <field name="partner_id" string="Cliente"/>
+                <field name="amount_untaxed_signed"/>
+                <field name="amount_tax_signed"/>
+                <field name="amount_total_signed"/>
+                <field name="invoice_user_id"/>
+                <field name="company_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fact_cliente_search" model="ir.ui.view">
+		<field name="name">account.move.search.cpe.sale.view</field>
+		<field name="model">account.move</field>
+		<field name="arch" type="xml">
+			<search string="Detalle de Ventas">
+                <field name="l10n_latam_document_number"/>
+                <field name="partner_id" string="Cliente"/>
+                <field name="invoice_user_id"/>
+
+				<group >
+                    <filter string="Fecha" name='invoice_date' context="{'group_by':'invoice_date'}"/>
+                    <filter string="Nro. Factura Cliente" name='l10n_latam_document_number' context="{'group_by':'l10n_latam_document_number'}"/>
+                    <filter string="Cliente" name='partner_id' context="{'group_by':'partner_id'}"/>
+                    <filter string="Vendedor" name='invoice_user_id' context="{'group_by':'invoice_user_id'}"/>
+					<separator orientation="vertical" />
+				</group>
+				
+			</search>
+		</field>
+	</record>
+
+    <!-- accion lote -->
+    <record id="detalle_fact_cliente_action" model="ir.actions.act_window">
+        <field name="name">Detalles Factura Ventas</field>
+        <field name="res_model">account.move</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="detalle_fact_cliente_tree"/>
+        <field name="search_view_id" ref="view_fact_cliente_search"/>
+        <field name="domain">[('move_type', 'in', ['out_invoice', 'out_refund']), 
+        	('state', 'in', ['posted'])]</field>
+        <field name="context">{}</field>
+    </record> 
+
+    <menuitem id="menu_detalle_fact_cliente" name="Facturas cliente detallado" parent="account.menu_finance_reports" action="detalle_fact_cliente_action" sequence="20"/>
+
+  </data>
+</odoo>

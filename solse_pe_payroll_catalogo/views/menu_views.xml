@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Con la suite CPE presente, el menú raíz de Nómina PE también se
+	     expone bajo la raíz SOLSE, manteniendo el acceso desde Nómina. -->
+	<menuitem id="menu_solse_pe_payroll_en_catalogo"
+			  name="Nómina PE"
+			  parent="solse_pe_catalogo.solse_cpe_menu_root"
+			  action="solse_pe_payroll.rule_parameter_pe_action"
+			  sequence="60"
+			  groups="hr_payroll.group_hr_payroll_user"/>
+</odoo>

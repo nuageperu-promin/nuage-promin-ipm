@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 3: Aportes del empleador
+	     Categoría nativa COMP (hr_payroll.COMP): no forma parte de
+	     ING_001 ni DED, por lo que NO altera el neto del trabajador.
+	     Sí genera asiento contable (gasto 62x contra pasivo 40x/46x).
+	================================================================ -->
+	<data noupdate="0">
+
+		<record id="regla_essalud_001" model="hr.salary.rule">
+			<field name="name">ESSALUD - Aporte del empleador</field>
+			<field name="code">ESSALUD_001</field>
+			<field name="sequence">150</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0804')])]"/>
+			<field name="note">Ley 26790: 9% (parámetro pe_essalud_tasa) sobre la
+remuneración afecta, con base imponible mínima igual a la RMV (parámetro
+pe_rmv). En nóminas semanales el piso se prorratea por las semanas del
+mes. El crédito EPS se muestra por separado (EPS_CRED_001).</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+piso = payslip._rule_parameter('pe_rmv')
+# ISM_001 = 1 en mensuales, semanas del mes en semanales
+piso = piso / (result_rules['ISM_001']['total'] or 1.0)
+base_imponible = max(base_afecta, piso)
+result = base_imponible * payslip._rule_parameter('pe_essalud_tasa')
+			</field>
+		</record>
+
+		<record id="regla_eps_apo_001" model="hr.salary.rule">
+			<field name="name">EPS - Aporte del empleador</field>
+			<field name="code">EPS_APO_001</field>
+			<field name="sequence">151</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Aporte del empleador al plan EPS del trabajador según la
+tasa del plan (campo "Tasa empleador" de la gestión EPS asignada).</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(employee.management_eps)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * (employee.management_eps.rate_employer or 0.0)
+			</field>
+		</record>
+
+		<record id="regla_eps_cred_001" model="hr.salary.rule">
+			<field name="name">EPS - Crédito contra ESSALUD</field>
+			<field name="code">EPS_CRED_001</field>
+			<field name="sequence">152</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Ley 26790 art. 15: el empleador con trabajadores en EPS
+acredita contra su aporte a ESSALUD hasta el 25% de este (parámetro
+pe_eps_credito_max), sin exceder el aporte efectivo al plan EPS.
+Se registra en negativo: reduce el gasto y el pasivo con ESSALUD.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(employee.management_eps)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+aporte_essalud = result_rules['ESSALUD_001']['total']
+aporte_eps = result_rules['EPS_APO_001']['total']
+credito_maximo = aporte_essalud * payslip._rule_parameter('pe_eps_credito_max')
+result = -min(credito_maximo, aporte_eps)
+			</field>
+		</record>
+
+		<record id="regla_sctr_sal_001" model="hr.salary.rule">
+			<field name="name">SCTR Salud</field>
+			<field name="code">SCTR_SAL_001</field>
+			<field name="sequence">153</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0814')])]"/>
+			<field name="note">Seguro Complementario de Trabajo de Riesgo - cobertura de
+salud (Ley 26790 / D.S. 003-98-SA). Tasa referencial en el parámetro
+pe_sctr_salud_tasa: AJUSTAR A LA TASA REAL DE LA PÓLIZA del cliente
+(varía por actividad y aseguradora). Si la cobertura es vía ESSALUD,
+cambiar el concepto PLAME a 0806 y el mapeo contable a 4031.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = employee.pension_sctr</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * payslip._rule_parameter('pe_sctr_salud_tasa')
+			</field>
+		</record>
+
+		<record id="regla_sctr_pen_001" model="hr.salary.rule">
+			<field name="name">SCTR Pensión</field>
+			<field name="code">SCTR_PEN_001</field>
+			<field name="sequence">154</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0805')])]"/>
+			<field name="note">SCTR - cobertura de pensiones. Tasa referencial en
+pe_sctr_pension_tasa: AJUSTAR A LA TASA REAL DE LA PÓLIZA.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = employee.pension_sctr</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * payslip._rule_parameter('pe_sctr_pension_tasa')
+			</field>
+		</record>
+
+		<record id="regla_senati_001" model="hr.salary.rule">
+			<field name="name">SENATI - Contribución</field>
+			<field name="code">SENATI_001</field>
+			<field name="sequence">155</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0807')])]"/>
+			<field name="note">Ley 26272: 0.75% (parámetro pe_senati_tasa) sobre las
+remuneraciones del personal dedicado a la actividad industrial. Solo se
+calcula si la compañía está marcada como afecta a SENATI (campo en la
+ficha de la compañía).</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(payslip.company_id.afecto_senati)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * payslip._rule_parameter('pe_senati_tasa')
+			</field>
+		</record>
+	</data>
+
+	<!-- Parámetros nuevos del bloque (tasas SCTR referenciales por póliza) -->
+	<data noupdate="0">
+		<record id="param_pe_sctr_salud_tasa" model="hr.rule.parameter">
+			<field name="name">SCTR Salud - Tasa de la póliza (referencial, ajustar por cliente)</field>
+			<field name="code">pe_sctr_salud_tasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">salud</field>
+		</record>
+		<record id="param_pe_sctr_pension_tasa" model="hr.rule.parameter">
+			<field name="name">SCTR Pensión - Tasa de la póliza (referencial, ajustar por cliente)</field>
+			<field name="code">pe_sctr_pension_tasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">salud</field>
+		</record>
+	</data>
+	<data noupdate="1">
+		<record id="param_pe_sctr_salud_tasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_sctr_salud_tasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0130</field>
+		</record>
+		<record id="param_pe_sctr_pension_tasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_sctr_pension_tasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0170</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable: gasto del empleador contra pasivos -->
+	<data noupdate="1">
+		<record id="mapeo_essalud_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_essalud_001"/>
+			<field name="prefijo_debito">6271</field>
+			<field name="prefijo_credito">4031</field>
+		</record>
+		<record id="mapeo_eps_apo_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_eps_apo_001"/>
+			<field name="prefijo_debito">6275</field>
+			<field name="prefijo_credito">4699</field>
+			<field name="nota">Pasivo con la EPS privada</field>
+		</record>
+		<record id="mapeo_eps_cred_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_eps_cred_001"/>
+			<field name="prefijo_debito">6271</field>
+			<field name="prefijo_credito">4031</field>
+			<field name="nota">Importe negativo: revierte gasto y pasivo ESSALUD</field>
+		</record>
+		<record id="mapeo_sctr_sal_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_sctr_sal_001"/>
+			<field name="prefijo_debito">6273</field>
+			<field name="prefijo_credito">4699</field>
+		</record>
+		<record id="mapeo_sctr_pen_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_sctr_pen_001"/>
+			<field name="prefijo_debito">6273</field>
+			<field name="prefijo_credito">4699</field>
+		</record>
+		<record id="mapeo_senati_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_senati_001"/>
+			<field name="prefijo_debito">6277</field>
+			<field name="prefijo_credito">4033</field>
+		</record>
+	</data>
+</odoo>

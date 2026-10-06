@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cambios de vista de tree a list -->
+	<record id="view_document_type_tree" model="ir.ui.view">
+        <field name="name">l10n_latam.document.type.list.view.inherit.solse_pe_edi</field>
+        <field name="model">l10n_latam.document.type</field>
+        <field name="inherit_id" ref="l10n_latam_invoice_document.view_document_type_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="edit">1</attribute>
+                <attribute name="create">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_document_type_form" model="ir.ui.view">
+        <field name="name">l10n_latam.document.type.form.view.inherit.solse_pe_edi</field>
+        <field name="model">l10n_latam.document.type</field>
+        <field name="inherit_id" ref="l10n_latam_invoice_document.view_document_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="edit">1</attribute>
+                <attribute name="create">1</attribute>
+            </xpath>
+            <xpath expr="//form//group[1]" position="before">
+                <div name="button_box" class="oe_button_box">
+                    <button class="oe_stat_button" type="object"
+                            name="crear_secuencia" icon="fa-book" string="Crear secuencia" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == False or secuencia_id != False" />
+
+                    <button class="oe_stat_button" type="object"
+                            name="reasignar_ultimo_numero" icon="fa-book" string="Reasignar ultimo numero" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == False or secuencia_id == False" />
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='code']" position="before">
+                <field name="company_id" />
+            </xpath>
+            <xpath expr="//field[@name='internal_type']" position="after">
+            	<field name="sub_type" invisible="country_id != %(base.pe)d"/>
+            	<field name="is_cpe" invisible="country_id != %(base.pe)d"/>
+                <field name="is_synchronous" invisible="country_id != %(base.pe)d or is_cpe == False"/>
+                <field name="is_synchronous_anull" invisible="country_id != %(base.pe)d or is_cpe == False"/>
+                <field name="nota_credito" invisible="country_id != %(base.pe)d or code not in ('01', '03', '00')" />
+                <field name="nota_debito" invisible="country_id != %(base.pe)d or code not in ('01', '03', '00')" />
+                <field name="usar_prefijo_personalizado" invisible="country_id != %(base.pe)d or usar_prefijo_sin_localizacion == True"/>
+                <field name="usar_prefijo_sin_localizacion" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == True"/>
+                <field name="prefijo" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == False" />
+                <field name="secuencia_id" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == False" />
+                <field name="sequence_number_next" invisible="country_id != %(base.pe)d or usar_prefijo_personalizado == False or secuencia_id == False"/>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

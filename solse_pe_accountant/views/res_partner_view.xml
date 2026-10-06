@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Agrega aplica_detraccion en el formulario de res.partner.
+	     Se ubica en la pestaña "Sales & Purchase", junto al resto de
+	     campos de configuración fiscal del partner. -->
+	<record id="view_partner_form_detraccion" model="ir.ui.view">
+		<field name="name">res.partner.form.detraccion</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="account.view_partner_property_form"/>
+		<field name="arch" type="xml">
+			<!-- account.view_partner_property_form añade el grupo "account_fiscal"
+			     con campos contables. Anclamos ahí. Si no existe en alguna
+			     versión, el fallback es agregarlo después de property_payment_term_id. -->
+			<xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
+				<field name="aplica_detraccion"
+				       options="{'no_create': True, 'no_open': True}"/>
+			</xpath>
+		</field>
+	</record>
+
+</odoo>

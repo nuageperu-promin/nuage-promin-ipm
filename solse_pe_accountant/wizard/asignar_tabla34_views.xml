@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard: Asignación masiva Tabla 34 -->
+    <record id="wizard_asignar_tabla34_view" model="ir.ui.view">
+        <field name="name">solse.wizard.asignar.tabla34.form</field>
+        <field name="model">solse.wizard.asignar.tabla34</field>
+        <field name="arch" type="xml">
+            <form string="Asignar Rubros EEFF (Tabla 34) al Plan de Cuentas">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Asignación masiva — Tabla 34</h1>
+                        <p class="text-muted">
+                            Asigna automáticamente el Rubro EEFF a cada cuenta contable
+                            según el Plan de Cuentas General Empresarial (PCGE).
+                            El contador puede modificar las asignaciones individuales
+                            desde el Plan de Cuentas.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Configuración">
+                            <field name="company_id"/>
+                            <field name="sector" readonly="1"/>
+                            <field name="solo_sin_rubro"/>
+                        </group>
+
+                        <group string="Resultado estimado"
+                               invisible="not preview_calculado">
+                            <field name="total_cuentas" readonly="1"/>
+                            <field name="cuentas_sin_rubro" readonly="1"/>
+                            <field name="cuentas_a_asignar" readonly="1"
+                                   widget="statinfo"
+                                   string="Cuentas que se asignarán"/>
+                        </group>
+                    </group>
+
+                    <div class="alert alert-info" role="alert"
+                         invisible="preview_calculado">
+                        <p>
+                            <strong>¿Cómo funciona?</strong><br/>
+                            El sistema analiza el prefijo del código PCGE de cada cuenta
+                            y le asigna el rubro EEFF correspondiente según la Tabla 34 de SUNAT.
+                            Pulse <strong>Calcular preview</strong> para ver cuántas cuentas
+                            se verán afectadas antes de aplicar los cambios.
+                        </p>
+                        <p class="mb-0">
+                            <strong>Nota:</strong> Las cuentas de orden (8x, 9x) y las de
+                            compras/variación (60x, 61x) no se mapean automáticamente
+                            ya que no forman parte de los Estados Financieros.
+                        </p>
+                    </div>
+
+                    <div class="alert alert-success" role="alert"
+                         invisible="not preview_calculado">
+                        <p class="mb-0">
+                            Se asignarán rubros a <strong><field name="cuentas_a_asignar" readonly="1" nolabel="1"/></strong> cuentas.
+                            Pulse <strong>Asignar ahora</strong> para aplicar los cambios.
+                        </p>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_asignar"
+                            string="Asignar ahora"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not preview_calculado"
+                            confirm="¿Confirma la asignación masiva de rubros EEFF? Esta acción modificará el Plan de Cuentas."/>
+                    <button name="action_preview"
+                            string="Calcular preview"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="preview_calculado"/>
+                    <button string="Cancelar"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción para abrir el wizard -->
+    <record id="action_wizard_asignar_tabla34" model="ir.actions.act_window">
+        <field name="name">Asignar Rubros EEFF (Tabla 34)</field>
+        <field name="res_model">solse.wizard.asignar.tabla34</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Botón en la vista lista del Plan de Cuentas -->
+    <record id="account_account_action_tabla34" model="ir.ui.view">
+        <field name="name">account.account.list.tabla34.button</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="%(action_wizard_asignar_tabla34)d"
+                            string="Asignar Rubros EEFF (Tabla 34)"
+                            type="action"
+                            class="btn-secondary"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+</odoo>

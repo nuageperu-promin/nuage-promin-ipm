@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_ple_report_07_tree" model="ir.ui.view">
+		<field name="name">ple.report.07.tree</field>
+		<field name="model">ple.report.07</field>
+		<field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_list"/>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<data>
+				<!-- Libro anual: mes irrelevante, ya está invisible en la base -->
+			</data>
+		</field>
+	</record>
+
+	<record id="view_ple_report_07_form" model="ir.ui.view">
+		<field name="name">ple.report.07.form</field>
+		<field name="model">ple.report.07</field>
+		<field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_form"/>
+		<field name="mode">primary</field>
+		<field name="arch" type="xml">
+			<data>
+				<!-- L8.1: el formato físico 7.1 (reports/formato_7_1.xml). -->
+				<xpath expr="//header" position="inside">
+					<field name="ple_txt_01" invisible="1"/>
+					<field name="ple_txt_03" invisible="1"/>
+					<field name="ple_txt_04" invisible="1"/>
+					<button name="%(action_reporte_formato_7_1)d"
+					        string="PDF Formato 7.1"
+					        type="action"
+					        icon="fa-file-pdf-o"
+					        invisible="not ple_txt_01"
+					        groups="solse_pe_ple_pro.group_ple_usuario"/>
+					<button name="%(action_reporte_formato_7_2)d"
+					        string="PDF Formato 7.2"
+					        type="action"
+					        icon="fa-file-pdf-o"
+					        invisible="not ple_txt_01"
+					        groups="solse_pe_ple_pro.group_ple_usuario"/>
+					<button name="%(action_reporte_formato_7_3)d"
+					        string="PDF Formato 7.3"
+					        type="action"
+					        icon="fa-file-pdf-o"
+					        invisible="not ple_txt_03"
+					        groups="solse_pe_ple_pro.group_ple_usuario"/>
+					<button name="%(action_reporte_formato_7_4)d"
+					        string="PDF Formato 7.4"
+					        type="action"
+					        icon="fa-file-pdf-o"
+					        invisible="not ple_txt_04"
+					        groups="solse_pe_ple_pro.group_ple_usuario"/>
+				</xpath>
+				<xpath expr="//group[@name='file_group']" position="inside">
+					<field name="ple_txt_03_filename" invisible="1"/>
+					<field name="ple_txt_03_binary" filename="ple_txt_03_filename" invisible="ple_txt_03_binary == False"/>
+					<field name="ple_xls_03_filename" invisible="1"/>
+					<field name="ple_xls_03_binary" filename="ple_xls_03_filename" invisible="ple_xls_03_binary == False"/>
+					<field name="ple_txt_04_filename" invisible="1"/>
+					<field name="ple_txt_04_binary" filename="ple_txt_04_filename" invisible="ple_txt_04_binary == False"/>
+					<field name="ple_xls_04_filename" invisible="1"/>
+					<field name="ple_xls_04_binary" filename="ple_xls_04_filename" invisible="ple_xls_04_binary == False"/>
+				</xpath>
+				<xpath expr="//notebook" position="inside">
+					<page name="report_07_assets" string="Activos incluidos">
+						<field name="asset_ids" nolabel="1">
+							<list>
+								<field name="name"/>
+								<field name="codigo_af" optional="show"/>
+								<field name="account_asset_id" optional="show"/>
+								<field name="acquisition_date"/>
+								<field name="original_value"/>
+								<field name="state"/>
+								<field name="es_leasing" optional="hide"/>
+								<field name="moneda_adquisicion_id" optional="hide"/>
+							</list>
+						</field>
+					</page>
+				</xpath>
+			</data>
+		</field>
+	</record>
+
+	<record id="action_ple_report_07" model="ir.actions.act_window">
+		<field name="name">Registro de Activos Fijos (7.1 / 7.3 / 7.4)</field>
+		<field name="res_model">ple.report.07</field>
+		<field name="view_mode">list,form</field>
+		<field name="domain">[]</field>
+	</record>
+
+	<menuitem name="Estructura 07 - Registro de Activos Fijos"
+			id="menu_action_ple_report_07"
+			parent="solse_pe_ple_pro.menu_ple_report"
+			action="action_ple_report_07"
+			sequence="7"/>
+</odoo>

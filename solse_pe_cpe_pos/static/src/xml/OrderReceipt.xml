@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+    =========================================================================
+    Ticket POS — solse_pe_cpe_pos (Odoo 19)
+    =========================================================================
+    Diseño compacto inspirado en solse_farmacia:
+      - Cabecera con datos empresa + número comprobante
+      - Adquiriente / Atendido por
+      - Tabla columnar de productos: Producto | Cant. | P.Unit | Total
+      - Tabla totales SUNAT: TOTAL A PAGAR / Op.Gravadas / IGV / Importe Total
+      - Pagos y vuelto en formato tabla
+      - Loyalty: códigos de gift_card / ewallet con barcode (override backend)
+      - Footer: SON, Forma de Pago, QR SUNAT, Gracias, leyenda comprobante
+      - Sin duplicado de empresa al final del ticket (ahorro de papel)
+
+    Orden de herencia:
+        point_of_sale.OrderReceipt (nativo v19)
+          └─ solse_pe_cpe_pos (este archivo)
+    =========================================================================
+    -->
+
+    <!--
+    =====================================================================
+    Quitar cajero y partner del ReceiptHeader nativo. Ambos ya se
+    muestran en el bloque "Adquiriente / Atendido por" custom.
+    =====================================================================
+    -->
+    <t t-name="point_of_sale.ReceiptHeader"
+       t-inherit="point_of_sale.ReceiptHeader"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@class='cashier']" position="replace"/>
+        <xpath expr="//div[@class='pos-receipt-customer mt-2']" position="replace"/>
+    </t>
+
+
+    <t t-name="point_of_sale.OrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension">
+
+        <!-- ================================================================
+             1) DATOS EMPRESA + SERIE/NÚMERO DESPUÉS DEL HEADER
+             Compactado: line-height 1.25, font 10px, una sola sección.
+             ================================================================ -->
+        <xpath expr="//ReceiptHeader" position="after">
+            <div style="text-align: center; font-size: 10px; line-height: 1.3; margin-top: 2px;">
+                <div t-if="order.company.name" style="font-weight: bold; font-size: 12px;">
+                    <t t-esc="order.company.name"/>
+                </div>
+                <div t-if="order.company.vat" style="font-weight: bold;">
+                    RUC: <t t-esc="order.company.vat"/>
+                </div>
+                <div t-if="order.company.street">
+                    <t t-esc="order.company.street"/><t t-if="order.company.city">, <t t-esc="order.company.city"/></t>
+                </div>
+                <div t-if="order.company.phone">
+                    Tel: <t t-esc="order.company.phone"/>
+                </div>
+            </div>
+            <div style="border-bottom: 1px dashed #000; margin: 3px 0;"/>
+
+            <div t-if="order.number" style="text-align: center; font-size: 11px; font-weight: bold;">
+                <t t-if="order.get_cpe_type and order.get_cpe_type()=='01'">FACTURA: </t>
+                <t t-elif="order.get_cpe_type and order.get_cpe_type()=='03'">BOLETA: </t>
+                <t t-esc="order.number"/>
+            </div>
+            <div style="border-bottom: 1px dashed #000; margin: 3px 0;"/>
+        </xpath>
+
+        <!-- ================================================================
+             2) BLOQUE ADQUIRIENTE / ATENDIDO POR
+             Reemplaza el primer div pt-3 nativo.
+             ================================================================ -->
+        <xpath expr="//div[@class='pt-3'][1]" position="replace">
+            <div style="font-size: 9px; line-height: 1.35; margin: 4px 0 3px 0;">
+                <div style="font-weight: bold;">Adquiriente:</div>
+                <t t-if="order.partner_id">
+                    <div>
+                        <t t-if="order.partner_id.l10n_latam_identification_type_id">
+                            <t t-esc="order.partner_id.l10n_latam_identification_type_id.name"/>:
+                        </t>
+                        <t t-if="order.partner_id.vat">
+                            <span style="font-weight: bold;"> <t t-esc="order.partner_id.vat"/></span>
+                        </t>
+                    </div>
+                    <div t-if="order.partner_id.name" style="font-weight: bold;">
+                        <t t-esc="order.partner_id.name"/>
+                    </div>
+                    <div t-if="order.partner_id.street">
+                        <t t-esc="order.partner_id.street"/>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div style="font-style: italic;">Consumidor Final</div>
+                </t>
+                <div>Fecha: <t t-esc="order.formatDateOrTime('date_order', 'datetime')"/></div>
+                <div>Moneda: Soles</div>
+            </div>
+            <div style="font-size: 9px; text-align: center;">
+                Atendido por <t t-esc="order.getCashierName()"/>
+            </div>
+            <div style="border-bottom: 1px dashed #000; margin: 3px 0;"/>
+        </xpath>
+
+        <!-- ================================================================
+             3) TABLA COLUMNAR DE PRODUCTOS
+             Estructura: Producto | Cant. | P.Unit | Total
+             Reemplaza <OrderDisplay/> nativo (que renderiza líneas verticales).
+             ================================================================ -->
+        <xpath expr="//OrderDisplay" position="replace">
+            <div class="pe-cpe-product-lines">
+                <table style="width: 100%; font-size: 9px; line-height: 1.3; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #000;">
+                            <th style="text-align: left; padding: 1px 0;">Producto</th>
+                            <th style="text-align: right; padding: 1px 0; width: 14%;">Cant.</th>
+                            <th style="text-align: right; padding: 1px 0; width: 18%;">P.Unit</th>
+                            <th style="text-align: right; padding: 1px 0; width: 22%;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="order.lines" t-as="line" t-key="line.uuid">
+                            <t t-if="!line.combo_parent_id">
+                                <tr>
+                                    <td style="text-align: left; padding-top: 2px;">
+                                        <t t-esc="line.full_product_name"/>
+                                    </td>
+                                    <td style="text-align: right; padding-top: 2px;">
+                                        <t t-esc="line.qty"/>
+                                    </td>
+                                    <td style="text-align: right; padding-top: 2px;">
+                                        <t t-esc="line.displayPriceUnit.toFixed(2)"/>
+                                    </td>
+                                    <td style="text-align: right; padding-top: 2px;">
+                                        <t t-esc="line.displayPrice.toFixed(2)"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="line.discount">
+                                    <td colspan="3" style="text-align: left; font-style: italic; font-size: 8px;">
+                                        Descuento <t t-esc="line.discount"/>%
+                                    </td>
+                                    <td style="text-align: right; font-style: italic; font-size: 8px;">
+                                        <t t-esc="(line.displayPrice - line.displayPriceNoDiscount).toFixed(2)"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+                <div style="border-bottom: 1px dashed #000; margin: 3px 0;"/>
+            </div>
+        </xpath>
+
+        <!-- ================================================================
+             4) TABLA TOTALES SUNAT
+             Reemplaza <div class="pos-receipt-taxes pt-3"> nativo.
+             ================================================================ -->
+        <xpath expr="//div[@class='pos-receipt-taxes pt-3']" position="replace">
+            <table style="width: 100%; font-size: 10px; line-height: 1.4;">
+                <tr style="font-weight: bold; font-size: 12px;">
+                    <td>TOTAL A PAGAR</td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(order.priceIncl)"/></td>
+                </tr>
+                <tr>
+                    <td>Op. Gravadas:</td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(order.priceExcl)"/></td>
+                </tr>
+                <t t-if="order.prices and order.prices.taxDetails and order.prices.taxDetails.subtotals">
+                    <t t-foreach="order.prices.taxDetails.subtotals" t-as="subtotal" t-key="subtotal.name">
+                        <t t-foreach="subtotal.tax_groups" t-as="tax_group" t-key="tax_group.id">
+                            <tr>
+                                <td><t t-esc="tax_group.group_name"/>:</td>
+                                <td style="text-align: right;"><t t-esc="formatCurrency(tax_group.tax_amount_currency)"/></td>
+                            </tr>
+                        </t>
+                    </t>
+                </t>
+                <tr style="font-weight: bold;">
+                    <td>Importe Total</td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(order.priceIncl)"/></td>
+                </tr>
+                <t t-set="total_descuento" t-value="order.getTotalDiscount()"/>
+                <tr t-if="total_descuento">
+                    <td>Descuento Total</td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(total_descuento)"/></td>
+                </tr>
+            </table>
+        </xpath>
+
+        <!-- ================================================================
+             5) OCULTAR TOTAL/ROUNDING/TO-PAY NATIVOS
+             (ya integrados en la tabla de totales SUNAT del paso 4)
+             ================================================================ -->
+        <xpath expr="//div[@class='pos-receipt-amount receipt-total fw-bolder']" position="replace"/>
+        <xpath expr="//div[@class='pos-receipt-amount receipt-rounding']" position="replace"/>
+        <xpath expr="//div[@class='pos-receipt-amount receipt-to-pay']" position="replace"/>
+
+        <!-- ================================================================
+             6) LÍNEAS DE PAGO en formato tabla
+             ================================================================ -->
+        <xpath expr="//div[@class='paymentlines text-start pt-1']" position="replace">
+            <table style="width: 100%; font-size: 10px; line-height: 1.35; margin-top: 2px;">
+                <tr t-foreach="paymentLines" t-as="line" t-key="line_index">
+                    <td><t t-esc="line.payment_method_id.name"/></td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(line.getAmount())"/></td>
+                </tr>
+            </table>
+        </xpath>
+
+        <!-- ================================================================
+             7) VUELTO en formato tabla
+             ================================================================ -->
+        <xpath expr="//div[@class='pos-receipt-amount receipt-change']" position="replace">
+            <table t-if="order.showChange" style="width: 100%; font-size: 10px; font-weight: bold; line-height: 1.35;">
+                <tr>
+                    <td>VUELTO</td>
+                    <td style="text-align: right;"><t t-esc="formatCurrency(order.change)"/></td>
+                </tr>
+            </table>
+        </xpath>
+
+        <!-- ================================================================
+             8) OCULTAR LABEL DE DESCUENTO NATIVO
+             (ya integrado en tabla de totales)
+             ================================================================-->
+        <xpath expr="//span[@class='label-discount']/.." position="replace"/> 
+
+        <!-- ================================================================
+             9) OCULTAR BLOQUE QR PORTAL NATIVO
+             Ya tenemos el QR SUNAT custom abajo.
+             ================================================================ 
+        <xpath expr="//div[@class='gap-2 d-flex flex-row pt-3']" position="replace"/>-->
+
+        <!-- ================================================================
+            10) [AHORRO DE PAPEL] OCULTAR BLOQUE EMPRESA DUPLICADO DEL FOOTER
+            Odoo nativo agrega al final un d-flex con company name + dirección
+            + RUC + tel + email + website. Esa info YA aparece en la cabecera
+            (paso 1), por lo que se elimina para no gastar papel.
+            ================================================================ -->
+        <xpath expr="//div[@class='d-flex gap-2 pt-3']" position="replace"/>
+
+        <!-- ================================================================
+            11) OCULTAR "POWERED BY ODOO"
+            ================================================================ 
+        <xpath expr="//div[@class='pos-receipt-order-data text-center pt-3']" position="replace"/>-->
+
+        <!-- ================================================================
+            12) BEFORE-FOOTER: GIFT CARDS + INFO SUNAT
+            Usamos position="inside" (NO replace) para preservar el contenido
+            que pos_loyalty inyecta nativamente:
+              - Puntos won/spent/balance del programa de fidelización
+              - new_coupon_info (con override del módulo, ahora también gift_card y ewallet)
+
+            Orden visual final del before-footer:
+              [pos_loyalty: puntos + cupones, gift cards y ewallets]
+              [info SUNAT: SON, Forma pago, QR, GRACIAS, leyenda]
+            ================================================================ -->
+        <xpath expr="//div[@class='before-footer']" position="inside">
+            <!-- Gift cards / ewallets creadas en esta orden (poblado por
+                 postProcessLoyalty del módulo solse_pe_cpe_pos). Independiente
+                 del bloque new_coupon_info de pos_loyalty para no interferir
+                 con su render. -->
+            <t t-if="order.solse_gift_cards and order.solse_gift_cards.length">
+                <div style="border-top: 1px dashed #000; margin: 3px 0;"/>
+                <t t-foreach="order.solse_gift_cards" t-as="card" t-key="card.code">
+                    <div style="text-align: center; margin-top: 4px;">
+                        <div style="font-weight: bold; font-size: 9px;">
+                            <t t-esc="card.program_name"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            Codigo: <t t-esc="card.code"/>
+                        </div>
+                        <div style="margin: 2px 0;">
+                            <img t-att-src="'/report/barcode/Code128/' + card.code"
+                                 style="height: 30px;" alt="Codigo de barras"/>
+                        </div>
+                        <t t-if="card.expiration_date">
+                            <div style="font-size: 8px;">
+                                Valida hasta: <t t-esc="card.expiration_date"/>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Monto en letras -->
+            <div t-if="order.get_amount_text and order.get_amount_text()"
+                 style="font-size: 9px; text-align: center; font-weight: bold; margin-top: 4px;">
+                SON: <t t-esc="order.get_amount_text()"/>
+            </div>
+
+            <!-- Forma de pago -->
+            <div style="font-size: 9px; text-align: center;">
+                Forma de Pago:
+                <t t-if="order.payment_ids.some(p =&gt; p.payment_method_id &amp;&amp; p.payment_method_id.split_transactions)">Credito</t>
+                <t t-else="">Contado</t>
+            </div>
+
+            <!-- Items count -->
+            <div style="font-size: 9px; text-align: center;">
+                Items: <t t-esc="order.lines.length"/>
+            </div>
+
+            <!-- QR SUNAT -->
+            <div t-if="order.sunat_qr_code" style="text-align: center; margin: 4px 0;">
+                <img alt="QR SUNAT"
+                     t-att-src="order.sunat_qr_code"
+                     style="width: 70px; height: 70px;"/>
+            </div>
+
+            <div style="border-top: 1px dashed #000; margin: 3px 0;"/>
+
+            <!-- MENSAJE -->
+            <div style="text-align: center; font-weight: bold; font-size: 10px;">
+                GRACIAS POR SU PREFERENCIA
+            </div>
+
+            <!-- Leyenda comprobante electrónico -->
+            <div t-if="order.get_cpe_type and order.get_cpe_type()"
+                 style="font-size: 8px; text-align: center; line-height: 1.3; margin-top: 3px;">
+                <div style="font-weight: bold;">
+                    <t t-if="order.get_cpe_type()=='01'">FACTURA ELECTRONICA</t>
+                    <t t-elif="order.get_cpe_type()=='03'">BOLETA ELECTRONICA</t>
+                </div>
+                <div>Representacion impresa del Comprobante de Pago Electronico</div>
+                <div>
+                    Consulte en:
+                    <t t-if="order.company.website" t-esc="order.company.website"/>
+                    <t t-else="">www.sunat.gob.pe</t>
+                </div>
+            </div>
+        </xpath>
+
+    </t>
+
+</templates>

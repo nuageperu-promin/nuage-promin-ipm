@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+		<record id="view_fleet_vehicle_form_guias" model="ir.ui.view">
+			<field name="name">fleet.vehicle.form.guias</field>
+			<field name="model">fleet.vehicle</field>
+			<field name="inherit_id" ref="fleet.fleet_vehicle_view_form" />
+			<field eval="100" name="priority"/>
+			<field name="arch" type="xml">
+				<!-- driver_id vive dentro del primer group del formulario;
+					 es un ancla estable en v17/v18/v19. -->
+				<xpath expr="//field[@name='driver_id']" position="after">
+					<field name="pe_tuce" placeholder="p. ej. 15M22019162E"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="bancos_wizard_view_form" model="ir.ui.view">
+		<field name="name">solse.payroll.bancos.wizard.form</field>
+		<field name="model">solse.payroll.bancos.wizard</field>
+		<field name="arch" type="xml">
+			<form>
+				<div class="text-muted" style="margin-bottom: 8px;">
+					Genera el TXT de abono masivo (haberes o CTS) desde las boletas
+					VALIDADAS del periodo, usando la cuenta de sueldo o CTS registrada
+					por trabajador (CCI para abonos interbancarios).
+				</div>
+				<group>
+					<group>
+						<field name="mes"/>
+						<field name="anio"/>
+						<field name="tipo"/>
+						<field name="incluir_gratificaciones" invisible="tipo == 'cts'"/>
+					</group>
+					<group>
+						<field name="banco"/>
+						<field name="cuenta_cargo"/>
+						<field name="fecha_pago"/>
+					</group>
+				</group>
+				<group invisible="not archivo">
+					<field name="archivo" filename="archivo_nombre" readonly="1"/>
+					<field name="archivo_nombre" invisible="1"/>
+					<field name="resumen"/>
+				</group>
+				<footer>
+					<button name="action_generar" string="Generar TXT" type="object" class="btn-primary"/>
+					<button string="Cerrar" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_bancos_wizard" model="ir.actions.act_window">
+		<field name="name">Pago masivo a bancos</field>
+		<field name="res_model">solse.payroll.bancos.wizard</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="menu_pe_bancos" parent="menu_solse_pe_payroll_root"
+			  name="Pago masivo a bancos" action="action_bancos_wizard"
+			  sequence="31"/>
+</odoo>

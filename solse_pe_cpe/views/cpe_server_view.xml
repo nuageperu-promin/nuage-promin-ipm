@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!-- Se cambio la vista tree por list para v18-->
+    <record model="ir.ui.view" id="view_pe_server_tree">
+      <field name="name">cpe.server.list</field>
+      <field name="model">cpe.server</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name" />
+          <field name="url" />
+          <field name="user" />
+        </list>
+      </field>
+    </record>
+
+    <record id="view_pe_server_from" model="ir.ui.view">
+      <field name="name">cpe.server.form</field>
+      <field name="model">cpe.server</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <button name="action_draft" string="Borrador" invisible="state != 'cancel'" type="object" />
+            <button name="action_done" string="Hecho" invisible="state != 'draft'" type="object" />
+            <button name="action_cancel" string="Cancelar" invisible="state != 'done'" type="object" />
+            <field name="state" widget="statusbar" statusbar_visible="draft,done" />
+          </header>
+          <group>
+            <group>
+              <field name="company_id" />
+              <field name="name" />
+              <field name="user" required="1" />
+              <field name="password" required="1" />
+            </group>
+            <group>
+              <field name="url" />
+              <field name="url_consulta" />
+              <field name="extension_xml" />
+              <field name="active" />
+            </group>
+          </group>
+          <label for="description" />
+          <field name="description" />
+        </form>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="action_pe_server">
+      <field name="name">Servidores SUNAT</field>
+      <field name="res_model">cpe.server</field>
+      <field name="view_mode">list,form</field>
+    </record>
+
+  </data>
+</odoo>

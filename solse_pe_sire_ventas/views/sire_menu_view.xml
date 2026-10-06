@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+	<menuitem id="menu_sire_report"
+		name="Libros electrónicos (SIRE)"
+		parent="solse_pe_catalogo.solse_cpe_menu_root"
+		sequence="11"/>
+
+	
+	<menuitem name="Estructura 14 - Registro de Ventas e Ingresos"
+		id="menu_action_sire_report_14"
+		parent="menu_sire_report"
+		action="action_sire_report_14"
+		sequence="14"/>
+</data>
+</odoo>

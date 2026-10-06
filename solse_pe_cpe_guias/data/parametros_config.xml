@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- noupdate: el valor que fije el cliente NO se pisa al actualizar el
+         módulo. Estos parámetros se editan desde
+         Ajustes > Técnico > Parámetros del sistema, sin consola. -->
+    <data noupdate="1">
+
+        <!-- OBS-4399: SUNAT solo OBSERVA la ausencia de la TUCE en la guía
+             modalidad 01-Público con 'Registro de vehículos y conductores del
+             transportista'; la guía se acepta igual. Por eso el bloqueo es
+             opcional y viene desactivado.
+             Valores admitidos: 1 / 0, true / false, si / no. -->
+        <record id="parametro_tuce_obligatoria" model="ir.config_parameter">
+            <field name="key">solse_pe_cpe_guias.tuce_obligatoria</field>
+            <field name="value">0</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,6 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_sire_report_templ,sire.report.templ,model_sire_report_templ,,1,1,1,1
+access_sire_report_14,sire.report.14,model_sire_report_14,,1,1,1,1
+access_solse_pe_ventas_recibidas,solse.pe.ventas.recibidas,model_solse_pe_ventas_recibidas,,1,1,1,1
+access_solse_pe_ventas_preliminar,solse.pe.ventas.preliminar,model_solse_pe_ventas_preliminar,,1,1,1,1
+access_solse_sire_ticket,solse.sire.ticket,model_solse_sire_ticket,,1,1,1,1

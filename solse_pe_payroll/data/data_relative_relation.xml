@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record model="hr.employee.relative.relation" id="relation_spouse">
+            <field name="name">Cónyugue</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_significant_other">
+            <field name="name">Pareja</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_child">
+            <field name="name">Hijo(a)</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_parent">
+            <field name="name">Padre</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_sibling">
+            <field name="name">Hermano(a)</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_cousin">
+            <field name="name">Primo(a)</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_grandparent">
+            <field name="name">Abuelo(a)</field>
+        </record>
+        <record model="hr.employee.relative.relation" id="relation_grandchild">
+            <field name="name">Nieto(a)</field>
+        </record>
+    </data>
+</odoo>

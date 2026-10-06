@@ -1,0 +1,8 @@
+.env
+access_log
+error_log
+debug.log
+__pycache__
+__pycache__/
+/**/__pycache__
+*.pyc

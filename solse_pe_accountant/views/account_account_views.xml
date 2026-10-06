@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Vista heredada del formulario del Plan de cuentas para mostrar los
+        rubros de la Tabla 34 SUNAT (Estados Financieros).
+
+        En Odoo 19 el formulario de account.account organiza sus campos en 2
+        columnas ajustadas. Si insertamos los 4 Many2one 'pe_t34_*' dentro
+        de un <group> luego de tag_ids, quedan apretados en la columna
+        izquierda del sheet.
+
+        Solucion: los movemos a una pestana (page) propia dentro del
+        <notebook>. Asi ocupan el ancho completo del formulario y quedan
+        bien legibles, ademas de separar los campos del Plan de Cuentas
+        (uso diario) de los campos SUNAT (configuracion ocasional).
+    -->
+    <record id="account_account_form_tabla34" model="ir.ui.view">
+        <field name="name">account.account.form.tabla34</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Rubros EEFF (Tabla 34)"
+                      name="page_rubros_sunat_tabla34">
+                    <!--
+                        Indicador de estado de configuracion. Da feedback
+                        inmediato al contador antes de que empiece a mirar
+                        campos uno por uno. El widget badge pinta el valor
+                        en color (via decoration-*) y el texto 'Resumen' lo
+                        complementa mostrando que rubros tiene asignados.
+                    -->
+                    <div class="alert mt-0 mb-3"
+                         invisible="pe_t34_estado == False">
+                        <group>
+                            <group>
+                                <field name="pe_t34_estado"
+                                       widget="badge"
+                                       decoration-success="pe_t34_estado == 'completo'"
+                                       decoration-warning="pe_t34_estado == 'parcial'"
+                                       decoration-danger="pe_t34_estado == 'sin_config'"
+                                       decoration-muted="pe_t34_estado == 'na'"/>
+                            </group>
+                            <group>
+                                <field name="pe_t34_resumen" readonly="1"/>
+                            </group>
+                        </group>
+                    </div>
+
+                    <group>
+                        <group string="Situacion Financiera y Resultados">
+                            <field name="pe_t34_esf"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="pe_t34_resultado"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group string="Flujos de Efectivo y Patrimonio">
+                            <field name="pe_t34_flujos"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="pe_t34_patrimonio"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                    </group>
+                    <div class="text-muted mt-2">
+                        <p>
+                            Configure aqui los rubros de la Tabla 34 SUNAT para
+                            que esta cuenta alimente los sub-libros del PLE 03
+                            (Inventarios y Balances) y los Estados Financieros
+                            EEFF. Solo asigne rubros a las cuentas que registran
+                            movimientos reales (cuentas hoja).
+                        </p>
+                        <p>
+                            Puede configurar todas las cuentas del plan de una
+                            sola vez desde el wizard
+                            <b>Asignar Rubros EEFF (Tabla 34)</b>, disponible en
+                            la vista lista del Plan de Cuentas. Para ver que
+                            cuentas requieren revision manual use el
+                            <b>Diagnostico de Rubros EEFF</b>.
+                        </p>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!--
+        Vista lista del Plan de cuentas: los rubros se muestran como columnas
+        opcionales. Solo pe_t34_esf queda visible por defecto; las demas se
+        activan desde el selector de columnas del listado.
+
+        Se agrega ademas la columna pe_t34_estado con decoraciones de color
+        para que el contador detecte a simple vista las cuentas que necesitan
+        atencion (Sin configurar = rojo, Parcial = naranja).
+    -->
+    <record id="account_account_list_tabla34" model="ir.ui.view">
+        <field name="name">account.account.list.tabla34</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="pe_t34_estado"
+                       optional="show"
+                       string="Estado EEFF"
+                       widget="badge"
+                       decoration-success="pe_t34_estado == 'completo'"
+                       decoration-warning="pe_t34_estado == 'parcial'"
+                       decoration-danger="pe_t34_estado == 'sin_config'"
+                       decoration-muted="pe_t34_estado == 'na'"/>
+                <field name="pe_t34_esf"        optional="show" string="Rubro ESF"/>
+                <field name="pe_t34_resultado"  optional="hide" string="Rubro Resultados"/>
+                <field name="pe_t34_flujos"     optional="hide" string="Rubro Flujos"/>
+                <field name="pe_t34_patrimonio" optional="hide" string="Rubro Patrimonio"/>
+                <field name="pe_t34_resumen"    optional="hide" string="Resumen Rubros"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--
+        Filtros de busqueda dedicados al estado de configuracion. Permiten
+        al contador filtrar rapidamente desde la barra de busqueda sin
+        conocer los nombres tecnicos de los campos.
+    -->
+    <record id="account_account_search_tabla34" model="ir.ui.view">
+        <field name="name">account.account.search.tabla34</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Rubros EEFF: Sin Configurar"
+                        name="filter_t34_sin_config"
+                        domain="[('pe_t34_estado', '=', 'sin_config')]"/>
+                <filter string="Rubros EEFF: Parcial"
+                        name="filter_t34_parcial"
+                        domain="[('pe_t34_estado', '=', 'parcial')]"/>
+                <filter string="Rubros EEFF: Completo"
+                        name="filter_t34_completo"
+                        domain="[('pe_t34_estado', '=', 'completo')]"/>
+                <filter string="Rubros EEFF: No Aplica"
+                        name="filter_t34_na"
+                        domain="[('pe_t34_estado', '=', 'na')]"/>
+                <separator/>
+                <filter string="Agrupar por Estado EEFF"
+                        name="group_t34_estado"
+                        context="{'group_by': 'pe_t34_estado'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

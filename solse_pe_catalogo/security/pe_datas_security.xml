@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- 1. Categoría del módulo -->
+        <record model="ir.module.category" id="module_pe_datas">
+            <field name="name">Configuración Peruana</field>
+            <field name="description">Establecer permisos de usuarios para datos peruanos</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- 2. Crear privilegios -->
+        <record id="privilege_pe_datas_user" model="res.groups.privilege">
+            <field name="name">Usuario</field>
+            <field name="category_id" ref="module_pe_datas"/>
+        </record>
+
+        <record id="privilege_pe_datas_manager" model="res.groups.privilege">
+            <field name="name">Administrador</field>
+            <field name="category_id" ref="module_pe_datas"/>
+        </record>
+
+        <!-- 3. Crear grupos -->
+        <record id="group_pe_datas_user" model="res.groups">
+            <field name="name">Usuario - Datos Peruanos</field>
+            <field name="privilege_id" ref="privilege_pe_datas_user"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_pe_datas_manager" model="res.groups">
+            <field name="name">Administrador - Datos Peruanos</field>
+            <field name="privilege_id" ref="privilege_pe_datas_manager"/>
+            <field name="implied_ids" eval="[(4, ref('group_pe_datas_user'))]"/>
+            <!-- Asignar usuarios directamente aquí -->
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

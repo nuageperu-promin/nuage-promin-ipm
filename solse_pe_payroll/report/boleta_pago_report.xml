@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 3.1: Boleta de Pago formal (D.S. 001-98-TR)
+	     Contenido mínimo: empleador (razón social, RUC, domicilio),
+	     trabajador (nombres, DNI, ingreso, ocupación, régimen pensionario
+	     y CUSPP), periodo y tiempo laborado, conceptos en tres columnas
+	     por posición de categoría (ingresos / descuentos / aportes del
+	     empleador), neto en número y letras, y firmas.
+	================================================================ -->
+
+	<record id="paperformat_boleta_pe" model="report.paperformat">
+		<field name="name">Boleta de Pago PE (A4)</field>
+		<field name="format">A4</field>
+		<field name="orientation">Portrait</field>
+		<field name="margin_top">10</field>
+		<field name="margin_bottom">8</field>
+		<field name="margin_left">8</field>
+		<field name="margin_right">8</field>
+		<field name="header_spacing">5</field>
+		<field name="dpi">90</field>
+	</record>
+
+	<record id="action_reporte_boleta_pago" model="ir.actions.report">
+		<field name="name">Boleta de Pago (PE)</field>
+		<field name="model">hr.payslip</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_payroll.reporte_boleta_pago</field>
+		<field name="report_file">solse_pe_payroll.reporte_boleta_pago</field>
+		<field name="print_report_name">'Boleta de Pago - %s - %s' % (object.employee_id.name, object.date_start or '')</field>
+		<field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+		<field name="binding_type">report</field>
+		<field name="paperformat_id" ref="paperformat_boleta_pe"/>
+	</record>
+
+	<template id="reporte_boleta_pago">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="web.basic_layout">
+					<div class="page" style="font-size: 11px; padding-top: 6px;">
+
+						<!-- Encabezado legal con logo propio -->
+						<table style="width: 100%; margin-bottom: 6px;">
+							<tr>
+								<td style="width: 20%; vertical-align: middle;">
+									<img t-if="o.company_id.logo"
+										 t-att-src="image_data_uri(o.company_id.logo)"
+										 style="max-height: 45px; max-width: 140px;"/>
+								</td>
+								<td class="text-center" style="vertical-align: middle;">
+									<h4 style="margin: 0;">BOLETA DE PAGO DE REMUNERACIONES</h4>
+									<div style="font-size: 9px;">D.S. N° 001-98-TR y modificatorias — Planilla Electrónica</div>
+								</td>
+								<td style="width: 20%;"/>
+							</tr>
+						</table>
+
+						<!-- Empleador -->
+						<table class="table table-sm table-bordered" style="margin-bottom: 6px;">
+							<tr>
+								<td style="width: 60%;">
+									<strong>EMPLEADOR:</strong> <span t-field="o.company_id.name"/><br/>
+									<strong>Domicilio:</strong>
+									<span t-out="' '.join(filter(None, [o.company_id.street, o.company_id.city, o.company_id.state_id.name or '']))"/>
+								</td>
+								<td>
+									<strong>RUC:</strong> <span t-field="o.company_id.vat"/><br/>
+									<strong>Periodo:</strong> <span t-field="o.date_from"/> — <span t-field="o.date_to"/>
+								</td>
+							</tr>
+						</table>
+
+						<!-- Trabajador -->
+						<t t-set="version" t-value="o.version_id or o.employee_id.version_id"/>
+						<table class="table table-sm table-bordered" style="margin-bottom: 6px;">
+							<tr>
+								<td style="width: 60%;">
+									<strong>TRABAJADOR:</strong> <span t-field="o.employee_id.name"/><br/>
+									<strong>Documento (DNI):</strong> <span t-field="o.employee_id.identification_id"/><br/>
+									<strong>Ocupación:</strong> <span t-out="version.work_occupation_id.name or '—'"/><br/>
+									<strong>Situación:</strong> <span t-out="version.labor_regime_id.name or ''"/>
+								</td>
+								<td>
+									<strong>Fecha de ingreso:</strong> <span t-out="version.contract_date_start or ''"/><br/>
+									<strong>Rég. pensionario:</strong> <span t-out="o.employee_id.pension_system_id.name or ''"/><br/>
+									<t t-if="o.employee_id.is_cuspp">
+										<strong>CUSPP:</strong> <span t-out="o.employee_id.cuspp or ''"/><br/>
+									</t>
+									<strong>Remuneración básica:</strong>
+									<span t-out="'%.2f' % (version.wage or 0.0)"/>
+								</td>
+							</tr>
+						</table>
+
+						<!-- Tiempo laborado -->
+						<table class="table table-sm table-bordered" style="margin-bottom: 6px;">
+							<tr class="text-center">
+								<t t-set="dias" t-value="sum(o.worked_days_line_ids.mapped('number_of_days'))"/>
+								<t t-set="horas" t-value="sum(o.worked_days_line_ids.mapped('number_of_hours'))"/>
+								<td><strong>Días laborados/computables:</strong> <span t-out="'%.0f' % dias"/></td>
+								<td><strong>Horas:</strong> <span t-out="'%.1f' % horas"/></td>
+								<td><strong>Moneda:</strong> <span t-field="o.currency_id.name"/></td>
+							</tr>
+						</table>
+
+						<!-- Conceptos en tres columnas por posición de la categoría -->
+						<t t-set="lineas" t-value="o.line_ids.filtered(lambda l: l.appears_on_payslip and abs(l.total) &gt; 0.004 and l.code not in ('BASIC', 'GROSS', 'NET'))"/>
+						<t t-set="ingresos" t-value="lineas.filtered(lambda l: (l.category_id.invoice_position or 'pos_1') == 'pos_1')"/>
+						<t t-set="descuentos" t-value="lineas.filtered(lambda l: l.category_id.invoice_position == 'pos_2')"/>
+						<t t-set="aportes" t-value="lineas.filtered(lambda l: l.category_id.invoice_position == 'pos_3')"/>
+						<table class="table table-sm table-bordered" style="margin-bottom: 6px;">
+							<thead>
+								<tr class="text-center" style="background-color: #f0f0f0;">
+									<th style="width: 33%;">INGRESOS</th>
+									<th style="width: 33%;">DESCUENTOS</th>
+									<th style="width: 34%;">APORTES DEL EMPLEADOR</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr style="vertical-align: top;">
+									<td>
+										<table style="width: 100%;">
+											<t t-foreach="ingresos" t-as="linea">
+												<tr>
+													<td><span t-field="linea.name"/></td>
+													<td class="text-end"><span t-out="'%.2f' % linea.total"/></td>
+												</tr>
+											</t>
+										</table>
+									</td>
+									<td>
+										<table style="width: 100%;">
+											<t t-foreach="descuentos" t-as="linea">
+												<tr>
+													<td><span t-field="linea.name"/></td>
+													<td class="text-end"><span t-out="'%.2f' % linea.total"/></td>
+												</tr>
+											</t>
+										</table>
+									</td>
+									<td>
+										<table style="width: 100%;">
+											<t t-foreach="aportes" t-as="linea">
+												<tr>
+													<td><span t-field="linea.name"/></td>
+													<td class="text-end"><span t-out="'%.2f' % linea.total"/></td>
+												</tr>
+											</t>
+										</table>
+									</td>
+								</tr>
+								<tr style="background-color: #f7f7f7; font-weight: bold;">
+									<td class="text-end">Total ingresos:
+										<span t-out="'%.2f' % sum(ingresos.mapped('total'))"/></td>
+									<td class="text-end">Total descuentos:
+										<span t-out="'%.2f' % sum(descuentos.mapped('total'))"/></td>
+									<td class="text-end">Total aportes:
+										<span t-out="'%.2f' % sum(aportes.mapped('total'))"/></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<!-- Neto -->
+						<t t-set="neto" t-value="o.line_ids.filtered(lambda l: l.code == 'NET')[:1].total or 0.0"/>
+						<table class="table table-sm table-bordered" style="margin-bottom: 18px;">
+							<tr style="font-weight: bold;">
+								<td>NETO A PAGAR:
+									<span t-out="'%s %.2f' % (o.currency_id.symbol or 'S/', neto)"/></td>
+								<td>SON: <span t-out="o.currency_id.amount_to_text(neto).upper()"/></td>
+							</tr>
+						</table>
+
+						<!-- Firmas -->
+						<t t-set="empleador_firma" t-value="o.env['hr.employee'].sudo().search([('company_id', '=', o.company_id.id), ('is_employer', '=', True)], limit=1)"/>
+						<table style="width: 100%; margin-top: 28px;">
+							<tr class="text-center">
+								<td style="width: 50%;">
+									<t t-if="empleador_firma and empleador_firma.employer_sign">
+										<img t-att-src="image_data_uri(empleador_firma.employer_sign)"
+											 style="max-height: 60px;"/>
+									</t>
+									<div style="border-top: 1px solid #000; width: 70%; margin: 4px auto 0;">
+										EMPLEADOR
+									</div>
+								</td>
+								<td style="width: 50%;">
+									<div style="margin-top: 60px; border-top: 1px solid #000; width: 70%; margin-left: auto; margin-right: auto;">
+										TRABAJADOR<br/>
+										<span style="font-size: 9px;">DNI: <span t-field="o.employee_id.identification_id"/></span>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<div style="font-size: 8px; margin-top: 8px;">
+							La entrega de la presente boleta puede realizarse por medios físicos o
+							electrónicos conforme al D.S. 009-2011-TR. El duplicado queda en poder
+							del empleador.
+						</div>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+</odoo>

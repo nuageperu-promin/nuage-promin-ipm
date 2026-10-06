@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2026 FM SYSTEMS SOLUTIONS E.I.R.L. (sistemas@solse.pe)
+     Licencia: Other proprietary. Prohibida la redistribucion total o parcial. -->
+<odoo>
+	<record id="view_qa_caso_list" model="ir.ui.view">
+		<field name="name">solse.cpe.guias.qa.caso.list</field>
+		<field name="model">solse.cpe.guias.qa.caso</field>
+		<field name="arch" type="xml">
+			<list decoration-success="estado == 'ok'" decoration-danger="estado == 'error'"
+				  decoration-info="estado == 'enviado'">
+				<header>
+					<button name="action_sembrar" type="object" string="Sembrar"/>
+					<button name="action_verificar" type="object" string="Verificar XML"/>
+					<button name="action_enviar_beta" type="object" string="Enviar a beta"/>
+					<button name="action_limpiar" type="object" string="Limpiar" confirm="Se eliminarán las transferencias y guías sembradas de los casos seleccionados. ¿Continuar?"/>
+					<button name="action_actualizar_casos_precargados" type="object" string="Actualizar casos precargados"/>
+				</header>
+				<field name="codigo"/>
+				<field name="name"/>
+				<field name="tipo_guia"/>
+				<field name="resultado_esperado"/>
+				<field name="picking_id"/>
+				<field name="guia_numero"/>
+				<field name="guia_estado"/>
+				<field name="estado"/>
+			</list>
+		</field>
+	</record>
+
+	<record id="view_qa_caso_form" model="ir.ui.view">
+		<field name="name">solse.cpe.guias.qa.caso.form</field>
+		<field name="model">solse.cpe.guias.qa.caso</field>
+		<field name="arch" type="xml">
+			<form>
+				<header>
+					<button name="action_sembrar" type="object" string="Sembrar" class="btn-primary"
+							invisible="picking_id"/>
+					<button name="action_verificar" type="object" string="Verificar XML" class="btn-primary"
+							invisible="not picking_id"/>
+					<button name="action_enviar_beta" type="object" string="Enviar a beta"
+							invisible="not picking_id or resultado_esperado != 'aceptada'"
+							confirm="Se enviará la guía al servidor configurado en la compañía. ¿Continuar?"/>
+					<button name="action_consultar_ticket" type="object" string="Consultar ticket"
+							invisible="estado != 'enviado'"/>
+					<button name="action_limpiar" type="object" string="Limpiar"
+							invisible="not picking_id"
+							confirm="Se eliminarán la transferencia y las guías sembradas. ¿Continuar?"/>
+					<field name="estado" widget="statusbar"/>
+				</header>
+				<sheet>
+					<h1><field name="codigo" readonly="picking_id"/></h1>
+					<group>
+						<group>
+							<field name="name"/>
+							<field name="tipo_guia" readonly="picking_id"/>
+							<field name="resultado_esperado"/>
+							<field name="error_esperado" invisible="resultado_esperado != 'rechazo_local'"/>
+							<field name="company_id" groups="base.group_multi_company"/>
+						</group>
+						<group>
+							<field name="picking_id"/>
+							<field name="guia_numero"/>
+							<field name="guia_estado"/>
+						</group>
+					</group>
+					<notebook>
+						<page string="Resultado">
+							<field name="resultado" nolabel="1"/>
+						</page>
+						<page string="Descripción">
+							<field name="descripcion" nolabel="1"/>
+						</page>
+						<page string="XML generado">
+							<field name="xml_generado" nolabel="1"/>
+						</page>
+					</notebook>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_qa_caso" model="ir.actions.act_window">
+		<field name="name">Laboratorio QA de guías</field>
+		<field name="res_model">solse.cpe.guias.qa.caso</field>
+		<field name="view_mode">list,form</field>
+	</record>
+
+	<menuitem id="menu_qa_guias" name="Laboratorio QA guías"
+			  parent="solse_pe_cpe.pe_cpe_document_menu" action="action_qa_caso" sequence="90"/>
+</odoo>

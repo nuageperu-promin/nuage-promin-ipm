@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 8: Vacaciones (D.Leg. 713)
+	     Diseño: boleta de vacaciones SEPARADA (práctica peruana: la
+	     remuneración vacacional se abona antes del goce). La estructura
+	     Vacaciones se REPLICA desde la base (la remuneración vacacional
+	     está AFECTA a aportes y renta) sustituyendo la remuneración
+	     básica por VAC_001. Las estructuras mensual/semanal marcan el
+	     work entry de vacaciones PE como NO pagado: el mes del goce
+	     descuenta esos días y no se duplica el pago.
+	================================================================ -->
+	<!-- N-6 en ENTERPRISE (19.0.0.44) · MEDIDO el 2026-09-22: con un goce
+	     validado, el -u moría en hr_leave._check_date_state (:749) desde
+	     _compute_duration (:634), disparado por _update_translations. La
+	     cadena es la de Community: este bloque reescribía `request_unit`
+	     del tipo de ausencia en cada actualización → related
+	     hr.leave.leave_type_request_unit → _compute_date_from_to →
+	     constraint sobre ausencias aprobadas. El tipo de entrada y el tipo
+	     de ausencia son CATÁLOGO: nacen una vez y no se reescriben.
+	     Cambiar el atributo no toca las filas ya creadas (trampa 13):
+	     migrations/19.0.0.44/pre-migrate.py las congela. Lo que C-7
+	     necesita del tipo (estar en unpaid_work_entry_type_ids) lo asegura
+	     configurar_vacaciones_no_pagadas() en Python, no este XML. -->
+	<data noupdate="1">
+		<record id="work_entry_type_vacaciones_pe" model="hr.work.entry.type">
+			<field name="name">Vacaciones PE</field>
+			<field name="code">VACPE100</field>
+			<field name="display_code">VAC</field>
+			<field name="color">6</field>
+			<field name="is_leave">True</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="leave_type_vacaciones_pe" model="hr.leave.type">
+			<field name="name">Vacaciones PE (D.Leg. 713)</field>
+			<field name="work_entry_type_id" ref="work_entry_type_vacaciones_pe"/>
+			<field name="requires_allocation">yes</field>
+			<field name="request_unit">day</field>
+			<field name="leave_validation_type">hr</field>
+			<field name="company_id" eval="False"/>
+		</record>
+	</data>
+
+	<data noupdate="0">
+
+		<record id="input_type_vac_001" model="hr.payslip.input.type">
+			<field name="code">VAC_001</field>
+			<field name="name">Importe Vacaciones (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<!-- Remuneración vacacional (definida directo en la estructura
+		     Vacaciones; el resto de reglas llega replicado de la base) -->
+		<record id="regla_vac_001" model="hr.salary.rule">
+			<field name="name">Remuneración vacacional</field>
+			<field name="code">VAC_001</field>
+			<field name="sequence">3</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_vacaciones"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">D.Leg. 713: remuneración computable (sueldo + asignación
+familiar si corresponde) por los días de goce del periodo de la boleta
+(tope 30), sobre base 30. AFECTA a aportes y renta: esta estructura
+replica los descuentos de la base. El derecho al descanso (30 días
+régimen general, 15 MYPE) y el récord vacacional los controla la
+asignación del tipo de ausencia "Vacaciones PE". Input VAC_001 fuerza
+el importe (p. ej. para promedios con variables, pendiente de afinar).</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('VAC_001') and inputs['VAC_001'].amount > 0:
+    result = inputs['VAC_001'].amount
+else:
+    computable = version.wage
+    tiene_af = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' in nombre_relacion:
+            limite_edad = pariente.max_age or 18
+            if pariente.age &lt; limite_edad or pariente.disability:
+                tiene_af = True
+                break
+    if tiene_af:
+        computable += payslip._rule_parameter('pe_asig_familiar')
+    dias_goce = min(float((payslip.date_to - payslip.date_from).days + 1), 30.0)
+    result = computable * dias_goce / 30.0
+			</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable: gasto de vacaciones 6215, por pagar 4115 -->
+	<data noupdate="1">
+		<record id="mapeo_vac_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_vac_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_vacaciones"/>
+			<field name="prefijo_debito">6215</field>
+		</record>
+		<record id="mapeo_net_vac" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_net"/>
+			<field name="estructura_id" ref="hr_payroll_structure_vacaciones"/>
+			<field name="prefijo_credito">4115</field>
+			<field name="nota">Vacaciones por pagar</field>
+		</record>
+	</data>
+</odoo>

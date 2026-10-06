@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- L-6 · Secuencias por compania: crea las que falten. -->
+		<function model="res.company" name="pe_asegurar_secuencias_guias_todas"/>
+	</data>
+</odoo>

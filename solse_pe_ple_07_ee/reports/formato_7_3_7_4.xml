@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Formatos físicos 7.3 y 7.4 — R.S. 234-2006/SUNAT, art. 13 num. 7.3 c) y d),
+	según la plantilla oficial (234_formato71.xls, hojas «F 7.3» y «F 7.4»).
+	Usan el paperformat del 7.1. Datos: models/formato_7_3_7_4.py.
+
+	⚠ Se copia a la variante Enterprise con sincronizar_ple07.py, que cambia
+	el nombre técnico del módulo en report_name y report_file. No editarlo
+	en la variante Enterprise.
+-->
+<odoo>
+
+	<record id="action_reporte_formato_7_3" model="ir.actions.report">
+		<field name="name">Registro de Activos Fijos - Diferencia de Cambio (Formato 7.3) - PDF SUNAT</field>
+		<field name="model">ple.report.07</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_ple_07_ee.formato_7_3_documento</field>
+		<field name="report_file">solse_pe_ple_07_ee.formato_7_3_documento</field>
+		<field name="paperformat_id" ref="paperformat_formato_7_1"/>
+		<field name="print_report_name">'ACTIVOS_FIJOS_7_3_%s' % (object.year)</field>
+		<field name="binding_model_id" eval="False"/>
+		<field name="binding_type">report</field>
+	</record>
+
+	<record id="action_reporte_formato_7_4" model="ir.actions.report">
+		<field name="name">Registro de Activos Fijos - Arrendamiento Financiero (Formato 7.4) - PDF SUNAT</field>
+		<field name="model">ple.report.07</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_ple_07_ee.formato_7_4_documento</field>
+		<field name="report_file">solse_pe_ple_07_ee.formato_7_4_documento</field>
+		<field name="paperformat_id" ref="paperformat_formato_7_1"/>
+		<field name="print_report_name">'ACTIVOS_FIJOS_7_4_%s' % (object.year)</field>
+		<field name="binding_model_id" eval="False"/>
+		<field name="binding_type">report</field>
+	</record>
+
+	<template id="formato_7_x_estilos">
+		<style>
+			.f7 { font-family: Arial, sans-serif; font-size: 7pt; color: #000; }
+			.f7-titulo { font-size: 9pt; font-weight: bold; margin-bottom: 4pt; }
+			.f7-cabecera { font-size: 7pt; margin-bottom: 6pt; }
+			.f7-cabecera div { margin: 1pt 0; }
+			.f7-cabecera .etiqueta { font-weight: bold; }
+			table.f7-tabla { width: 100%; border-collapse: collapse; }
+			table.f7-tabla th { border: 1px solid #000; background-color: #e0e0e0;
+				font-size: 6pt; font-weight: bold; text-align: center;
+				vertical-align: middle; padding: 2pt; }
+			table.f7-tabla td { border: 1px solid #000; padding: 1pt 3pt; vertical-align: top; }
+			table.f7-tabla td.num { text-align: right; white-space: nowrap; }
+			table.f7-tabla td.centro { text-align: center; }
+			table.f7-tabla tr.totales td { font-weight: bold; background-color: #d0d0d0; }
+			.f7-sin-operaciones { text-align: center; font-weight: bold; padding: 12pt; }
+			.f7-nota { font-size: 6pt; margin-top: 3pt; color: #444; }
+		</style>
+	</template>
+
+	<template id="formato_7_x_cabecera">
+		<div class="f7-cabecera">
+			<div><span class="etiqueta">PERÍODO:</span> <t t-esc="datos['cabecera']['periodo']"/></div>
+			<div><span class="etiqueta">RUC:</span> <t t-esc="datos['cabecera']['ruc']"/></div>
+			<div><span class="etiqueta">APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:</span> <t t-esc="datos['cabecera']['razon_social']"/></div>
+		</div>
+	</template>
+
+	<template id="formato_7_3_documento">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-set="datos" t-value="o.datos_formato_7_3()"/>
+				<!-- L9.4: div.article, como web.basic_layout. Sin él,
+				     ir.actions.report._prepare_html (19.0) no envuelve el
+				     cuerpo en el layout con <meta charset="utf-8"> y
+				     wkhtmltopdf lo lee en latin-1: tildes en mojibake. -->
+				<div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id" t-att-data-oe-lang="o.env.context.get('lang')">
+				<div class="page">
+					<t t-call="solse_pe_ple_07_ee.formato_7_x_estilos"/>
+					<div class="f7">
+						<div class="f7-titulo">FORMATO 7.3: "REGISTRO DE ACTIVOS FIJOS - DETALLE DE LA DIFERENCIA DE CAMBIO"</div>
+						<t t-call="solse_pe_ple_07_ee.formato_7_x_cabecera"/>
+						<table class="f7-tabla">
+							<thead>
+								<tr>
+									<th rowspan="2">CÓDIGO RELACIONADO CON EL ACTIVO FIJO</th>
+									<th colspan="7">ACTIVO FIJO</th>
+									<th colspan="4">DEPRECIACIÓN</th>
+								</tr>
+								<tr>
+									<th>FECHA DE ADQUISICIÓN</th>
+									<th>VALOR DE ADQUISICIÓN EN MONEDA EXTRANJERA</th>
+									<th>TIPO DE CAMBIO EN LA FECHA DE ADQUISICIÓN</th>
+									<th>VALOR DE ADQUISICIÓN EN MONEDA NACIONAL</th>
+									<th>TIPO DE CAMBIO AL 31.12</th>
+									<th>AJUSTE POR DIFERENCIA DE CAMBIO</th>
+									<th>VALOR EN MONEDA NACIONAL AL 31.12</th>
+									<th>DEL EJERCICIO</th>
+									<th>DE LOS RETIROS Y/O BAJAS</th>
+									<th>DE OTROS AJUSTES</th>
+									<th>ACUMULADA HISTÓRICA</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr t-if="not datos['filas']">
+									<td colspan="12" class="f7-sin-operaciones">SIN OPERACIONES</td>
+								</tr>
+								<tr t-foreach="datos['filas']" t-as="fila">
+									<td><t t-esc="fila['codigo']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_adquisicion']"/></td>
+									<td class="num"><t t-esc="fila['valor_me_fmt']"/></td>
+									<td class="num"><t t-esc="fila['tc_adquisicion']"/></td>
+									<td class="num"><t t-esc="fila['valor_mn_fmt']"/></td>
+									<td class="num"><t t-esc="fila['tc_cierre']"/></td>
+									<td class="num"><t t-esc="fila['ajuste_fmt']"/></td>
+									<td class="num"><t t-esc="fila['valor_mn_3112_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ejercicio_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_retiros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_otros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_historica_fmt']"/></td>
+								</tr>
+								<tr t-if="datos['filas']" class="totales">
+									<td colspan="2" style="text-align: right;">TOTALES</td>
+									<td/>
+									<td/>
+									<td class="num"><t t-esc="datos['totales']['valor_mn']"/></td>
+									<td/>
+									<td class="num"><t t-esc="datos['totales']['ajuste']"/></td>
+									<td class="num"><t t-esc="datos['totales']['valor_mn_3112']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ejercicio']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_retiros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_otros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_historica']"/></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="f7-nota">
+							Totales solo en moneda nacional. La depreciación acumulada histórica toma la acumulada al cierre del ejercicio anterior del formato 7.1.
+							Retiros y/o bajas:
+							<t t-if="datos['modo_bajas'] == 'descontar'">la baja retira la depreciación acumulada del bien.</t>
+							<t t-else="">el bien retirado conserva su depreciación acumulada.</t>
+						</div>
+					</div>
+				</div>
+				</div>
+			</t>
+		</t>
+	</template>
+
+	<template id="formato_7_4_documento">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-set="datos" t-value="o.datos_formato_7_4()"/>
+				<!-- L9.4: div.article, como web.basic_layout. Sin él,
+				     ir.actions.report._prepare_html (19.0) no envuelve el
+				     cuerpo en el layout con <meta charset="utf-8"> y
+				     wkhtmltopdf lo lee en latin-1: tildes en mojibake. -->
+				<div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id" t-att-data-oe-lang="o.env.context.get('lang')">
+				<div class="page">
+					<t t-call="solse_pe_ple_07_ee.formato_7_x_estilos"/>
+					<div class="f7">
+						<div class="f7-titulo">FORMATO 7.4: "REGISTRO DE ACTIVOS FIJOS - DETALLE DE LOS ACTIVOS FIJOS BAJO LA MODALIDAD DE ARRENDAMIENTO FINANCIERO AL 31.12"</div>
+						<t t-call="solse_pe_ple_07_ee.formato_7_x_cabecera"/>
+						<table class="f7-tabla">
+							<thead>
+								<tr>
+									<th>FECHA DEL CONTRATO</th>
+									<th>NÚMERO DEL CONTRATO DE ARRENDAMIENTO FINANCIERO</th>
+									<th>FECHA DE INICIO DEL ARRENDAMIENTO FINANCIERO</th>
+									<th>NÚMERO DE CUOTAS PACTADAS</th>
+									<th>MONTO TOTAL DEL CONTRATO DE ARRENDAMIENTO FINANCIERO</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr t-if="not datos['filas']">
+									<td colspan="5" class="f7-sin-operaciones">SIN OPERACIONES</td>
+								</tr>
+								<tr t-foreach="datos['filas']" t-as="fila">
+									<td class="centro"><t t-esc="fila['fecha_contrato']"/></td>
+									<td><t t-esc="fila['numero_contrato']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_inicio']"/></td>
+									<td class="centro"><t t-esc="fila['cuotas']"/></td>
+									<td class="num"><t t-esc="fila['monto_fmt']"/></td>
+								</tr>
+								<tr t-if="datos['filas']" class="totales">
+									<td colspan="4" style="text-align: right;">TOTAL</td>
+									<td class="num"><t t-esc="datos['total']"/></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				</div>
+			</t>
+		</t>
+	</template>
+
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_ple" model="ir.ui.view">
+            <field name="name">res.config.settings.view.ple</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="PLE SUNAT" string="PLE SUNAT" name="solse_pe_ple_pro"
+                         groups="solse_pe_ple_pro.group_ple_gerente">
+                        <block title="Libros Electrónicos PLE" name="ple_config">
+                            <setting
+                                string="Libro Diario Simplificado (5.2)"
+                                help="Activar si la empresa tiene ingresos ≤ 150 UIT y debe presentar la estructura 5.2.">
+                                <field name="ple_presentar_5_2"/>
+                            </setting>
+                            <setting
+                                string="Eximido de presentar Libro Caja y Bancos"
+                                help="Si está activo, los nuevos registros del Libro Diario (5.1) incluirán por defecto los datos de caja y bancos en los campos libres, eximiendo al contribuyente del Libro Caja y Bancos separado.">
+                                <field name="ple_eximido_caja_bancos"/>
+                            </setting>
+                            <setting
+                                string="Validación estricta de referencias en facturas de proveedor"
+                                help="Si está activo (recomendado), al generar el Libro Diario o Mayor se detiene con un error listando las facturas de proveedor que tienen el campo Referencia vacío. El campo 12 (número de comprobante) es obligatorio para SUNAT. Desactivar solo si se acepta generar el TXT con líneas incompletas.">
+                                <field name="ple_validacion_estricta_ref"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

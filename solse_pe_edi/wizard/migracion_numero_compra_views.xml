@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_migracion_numero_compra_form" model="ir.ui.view">
+		<field name="name">solse.migracion.numero.compra.form</field>
+		<field name="model">solse.migracion.numero.compra</field>
+		<field name="arch" type="xml">
+			<form string="Número de comprobante en compras">
+				<div class="alert alert-info" role="alert" invisible="informe">
+					El número del comprobante del proveedor se guarda ahora en
+					su campo de la localización y ya no en «Referencia».
+					Las compras antiguas siguen funcionando: los libros leen
+					«Referencia» como respaldo. Analiza primero para saber qué
+					hay en esta base.
+				</div>
+				<group>
+					<group>
+						<field name="company_ids" widget="many2many_tags"/>
+						<field name="fecha_desde"/>
+					</group>
+					<group invisible="not total_compras">
+						<field name="total_compras"/>
+						<field name="ya_migradas"/>
+						<field name="migrables"/>
+						<field name="con_formato_invalido"
+							   decoration-danger="con_formato_invalido &gt; 0"/>
+					</group>
+				</group>
+				<group string="Detalle" invisible="not informe">
+					<field name="informe" nolabel="1" readonly="1"/>
+					<field name="move_invalidos_ids" invisible="1"/>
+				</group>
+				<footer>
+					<button name="accion_analizar" string="Analizar"
+							type="object" class="btn-primary"/>
+					<button name="accion_migrar" string="Migrar desde «Referencia»"
+							type="object" class="btn-secondary"
+							invisible="not migrables"
+							confirm="Se escribirá el número en su campo, lo que cambia el nombre del asiento. Conviene tener respaldo de la base. ¿Continuar?"/>
+					<button name="accion_ver_invalidos" string="Ver los que hay que corregir"
+							type="object" class="btn-secondary"
+							invisible="not con_formato_invalido"/>
+					<button string="Cerrar" class="btn-secondary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_migracion_numero_compra" model="ir.actions.act_window">
+		<field name="name">Número de comprobante en compras</field>
+		<field name="res_model">solse.migracion.numero.compra</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="menu_migracion_numero_compra"
+			  name="Número de comprobante en compras"
+			  parent="account.menu_finance_configuration"
+			  action="action_migracion_numero_compra"
+			  sequence="90"
+			  groups="account.group_account_manager"/>
+
+</odoo>

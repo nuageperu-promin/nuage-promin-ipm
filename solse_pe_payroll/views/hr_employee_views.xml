@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="hr_employee_view_form_pe" model="ir.ui.view">
+		<field name="name">hr.employee.view.form.inherit.solse_pe_payroll</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr.view_employee_form"/>
+		<field name="arch" type="xml">
+			<page name="personal_information" position="after">
+				<page string="Nómina PE" name="pe_nomina" groups="hr.group_hr_user">
+					<group>
+						<group string="Identificación T-Registro">
+							<field name="firstname"/>
+							<field name="lastname"/>
+							<field name="secondname"/>
+							<field name="academic_degree_id"/>
+							<field name="disability"/>
+							<field name="age" readonly="1"/>
+						</group>
+						<group string="Sistema pensionario">
+							<field name="pension_system_id"/>
+							<field name="is_cuspp" invisible="1"/>
+							<field name="cuspp" invisible="not is_cuspp" required="is_cuspp"/>
+							<field name="commission_type" invisible="not is_cuspp"/>
+							<field name="no_apply_afp_premium" invisible="not is_cuspp"/>
+							<field name="no_provide_pension"/>
+						</group>
+						<group string="Salud">
+							<field name="health_regime_id"/>
+							<field name="management_eps"/>
+							<field name="pension_sctr"/>
+							<field name="life_insurance_id"/>
+						</group>
+						<group string="Cuentas bancarias">
+							<field name="account_salary_bank"/>
+							<field name="type_salary_bank"/>
+							<field name="account_cts_bank"/>
+							<field name="type_cts_bank"/>
+						</group>
+						<group string="Descuento judicial" groups="hr_payroll.group_hr_payroll_user">
+							<field name="exists_beneficiary"/>
+							<field name="beneficiary" invisible="not exists_beneficiary"/>
+							<field name="judicial_discount" invisible="not exists_beneficiary"/>
+							<field name="judicial_discount_percent" invisible="not exists_beneficiary"/>
+						</group>
+						<group string="Firma de boletas">
+							<field name="is_employer"/>
+							<field name="employer_sign" widget="image"
+								   invisible="not is_employer"/>
+						</group>
+					</group>
+					<separator string="Derechohabientes"/>
+					<field name="relative_ids">
+						<list editable="bottom">
+							<field name="relation_id"/>
+							<field name="name"/>
+							<field name="gender" optional="show"/>
+							<field name="date_of_birth" optional="show"/>
+							<field name="age" optional="hide"/>
+							<field name="disability" optional="hide"/>
+							<field name="percentage_eps" optional="hide"/>
+							<field name="payer_eps" optional="hide"/>
+						</list>
+					</field>
+				</page>
+			</page>
+		</field>
+	</record>
+
+	<!-- Uso de cuenta y CCI en cuentas bancarias -->
+	<record id="res_partner_bank_view_list_pe" model="ir.ui.view">
+		<field name="name">res.partner.bank.list.inherit.solse_pe_payroll</field>
+		<field name="model">res.partner.bank</field>
+		<field name="inherit_id" ref="base.view_partner_bank_tree"/>
+		<field name="arch" type="xml">
+			<field name="acc_number" position="after">
+				<field name="uso_cuenta"/>
+				<field name="cci" optional="show"/>
+			</field>
+		</field>
+	</record>
+	<record id="res_partner_bank_view_form_pe" model="ir.ui.view">
+		<field name="name">res.partner.bank.form.inherit.solse_pe_payroll</field>
+		<field name="model">res.partner.bank</field>
+		<field name="inherit_id" ref="base.view_partner_bank_form"/>
+		<field name="arch" type="xml">
+			<field name="acc_number" position="after">
+				<field name="uso_cuenta"/>
+				<field name="cci"/>
+			</field>
+		</field>
+	</record>
+</odoo>

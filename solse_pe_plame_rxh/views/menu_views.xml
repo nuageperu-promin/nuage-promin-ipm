@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<menuitem id="menu_plame_rxh_exportar"
+	          name="PLAME - Recibos por Honorarios"
+	          parent="account.menu_finance_reports"
+	          action="action_plame_rxh_exportar"
+	          groups="account.group_account_user"
+	          sequence="95"/>
+
+</odoo>

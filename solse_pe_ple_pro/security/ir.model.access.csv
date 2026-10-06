@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ple_report_templ_usuario,ple.report.templ usuario,model_ple_report_templ,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
+access_ple_report_templ_gerente,ple.report.templ gerente,model_ple_report_templ,solse_pe_ple_pro.group_ple_gerente,1,1,1,1
+access_ple_report_05_usuario,ple.report.05 usuario,model_ple_report_05,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
+access_ple_report_05_gerente,ple.report.05 gerente,model_ple_report_05,solse_pe_ple_pro.group_ple_gerente,1,1,1,1
+access_ple_report_06_usuario,ple.report.06 usuario,model_ple_report_06,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
+access_ple_report_06_gerente,ple.report.06 gerente,model_ple_report_06,solse_pe_ple_pro.group_ple_gerente,1,1,1,1
+access_diagnostico_numeracion,solse.diagnostico.numeracion,model_solse_diagnostico_numeracion,base.group_user,1,1,1,1

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Menú raíz propio: el módulo es instalable sin la suite CPE.
+	     El puente solse_pe_payroll_catalogo (auto_install) reubica estos
+	     menús bajo la raíz SOLSE cuando solse_pe_catalogo está presente. -->
+	<menuitem id="menu_solse_pe_payroll_root"
+			  name="Nómina PE"
+			  parent="hr_work_entry_enterprise.menu_hr_payroll_root"
+			  sequence="90"
+			  groups="hr_payroll.group_hr_payroll_user"/>
+
+	<!-- Parámetros -->
+	<menuitem id="menu_pe_parametros"
+			  name="Parámetros de Nómina PE"
+			  parent="menu_solse_pe_payroll_root"
+			  action="rule_parameter_pe_action"
+			  sequence="10"
+			  groups="hr_payroll.group_hr_payroll_manager"/>
+
+	<!-- Maestros -->
+	<menuitem id="menu_pe_maestros"
+			  name="Maestros SUNAT"
+			  parent="menu_solse_pe_payroll_root"
+			  sequence="20"/>
+	<menuitem id="menu_pe_pension_system" parent="menu_pe_maestros"
+			  action="pension_system_action" sequence="10"/>
+	<menuitem id="menu_pe_employee_regime" parent="menu_pe_maestros"
+			  action="employee_regime_action" sequence="20"/>
+	<menuitem id="menu_pe_type_contract" parent="menu_pe_maestros"
+			  action="type_contract_action" sequence="30"/>
+	<menuitem id="menu_pe_mintra_contract" parent="menu_pe_maestros"
+			  action="mintra_contract_action" sequence="40"/>
+	<menuitem id="menu_pe_work_occupation" parent="menu_pe_maestros"
+			  action="work_occupation_action" sequence="50"/>
+	<menuitem id="menu_pe_low_reason" parent="menu_pe_maestros"
+			  action="low_reason_action" sequence="60"/>
+	<menuitem id="menu_pe_academic_degree" parent="menu_pe_maestros"
+			  action="academic_degree_action" sequence="70"/>
+	<menuitem id="menu_pe_special_situation" parent="menu_pe_maestros"
+			  action="special_situation_action" sequence="80"/>
+	<menuitem id="menu_pe_relative_relation" parent="menu_pe_maestros"
+			  action="relative_relation_action" sequence="90"/>
+	<menuitem id="menu_pe_plame_lines" parent="menu_pe_maestros"
+			  action="plame_lines_action" sequence="100"/>
+
+	<!-- Seguros y EPS -->
+	<menuitem id="menu_pe_seguros"
+			  name="Seguros y EPS"
+			  parent="menu_solse_pe_payroll_root"
+			  sequence="30"/>
+	<menuitem id="menu_pe_eps_management" parent="menu_pe_seguros"
+			  action="eps_management_action" sequence="10"/>
+	<menuitem id="menu_pe_life_insurance" parent="menu_pe_seguros"
+			  action="life_insurance_action" sequence="20"/>
+
+	<!-- Configuración contable -->
+	<menuitem id="menu_pe_contable"
+			  name="Contabilidad de nómina"
+			  parent="menu_solse_pe_payroll_root"
+			  sequence="40"
+			  groups="hr_payroll.group_hr_payroll_manager"/>
+	<menuitem id="menu_pe_mapeo_contable" parent="menu_pe_contable"
+			  action="mapeo_contable_action" sequence="10"/>
+	<menuitem id="menu_pe_asignar_cuentas" parent="menu_pe_contable"
+			  action="asignar_cuentas_wizard_action" sequence="20"/>
+</odoo>

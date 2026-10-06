@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Vista genérica lista+form para maestros simples código/descripción -->
+
+	<!-- pension.system -->
+	<record id="pension_system_view_list" model="ir.ui.view">
+		<field name="name">pension.system.list</field>
+		<field name="model">pension.system</field>
+		<field name="arch" type="xml">
+			<list>
+				<field name="code"/>
+				<field name="name"/>
+				<field name="pension_system"/>
+				<field name="cuspp"/>
+				<field name="clave_afp"/>
+				<field name="private_sector" optional="hide"/>
+				<field name="public_sector" optional="hide"/>
+			</list>
+		</field>
+	</record>
+	<record id="pension_system_view_form" model="ir.ui.view">
+		<field name="name">pension.system.form</field>
+		<field name="model">pension.system</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<group>
+						<group>
+							<field name="code"/>
+							<field name="name"/>
+							<field name="pension_system"/>
+							<field name="clave_afp"/>
+						</group>
+						<group>
+							<field name="cuspp"/>
+							<field name="private_sector"/>
+							<field name="public_sector"/>
+							<field name="other_entities"/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+	<record id="pension_system_action" model="ir.actions.act_window">
+		<field name="name">Sistemas pensionarios (T11)</field>
+		<field name="res_model">pension.system</field>
+		<field name="view_mode">list,form</field>
+	</record>
+
+	<!-- employee.regime -->
+	<record id="employee_regime_view_list" model="ir.ui.view">
+		<field name="name">employee.regime.list</field>
+		<field name="model">employee.regime</field>
+		<field name="arch" type="xml">
+			<list editable="bottom">
+				<field name="code"/>
+				<field name="name"/>
+				<field name="regime_description"/>
+				<field name="clave_regimen"/>
+				<field name="is_mype"/>
+			</list>
+		</field>
+	</record>
+	<record id="employee_regime_action" model="ir.actions.act_window">
+		<field name="name">Regímenes laborales (T33)</field>
+		<field name="res_model">employee.regime</field>
+		<field name="view_mode">list,form</field>
+	</record>
+
+	<!-- work.occupation -->
+	<record id="work_occupation_view_list" model="ir.ui.view">
+		<field name="name">work.occupation.list</field>
+		<field name="model">work.occupation</field>
+		<field name="arch" type="xml">
+			<list>
+				<field name="code"/>
+				<field name="name"/>
+				<field name="executive" optional="show"/>
+				<field name="employee" optional="show"/>
+				<field name="worker" optional="show"/>
+			</list>
+		</field>
+	</record>
+	<record id="work_occupation_action" model="ir.actions.act_window">
+		<field name="name">Ocupaciones (T30)</field>
+		<field name="res_model">work.occupation</field>
+		<field name="view_mode">list,form</field>
+	</record>
+
+	<!-- plame.lines -->
+	<record id="plame_lines_view_list" model="ir.ui.view">
+		<field name="name">plame.lines.list</field>
+		<field name="model">plame.lines</field>
+		<field name="arch" type="xml">
+			<list>
+				<field name="code"/>
+				<field name="name"/>
+				<field name="essalud_seguro_regular" optional="show"/>
+				<field name="sistema_nacional_pensiones" optional="show"/>
+				<field name="sistema_privado_pensiones" optional="show"/>
+				<field name="rent5ta" optional="show"/>
+				<field name="senati" optional="hide"/>
+				<field name="essalud_sctr" optional="hide"/>
+				<field name="essalud_seguro_agrario" optional="hide"/>
+			</list>
+		</field>
+	</record>
+	<record id="plame_lines_view_search" model="ir.ui.view">
+		<field name="name">plame.lines.search</field>
+		<field name="model">plame.lines</field>
+		<field name="arch" type="xml">
+			<search>
+				<field name="code"/>
+				<field name="name"/>
+				<filter string="Afectos a ESSALUD" name="afecto_essalud"
+						domain="[('essalud_seguro_regular', '=', True)]"/>
+				<filter string="Afectos a renta 5ta" name="afecto_5ta"
+						domain="[('rent5ta', '=', True)]"/>
+				<filter string="Afectos a pensión (ONP o SPP)" name="afecto_pension"
+						domain="['|', ('sistema_nacional_pensiones', '=', True), ('sistema_privado_pensiones', '=', True)]"/>
+			</search>
+		</field>
+	</record>
+	<record id="plame_lines_action" model="ir.actions.act_window">
+		<field name="name">Conceptos PLAME (T22)</field>
+		<field name="res_model">plame.lines</field>
+		<field name="view_mode">list,form</field>
+	</record>
+
+	<!-- Maestros simples: acciones directas (usan vistas autogeneradas) -->
+	<record id="type_contract_action" model="ir.actions.act_window">
+		<field name="name">Tipos de trabajador (T8)</field>
+		<field name="res_model">type.contract</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="mintra_contract_action" model="ir.actions.act_window">
+		<field name="name">Contratos MINTRA (T12)</field>
+		<field name="res_model">mintra.contract</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="low_reason_action" model="ir.actions.act_window">
+		<field name="name">Motivos de baja (T17)</field>
+		<field name="res_model">low.reason</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="academic_degree_action" model="ir.actions.act_window">
+		<field name="name">Situación educativa (T9)</field>
+		<field name="res_model">academic.degree</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="special_situation_action" model="ir.actions.act_window">
+		<field name="name">Situaciones especiales (T35)</field>
+		<field name="res_model">special.situation</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="life_insurance_action" model="ir.actions.act_window">
+		<field name="name">Vida Ley</field>
+		<field name="res_model">life.insurance</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="eps_management_action" model="ir.actions.act_window">
+		<field name="name">Planes EPS</field>
+		<field name="res_model">eps.management</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<record id="relative_relation_action" model="ir.actions.act_window">
+		<field name="name">Vínculos familiares (T19)</field>
+		<field name="res_model">hr.employee.relative.relation</field>
+		<field name="view_mode">list,form</field>
+	</record>
+</odoo>

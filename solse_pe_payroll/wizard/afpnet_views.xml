@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="afpnet_wizard_view_form" model="ir.ui.view">
+		<field name="name">solse.payroll.afpnet.wizard.form</field>
+		<field name="model">solse.payroll.afpnet.wizard</field>
+		<field name="arch" type="xml">
+			<form>
+				<div class="text-muted" style="margin-bottom: 8px;">
+					Genera el Excel de importación al portal AFPnet (hoja TRABAJADOR)
+					con los trabajadores del SPP y su remuneración asegurable del periodo.
+				</div>
+				<group><group>
+					<field name="mes"/>
+					<field name="anio"/>
+				</group></group>
+				<group invisible="not archivo">
+					<field name="archivo" filename="archivo_nombre" readonly="1"/>
+					<field name="archivo_nombre" invisible="1"/>
+					<field name="resumen"/>
+				</group>
+				<footer>
+					<button name="action_generar" string="Generar Excel AFPnet" type="object" class="btn-primary"/>
+					<button string="Cerrar" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+	<record id="action_afpnet_wizard" model="ir.actions.act_window">
+		<field name="name">AFPnet</field>
+		<field name="res_model">solse.payroll.afpnet.wizard</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+	<menuitem id="menu_pe_afpnet" parent="menu_solse_pe_payroll_root"
+			  name="AFPnet (planilla previsional)" action="action_afpnet_wizard"
+			  sequence="36"/>
+</odoo>

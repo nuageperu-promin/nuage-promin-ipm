@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">solse.account.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='analytic']" position="after">
+                <block title="Configuración Peruana" id="configuracion_contabilidad_peruana">
+
+                    <!-- Detracciones -->
+                    <div class="col-12 col-lg-6 o_setting_box" id="config_detracciones">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Detracciones</span>
+                            <div class="text-muted">Cuentas contables para SPOT. Van dentro de los términos de pago del comprobante, así que deben ser cuentas por cobrar (venta) y por pagar (compra), no cuentas de banco.</div>
+                            <div class="mt8">
+                                <label for="cuenta_detracciones" class="o_light_label"/>
+                                <field name="cuenta_detracciones"
+                                       domain="[('account_type', '=', 'asset_receivable')]"
+                                       options="{'no_create': True}"
+                                       placeholder="Cuenta por cobrar"/>
+                            </div>
+                            <div class="mt8">
+                                <label for="cuenta_detracciones_compra" class="o_light_label"/>
+                                <field name="cuenta_detracciones_compra"
+                                       domain="[('account_type', '=', 'liability_payable')]"
+                                       options="{'no_create': True}"
+                                       placeholder="Cuenta por pagar"/>
+                            </div>
+                            <div class="mt16">
+                                <b>Diferencias de cambio (detracciones):</b>
+                            </div>
+                            <div class="mt8">
+                                <label for="cuenta_detrac_ganancias" class="o_light_label"/>
+                                <field name="cuenta_detrac_ganancias"/>
+                            </div>
+                            <div class="mt8">
+                                <label for="cuenta_detrac_perdidas" class="o_light_label"/>
+                                <field name="cuenta_detrac_perdidas"/>
+                            </div>
+                            <div class="mt16">
+                                <field name="usar_fecha_vencimiento_detraccion"/>
+                                <label for="usar_fecha_vencimiento_detraccion"/>
+                            </div>
+                            <div class="mt8" invisible="not usar_fecha_vencimiento_detraccion">
+                                <label for="dia_vencimiento_detraccion" string="Día de vencimiento (mes siguiente):" class="o_light_label"/>
+                                <field name="dia_vencimiento_detraccion"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Retenciones -->
+                    <div class="col-12 col-lg-6 o_setting_box" id="config_retenciones">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Retenciones IGV</span>
+                            <div class="text-muted">
+                                Cuentas contables para el sistema de retenciones SUNAT.
+                                Compra: pasivo (IGV retenido por pagar).
+                                Venta: activo (IGV retenido por cobrar).
+                            </div>
+                            <div class="mt8">
+                                <label for="cuenta_retenciones" class="o_light_label"/>
+                                <field name="cuenta_retenciones"
+                                       domain="[('account_type', '=', 'liability_payable')]"
+                                       options="{'no_create': True}"
+                                       placeholder="Cuenta por pagar"/>
+                            </div>
+                            <div class="mt8">
+                                <label for="cuenta_retenciones_venta" class="o_light_label"/>
+                                <field name="cuenta_retenciones_venta"
+                                       domain="[('account_type', '=', 'asset_receivable')]"
+                                       options="{'no_create': True}"
+                                       placeholder="Cuenta por cobrar"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Libros Electrónicos / Estados Financieros -->
+                    <div class="col-12 col-lg-6 o_setting_box" id="config_libros_electronicos">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Libros Electrónicos y Estados Financieros</span>
+                            <div class="text-muted">
+                                Clasificación del sector contable para la Tabla 34 de SUNAT.
+                                Requerido para el PLE Libro 3 (Inventarios y Balances)
+                                y los reportes de Estados Financieros.
+                            </div>
+                            <div class="mt8">
+                                <label for="sector_contable" class="o_light_label"/>
+                                <field name="sector_contable"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Campos contractuales PE en la plantilla de contrato (hr.version).
+	     Anclaje: group[@name='salary_info'] de hr.hr_contract_template_form_view,
+	     mismo que usa hr_payroll nativo. -->
+	<record id="hr_contract_template_view_form_pe" model="ir.ui.view">
+		<field name="name">hr.contract.template.view.form.inherit.solse_pe_payroll</field>
+		<field name="model">hr.version</field>
+		<field name="inherit_id" ref="hr.hr_contract_template_form_view"/>
+		<field name="arch" type="xml">
+			<group name="salary_info" position="after">
+				<group string="Perú - Datos laborales (T-Registro / PLAME)"
+					   name="pe_datos_laborales"
+					   groups="hr_payroll.group_hr_payroll_user">
+					<group>
+						<field name="labor_regime_id"/>
+						<field name="labor_condition_id"/>
+						<field name="work_occupation_id"/>
+						<field name="mintra_contract_id"/>
+						<field name="special_situation_id"/>
+						<field name="reason_low_id"/>
+					</group>
+					<group>
+						<field name="payment_type_id"/>
+						<field name="variable_payment_id"/>
+						<field name="advance_percent"/>
+						<field name="maximum_working_day"/>
+						<field name="atypical_cumulative_day"/>
+						<field name="nocturnal_schedule"/>
+						<field name="unionized"/>
+						<field name="is_practitioner"/>
+						<field name="compensation_in_kind"/>
+						<field name="hiden_overtime"/>
+					</group>
+				</group>
+			</group>
+		</field>
+	</record>
+</odoo>

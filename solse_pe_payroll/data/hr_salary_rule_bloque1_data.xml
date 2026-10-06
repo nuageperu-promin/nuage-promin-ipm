@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 1: Remuneración base, asignación familiar y HHEE
+	     Patrón v19: `version` (no `contract`), `payslip` es el record
+	     (no existe slip_id), resultados previos vía result_rules, valores
+	     normativos vía payslip._rule_parameter('pe_*').
+	     Se definen en la estructura base; el inicializador las replica a
+	     las estructuras operativas.
+	================================================================ -->
+	<data noupdate="0">
+
+		<!-- Tipos de input (overrides manuales y conceptos por importe) -->
+		<record id="input_type_rbm_001" model="hr.payslip.input.type">
+			<field name="code">RBM_001</field>
+			<field name="name">Importe Remuneración Básica (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_rbs_002" model="hr.payslip.input.type">
+			<field name="code">RBS_002</field>
+			<field name="name">Importe Remuneración Básica semanal (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_asf_001" model="hr.payslip.input.type">
+			<field name="code">ASF_001</field>
+			<field name="name">Importe Asignación Familiar (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_mov_001" model="hr.payslip.input.type">
+			<field name="code">MOV_001</field>
+			<field name="name">Movilidad de libre disposición</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_he25_001" model="hr.payslip.input.type">
+			<field name="code">HE25_001</field>
+			<field name="name">Horas extras 25% (cantidad de horas)</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="is_quantity">1</field>
+		</record>
+		<record id="input_type_he35_001" model="hr.payslip.input.type">
+			<field name="code">HE35_001</field>
+			<field name="name">Horas extras 35% (cantidad de horas)</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="is_quantity">1</field>
+		</record>
+
+		<!-- ============== REGLAS (estructura base) ============== -->
+
+		<record id="regla_basic" model="hr.salary.rule">
+			<field name="name">Salario base</field>
+			<field name="code">BASIC</field>
+			<field name="sequence">1</field>
+			<field name="category_id" ref="hr_payroll.BASIC"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = payslip.paid_amount</field>
+		</record>
+
+		<record id="regla_sd_001" model="hr.salary.rule">
+			<field name="name">Salario diario</field>
+			<field name="code">SD_001</field>
+			<field name="sequence">2</field>
+			<field name="category_id" ref="hr_salary_rule_category_bas_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="note">Base auxiliar: sueldo mensual entre 30 (mes comercial peruano).</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = version.wage / 30.0</field>
+		</record>
+
+		<record id="regla_rb_001" model="hr.salary.rule">
+			<field name="name">Remuneración básica</field>
+			<field name="code">RB_001</field>
+			<field name="sequence">3</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Remuneración de la nómina mensual bajo mes comercial de 30 días:
+sueldo completo si el mes está íntegramente laborado, prorrateo por días
+calendario si hay ingreso/cese en el mes, y descuento de días no pagados
+(faltas, licencias sin goce). El input RBM_001 permite forzar el importe.
+Los ajustes por tardanzas/permisos con descuento llegan en el bloque de
+descuentos por asistencia.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('RBM_001') and inputs['RBM_001'].amount > 0:
+    result = inputs['RBM_001'].amount
+else:
+    # Mes comercial peruano: la remuneración mensual cubre 30 días
+    # (incluye dominicales y feriados), independientemente de los días
+    # hábiles del calendario laboral.
+    salario_diario = result_rules['SD_001']['total']
+    inicio = payslip.date_from
+    if version.contract_date_start and version.contract_date_start > inicio:
+        inicio = version.contract_date_start
+    fin = payslip.date_to
+    if version.contract_date_end and version.contract_date_end &lt; fin:
+        fin = version.contract_date_end
+    if inicio == payslip.date_from and fin == payslip.date_to:
+        dias_base = 30.0
+    else:
+        # Ingreso o cese dentro del mes: días calendario efectivos
+        dias_base = float((fin - inicio).days + 1)
+    # N-5 y N-7 · Los días no pagados se cuentan en días CALENDARIO, que
+    # es la unidad del mes comercial de 30. Sacarlos de
+    # `worked_days_line_ids` mezclaba unidades (esas líneas vienen del
+    # calendario laboral, de lunes a viernes) y además llegaban en
+    # negativo, porque el fork los acumula restando
+    # (om_hr_payroll/models/hr_payslip.py:277). Medido en el caso NOMINA:
+    # un goce de 30 días naturales dejaba la mensual en 5.200,00 con el
+    # signo mal y en 800,00 con el signo bien, cuando debe dar 0,00.
+    # El método vive en el shim de hr.payslip: la lógica de solapes no
+    # cabe legible aquí y RBS_002 necesita exactamente la misma.
+    #
+    # N-9 · Entre 19.0.0.39 y 19.0.0.41 esta regla leía un campo que solo
+    # existía en Community y cada boleta fallaba con «Wrong python code».
+    #
+    # N-7 en ENTERPRISE (19.0.0.43) · MEDIDO en el caso NOMINA EE el
+    # 2026-09-22: sumar `worked_days_line_ids` daba 800,00 a un goce de
+    # mes completo (30 − 22 días laborables) y 1.900,00 a uno de quince.
+    # `pe_dias_no_pagados` es ahora un campo PROPIO de solse_pe_payroll
+    # (models/hr_payslip.py), calculado sobre hr_payroll de Enterprise:
+    # días calendario de las ausencias no pagadas más las faltas de
+    # asistencia. `payslip` aquí es el registro (hr_payslip.py:1034).
+    dias_no_pagados = payslip.pe_dias_no_pagados
+    result = salario_diario * max(dias_base - dias_no_pagados, 0.0)
+			</field>
+		</record>
+
+		<record id="regla_rbs_002" model="hr.salary.rule">
+			<field name="name">Remuneración básica semanal</field>
+			<field name="code">RBS_002</field>
+			<field name="sequence">3</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Remuneración de la nómina semanal bajo semana comercial de 7 días:
+jornal completo de la semana (incluye dominical y días no laborables
+del calendario, D.Leg. 713), prorrateo por ingreso/cese dentro de la
+semana y descuento de días no pagados. Afinamiento pendiente (D.Leg.
+713 art. 4): la falta injustificada además hace perder el dominical
+proporcional; llegará con el bloque de descuentos por asistencia.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('RBS_002') and inputs['RBS_002'].amount > 0:
+    result = inputs['RBS_002'].amount
+else:
+    # Semana comercial de 7 dias: el jornal semanal incluye el descanso
+    # semanal remunerado (dominical, D.Leg. 713) y los dias no laborables
+    # del calendario. Se paga la semana completa menos ausencias no
+    # pagadas, con prorrateo por ingreso/cese dentro de la semana.
+    salario_diario = result_rules['SD_001']['total']
+    inicio = payslip.date_from
+    if version.contract_date_start and version.contract_date_start > inicio:
+        inicio = version.contract_date_start
+    fin = payslip.date_to
+    if version.contract_date_end and version.contract_date_end &lt; fin:
+        fin = version.contract_date_end
+    dias_base = min(float((fin - inicio).days + 1), 7.0)
+    # N-5 y N-7 · Los días no pagados se cuentan en días CALENDARIO, que
+    # es la unidad del mes comercial de 30. Sacarlos de
+    # `worked_days_line_ids` mezclaba unidades (esas líneas vienen del
+    # calendario laboral, de lunes a viernes) y además llegaban en
+    # negativo, porque el fork los acumula restando
+    # (om_hr_payroll/models/hr_payslip.py:277). Medido en el caso NOMINA:
+    # un goce de 30 días naturales dejaba la mensual en 5.200,00 con el
+    # signo mal y en 800,00 con el signo bien, cuando debe dar 0,00.
+    # El método vive en el shim de hr.payslip: la lógica de solapes no
+    # cabe legible aquí y RBS_002 necesita exactamente la misma.
+    #
+    # N-9 · Entre 19.0.0.39 y 19.0.0.41 esta regla leía un campo que solo
+    # existía en Community y cada boleta fallaba con «Wrong python code».
+    #
+    # N-7 en ENTERPRISE (19.0.0.43) · MEDIDO en el caso NOMINA EE el
+    # 2026-09-22: sumar `worked_days_line_ids` daba 800,00 a un goce de
+    # mes completo (30 − 22 días laborables) y 1.900,00 a uno de quince.
+    # `pe_dias_no_pagados` es ahora un campo PROPIO de solse_pe_payroll
+    # (models/hr_payslip.py), calculado sobre hr_payroll de Enterprise:
+    # días calendario de las ausencias no pagadas más las faltas de
+    # asistencia. `payslip` aquí es el registro (hr_payslip.py:1034).
+    dias_no_pagados = payslip.pe_dias_no_pagados
+    result = salario_diario * max(dias_base - dias_no_pagados, 0.0)
+			</field>
+		</record>
+
+		<record id="regla_asf_001" model="hr.salary.rule">
+			<field name="name">Asignación familiar</field>
+			<field name="code">ASF_001</field>
+			<field name="sequence">4</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Ley 25129: 10% de la RMV (parámetro pe_asig_familiar) para
+el trabajador con hijos menores de edad a cargo, o hijos mayores con
+discapacidad, o mayores cursando estudios (límite configurable por
+derechohabiente en "Edad máx.", por defecto 18). En la nómina semanal se
+paga proporcional por semanas (importe mensual entre semanas del mes).</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('ASF_001') and inputs['ASF_001'].amount > 0:
+    result = inputs['ASF_001'].amount
+else:
+    result = 0.0
+    tiene_derecho = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' not in nombre_relacion:
+            continue
+        limite_edad = pariente.max_age or 18
+        if pariente.age &lt; limite_edad or pariente.disability:
+            tiene_derecho = True
+            break
+    if tiene_derecho:
+        importe_mensual = payslip._rule_parameter('pe_asig_familiar')
+        # ISM_001 = 1 en mensuales, semanas del mes en semanales
+        semanas = result_rules['ISM_001']['total'] or 1.0
+        result = importe_mensual / semanas
+			</field>
+		</record>
+
+		<record id="regla_ism_001" model="hr.salary.rule">
+			<field name="name">Indicador de semanas del mes</field>
+			<field name="code">ISM_001</field>
+			<field name="sequence">2</field>
+			<field name="category_id" ref="hr_salary_rule_category_bas_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="note">Para nóminas semanales: cantidad de semanas atribuibles al
+mes de devengue (una semana pertenece al mes que contiene 4 o más de sus
+días). Usado para prorratear conceptos mensuales como la asignación
+familiar.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+# Detección robusta: una boleta es semanal por la longitud de su
+# periodo (las creadas por código no pasan por los onchange de UI y
+# el schedule_pay de la versión puede no reflejar la realidad).
+result = 1.0
+dias_periodo = (payslip.date_to - payslip.date_from).days + 1
+if dias_periodo &lt;= 10:
+    primer_dia = payslip.date_from.replace(day=1)
+    ultimo_dia = primer_dia + relativedelta(months=1, days=-1)
+    semanas = 0
+    cursor = primer_dia - relativedelta(days=primer_dia.weekday())
+    while cursor &lt;= ultimo_dia:
+        dias_en_mes = sum(
+            1 for d in range(7)
+            if primer_dia &lt;= cursor + relativedelta(days=d) &lt;= ultimo_dia
+        )
+        if dias_en_mes >= 4:
+            semanas += 1
+        cursor += relativedelta(days=7)
+    result = float(semanas or 4)
+			</field>
+		</record>
+
+		<record id="regla_he25_001" model="hr.salary.rule">
+			<field name="name">Horas extras 25%</field>
+			<field name="code">HE25_001</field>
+			<field name="sequence">8</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Primeras dos horas extras diarias: valor hora (sueldo/30/8)
+con el recargo del parámetro pe_hhee_recargo_1. El input HE25_001 registra
+la CANTIDAD de horas del periodo.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+result = 0.0
+if inputs.get('HE25_001') and inputs['HE25_001'].amount > 0 and not version.hiden_overtime:
+    horas = inputs['HE25_001'].amount
+    valor_hora = version.wage / 30.0 / 8.0
+    recargo = payslip._rule_parameter('pe_hhee_recargo_1')
+    result = horas * valor_hora * (1.0 + recargo)
+			</field>
+		</record>
+
+		<record id="regla_he35_001" model="hr.salary.rule">
+			<field name="name">Horas extras 35%</field>
+			<field name="code">HE35_001</field>
+			<field name="sequence">9</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Horas extras a partir de la tercera hora diaria: recargo del
+parámetro pe_hhee_recargo_2. El input HE35_001 registra la CANTIDAD de horas.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+result = 0.0
+if inputs.get('HE35_001') and inputs['HE35_001'].amount > 0 and not version.hiden_overtime:
+    horas = inputs['HE35_001'].amount
+    valor_hora = version.wage / 30.0 / 8.0
+    recargo = payslip._rule_parameter('pe_hhee_recargo_2')
+    result = horas * valor_hora * (1.0 + recargo)
+			</field>
+		</record>
+
+		<record id="regla_mov_001" model="hr.salary.rule">
+			<field name="name">Movilidad de libre disposición</field>
+			<field name="code">MOV_001</field>
+			<field name="sequence">31</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Concepto no remunerativo supeditado a asistencia (art. 19 LCTS):
+no afecto a aportes. Importe libre vía input MOV_001.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = inputs['MOV_001'].amount if inputs.get('MOV_001') else 0.0</field>
+		</record>
+
+		<record id="regla_gross" model="hr.salary.rule">
+			<field name="name">Total ingresos</field>
+			<field name="code">GROSS</field>
+			<field name="sequence">100</field>
+			<field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001']</field>
+		</record>
+
+		<record id="regla_net" model="hr.salary.rule">
+			<field name="name">Neto a pagar</field>
+			<field name="code">NET</field>
+			<field name="sequence">200</field>
+			<field name="category_id" ref="hr_payroll.NET"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001'] - categories['DED']</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable por prefijo PCGE (bloque 1) -->
+	<data noupdate="1">
+		<record id="mapeo_rb_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_rb_001"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_rbs_002" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_rbs_002"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_asf_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_asf_001"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_he25_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_he25_001"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_he35_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_he35_001"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_net" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_net"/>
+			<field name="prefijo_credito">4111</field>
+			<field name="nota">Neto por pagar al trabajador</field>
+		</record>
+		<record id="mapeo_mov_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_mov_001"/>
+			<field name="prefijo_debito">6220</field>
+			<field name="nota">Movilidad: gasto en Otras remuneraciones</field>
+		</record>
+	</data>
+</odoo>

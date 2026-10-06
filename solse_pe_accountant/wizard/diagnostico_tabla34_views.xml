@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Vista del wizard de diagnostico Tabla 34.
+
+        Diseno: pantalla unica con 3 estados visuales.
+
+        Antes de "Calcular Diagnostico":
+            Solo se ve la empresa y un mensaje informativo.
+
+        Despues de "Calcular":
+            Se muestran 4 tarjetas de colores (completo/parcial/sin config/na),
+            el desglose por familia contable para "sin config", y botones
+            para abrir listas filtradas.
+    -->
+
+    <record id="wizard_diagnostico_tabla34_view" model="ir.ui.view">
+        <field name="name">solse.wizard.diagnostico.tabla34.form</field>
+        <field name="model">solse.wizard.diagnostico.tabla34</field>
+        <field name="arch" type="xml">
+            <form string="Diagnostico Rubros EEFF (Tabla 34)">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Diagnostico de Rubros EEFF (Tabla 34)</h1>
+                        <p class="text-muted">
+                            Analiza el estado de configuracion del plan de
+                            cuentas para los reportes PLE 03 (Inventarios y
+                            Balances) y Estados Financieros EEFF.
+                        </p>
+                    </div>
+
+                    <!-- PASO 1: configuracion y boton inicial -->
+                    <group invisible="diagnostico_calculado">
+                        <group>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="diagnostico_calculado">
+                        <p class="mb-0">
+                            Pulse <b>Calcular Diagnostico</b> para obtener un
+                            resumen del estado de configuracion de rubros Tabla 34
+                            en todas las cuentas activas de la empresa.
+                        </p>
+                    </div>
+
+                    <!-- PASO 2: resultados del diagnostico -->
+                    <div invisible="not diagnostico_calculado">
+                        <field name="diagnostico_calculado" invisible="1"/>
+
+                        <!-- Total -->
+                        <div class="alert alert-secondary text-center"
+                             style="font-size:1.1em;">
+                            Total de cuentas analizadas:
+                            <b><field name="total_cuentas" readonly="1" nolabel="1" class="oe_inline"/></b>
+                        </div>
+
+                        <!-- Tarjetas con contadores por estado -->
+                        <group>
+                            <group string="Estado de configuracion">
+                                <label for="cuentas_completo"
+                                       string="Completo (todo configurado)"/>
+                                <div>
+                                    <field name="cuentas_completo"
+                                           widget="integer"
+                                           readonly="1"
+                                           nolabel="1"
+                                           class="oe_inline"/>
+                                    <button name="action_ver_completo"
+                                            type="object"
+                                            string="Ver"
+                                            class="btn-sm btn-link"
+                                            invisible="cuentas_completo == 0"/>
+                                </div>
+
+                                <label for="cuentas_parcial"
+                                       string="Parcial (algunos rubros faltan)"/>
+                                <div>
+                                    <field name="cuentas_parcial"
+                                           readonly="1"
+                                           nolabel="1"
+                                           class="oe_inline"/>
+                                    <button name="action_ver_parcial"
+                                            type="object"
+                                            string="Revisar"
+                                            class="btn-sm btn-warning"
+                                            invisible="cuentas_parcial == 0"/>
+                                </div>
+
+                                <label for="cuentas_sin_config"
+                                       string="Sin Configurar"/>
+                                <div>
+                                    <field name="cuentas_sin_config"
+                                           readonly="1"
+                                           nolabel="1"
+                                           class="oe_inline"/>
+                                    <button name="action_ver_sin_configurar"
+                                            type="object"
+                                            string="Ver todas"
+                                            class="btn-sm btn-danger"
+                                            invisible="cuentas_sin_config == 0"/>
+                                </div>
+
+                                <label for="cuentas_na"
+                                       string="No Aplica (cuentas de orden)"/>
+                                <field name="cuentas_na"
+                                       readonly="1"
+                                       nolabel="1"/>
+                            </group>
+
+                            <!--
+                                Foco en las cuentas problematicas reales:
+                                hojas sin configurar. Las agrupadoras sin
+                                configurar normalmente son esperadas.
+                            -->
+                            <group string="Analisis de 'Sin Configurar'"
+                                   invisible="cuentas_sin_config == 0">
+                                <label for="sin_config_hojas"
+                                       string="Cuentas Hoja (detalle)"/>
+                                <div>
+                                    <field name="sin_config_hojas"
+                                           readonly="1"
+                                           nolabel="1"
+                                           class="oe_inline"/>
+                                    <span class="text-danger">
+                                        <b>← requieren atencion</b>
+                                    </span>
+                                </div>
+                                <label for="sin_config_agrupadoras"
+                                       string="Cuentas Padre (agrupadoras)"/>
+                                <div>
+                                    <field name="sin_config_agrupadoras"
+                                           readonly="1"
+                                           nolabel="1"
+                                           class="oe_inline"/>
+                                    <span class="text-muted">
+                                        (normalmente esperado)
+                                    </span>
+                                </div>
+                                <separator string="Desglose por familia"/>
+                                <field name="desglose_activos_sin"
+                                       string="Activos"
+                                       readonly="1"/>
+                                <field name="desglose_pasivos_sin"
+                                       string="Pasivos"
+                                       readonly="1"/>
+                                <field name="desglose_patrimonio_sin"
+                                       string="Patrimonio"
+                                       readonly="1"/>
+                                <field name="desglose_resultados_sin"
+                                       string="Ingresos / Gastos"
+                                       readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!--
+                            Accion destacada: abrir directamente la lista de
+                            hojas sin configurar, que son las que realmente
+                            necesita el contador. Ademas acceso rapido al
+                            wizard de asignacion masiva.
+                        -->
+                        <div class="alert alert-light mt-3"
+                             invisible="sin_config_hojas == 0">
+                            <p>
+                                <b>Hay <field name="sin_config_hojas"
+                                              readonly="1"
+                                              nolabel="1"
+                                              class="oe_inline"/>
+                                cuentas hoja sin rubro configurado</b>
+                                que alimentaran los reportes PLE 03 y EEFF.
+                                Puede revisarlas una por una o volver a correr
+                                la asignacion masiva.
+                            </p>
+                            <div class="d-flex gap-2">
+                                <button name="action_ver_sin_config_hojas"
+                                        type="object"
+                                        string="Ver Cuentas Hoja sin Configurar"
+                                        class="btn btn-danger"/>
+                                <button name="action_ir_wizard_asignacion"
+                                        type="object"
+                                        string="Ejecutar Asignacion Masiva"
+                                        class="btn btn-primary"/>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success mt-3"
+                             invisible="sin_config_hojas != 0 or cuentas_parcial != 0">
+                            <p class="mb-0">
+                                <b>Configuracion al dia.</b>
+                                Todas las cuentas hoja tienen sus rubros EEFF
+                                asignados correctamente.
+                            </p>
+                        </div>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_calcular"
+                            string="Calcular Diagnostico"
+                            type="object"
+                            class="btn-primary"
+                            invisible="diagnostico_calculado"/>
+                    <button name="action_calcular"
+                            string="Recalcular"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="not diagnostico_calculado"/>
+                    <button string="Cerrar"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_diagnostico_tabla34" model="ir.actions.act_window">
+        <field name="name">Diagnostico Rubros EEFF (Tabla 34)</field>
+        <field name="res_model">solse.wizard.diagnostico.tabla34</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <!-- Binding: aparece en el dropdown "Acciones" del plan de cuentas -->
+        <field name="binding_model_id" ref="account.model_account_account"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <!--
+        Boton en el header de la vista lista del plan, junto al boton de
+        asignacion masiva. Complementa el binding del dropdown con una
+        entrada mas descubrible.
+    -->
+    <record id="account_account_list_boton_diagnostico" model="ir.ui.view">
+        <field name="name">account.account.list.boton.diagnostico.tabla34</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="%(action_wizard_diagnostico_tabla34)d"
+                            string="Diagnostico Rubros EEFF"
+                            type="action"
+                            class="btn-secondary"
+                            groups="account.group_account_user"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <!--
+        Menu item bajo Contabilidad para acceso directo al diagnostico.
+        Sigue el mismo patron que el wizard de asignacion masiva.
+    -->
+    <menuitem name="Diagnostico Rubros EEFF"
+              id="menu_wizard_diagnostico_tabla34"
+              parent="account.menu_finance"
+              action="action_wizard_diagnostico_tabla34"
+              sequence="57"
+              groups="account.group_account_user"/>
+
+</odoo>

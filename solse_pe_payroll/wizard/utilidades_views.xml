@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="utilidades_wizard_view_form" model="ir.ui.view">
+		<field name="name">solse.payroll.utilidades.wizard.form</field>
+		<field name="model">solse.payroll.utilidades.wizard</field>
+		<field name="arch" type="xml">
+			<form>
+				<div class="text-muted" style="margin-bottom: 8px;">
+					Reparto D.Leg. 892: 50% por días laborados + 50% por remuneraciones
+					del ejercicio, con tope individual de 18 sueldos. Los días y
+					remuneraciones salen de las boletas validadas del año.
+				</div>
+				<group>
+					<group>
+						<field name="anio"/>
+						<field name="renta_neta"/>
+					</group>
+					<group>
+						<field name="porcentaje"/>
+					</group>
+				</group>
+				<group invisible="not archivo">
+					<field name="archivo" filename="archivo_nombre" readonly="1"/>
+					<field name="archivo_nombre" invisible="1"/>
+					<field name="resumen"/>
+				</group>
+				<footer>
+					<button name="action_calcular" string="Calcular reparto" type="object" class="btn-primary"/>
+					<button string="Cerrar" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+	<record id="action_utilidades_wizard" model="ir.actions.act_window">
+		<field name="name">Reparto de utilidades</field>
+		<field name="res_model">solse.payroll.utilidades.wizard</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+	<menuitem id="menu_pe_utilidades" parent="menu_solse_pe_payroll_root"
+			  name="Reparto de utilidades" action="action_utilidades_wizard"
+			  sequence="38"/>
+</odoo>

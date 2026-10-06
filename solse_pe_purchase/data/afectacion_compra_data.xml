@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data noupdate="1">
+
+		<!--
+			Afectaciones de compra por defecto.
+			Los impuestos asociados (impuesto_afect_ids / impuesto_defecto_ids)
+			son completados por el post_init_hook detectando los account.tax
+			de cada compañía a partir de su l10n_pe_edi_tax_code (Catálogo 5 SUNAT).
+
+			Mapeo SIRE 8.4 (Anexo 11):
+				Col 15 = Base imponible — destinada a op. gravadas
+				Col 16 = IGV de col 15
+				Col 17 = Base imponible — destinada a gravadas y no gravadas (mixta)
+				Col 18 = IGV de col 17
+				Col 19 = Base imponible — destinada a no gravadas (sin crédito fiscal)
+				Col 20 = IGV de col 19
+				Col 21 = Valor de adquisiciones no gravadas (exoneradas / inafectas)
+				Col 22 = ISC
+				Col 23 = ICBPER
+				Col 24 = Otros tributos
+				Col 25 = Total CP
+		-->
+
+		<record id="afectacion_gravada_dg" model="solse.pe.afectacion.compra">
+			<field name="name">Gravada — destinada a operaciones gravadas</field>
+			<field name="codigo">10</field>
+			<field name="categoria">gravada_dg</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="sequence">10</field>
+		</record>
+
+		<record id="afectacion_gravada_dgng" model="solse.pe.afectacion.compra">
+			<field name="name">Gravada — destinada a operaciones gravadas y no gravadas (prorrata)</field>
+			<field name="codigo">11</field>
+			<field name="categoria">gravada_dgng</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="sequence">20</field>
+		</record>
+
+		<record id="afectacion_gravada_dng" model="solse.pe.afectacion.compra">
+			<field name="name">Gravada — destinada a operaciones no gravadas (sin crédito fiscal)</field>
+			<field name="codigo">12</field>
+			<field name="categoria">gravada_dng</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="sequence">30</field>
+		</record>
+
+		<record id="afectacion_exonerada" model="solse.pe.afectacion.compra">
+			<field name="name">Exonerada</field>
+			<field name="codigo">20</field>
+			<field name="categoria">exonerada</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="nro_col_importe_afectacion">21</field>
+			<field name="toma_para_calculo">base</field>
+			<field name="sequence">40</field>
+		</record>
+
+		<record id="afectacion_inafecta" model="solse.pe.afectacion.compra">
+			<field name="name">Inafecta</field>
+			<field name="codigo">30</field>
+			<field name="categoria">inafecta</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="nro_col_importe_afectacion">21</field>
+			<field name="toma_para_calculo">base</field>
+			<field name="sequence">50</field>
+		</record>
+
+		<record id="afectacion_importacion" model="solse.pe.afectacion.compra">
+			<field name="name">Importación de bienes (DAM/DSI)</field>
+			<field name="codigo">15</field>
+			<field name="categoria">importacion</field>
+			<field name="aplica_rce" eval="True"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="sequence">60</field>
+		</record>
+
+		<record id="afectacion_no_domiciliado" model="solse.pe.afectacion.compra">
+			<field name="name">Operación con sujeto no domiciliado</field>
+			<field name="codigo">85</field>
+			<field name="categoria">no_domiciliado</field>
+			<field name="aplica_rce" eval="False"/>
+			<field name="aplica_rce_no_dom" eval="True"/>
+			<field name="sequence">70</field>
+		</record>
+
+		<record id="afectacion_excluir" model="solse.pe.afectacion.compra">
+			<field name="name">No considerar en libros (uso interno)</field>
+			<field name="codigo">99</field>
+			<field name="categoria">excluir</field>
+			<field name="aplica_rce" eval="False"/>
+			<field name="aplica_rce_no_dom" eval="False"/>
+			<field name="sequence">100</field>
+		</record>
+
+	</data>
+</odoo>

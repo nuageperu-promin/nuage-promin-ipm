@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_ple_report_07,ple.report.07,model_ple_report_07,,1,1,1,1

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="plame_wizard_view_form_4ta" model="ir.ui.view">
+		<field name="name">solse.payroll.plame.wizard.form.4ta.ee</field>
+		<field name="model">solse.payroll.plame.wizard</field>
+		<field name="inherit_id"
+			   ref="solse_pe_payroll.plame_wizard_view_form"/>
+		<field name="arch" type="xml">
+			<field name="anio" position="after">
+				<field name="incluir_4ta"/>
+			</field>
+		</field>
+	</record>
+</odoo>

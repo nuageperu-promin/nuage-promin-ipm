@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!--
+		B-9 (L9): cómo presenta el formato físico 7.1 un activo dado de baja.
+		  descontar (defecto) — la baja retira costo y depreciación acumulada;
+		                        el bien queda en 0 / 0 (NIC 16 párr. 67-72).
+		  acumular            — el bien retirado conserva su depreciación.
+		No cambia el TXT: solo el físico. Ver models/formato_7_1.py.
+		noupdate: un -u no pisa la elección del cliente.
+	-->
+	<data noupdate="1">
+		<record id="parametro_dep_historica_bajas" model="ir.config_parameter">
+			<field name="key">solse_pe_ple_07.dep_historica_bajas</field>
+			<field name="value">descontar</field>
+		</record>
+	</data>
+</odoo>

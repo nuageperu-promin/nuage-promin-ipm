@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.rule" id="sire_report_templ_comp_rule">
+            <field name="name">SIRE report tmpl multi-company</field>
+            <field name="model_id" ref="model_sire_report_templ"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[
+                '|',
+                    ('company_id','=',False),
+                    ('company_id','in',company_ids),
+            ]</field>
+        </record>
+
+
+        <record model="ir.rule" id="sire_report_14_comp_rule">
+            <field name="name">SIRE Report 14 multi-company</field>
+            <field name="model_id" ref="model_sire_report_14"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[
+                '|',
+                    ('company_id','=',False),
+                    ('company_id','in',company_ids),
+            ]</field>
+        </record>
+    </data>
+</odoo>

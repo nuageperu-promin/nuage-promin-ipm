@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_solse_pe_puerto_tree" model="ir.ui.view">
+		<field name="name">solse.pe.puerto.tree</field>
+		<field name="model">solse.pe.puerto</field>
+		<field name="arch" type="xml">
+			<list editable="bottom">
+				<field name="codigo"/>
+				<field name="name"/>
+				<field name="tipo"/>
+				<field name="ubigeo"/>
+			</list>
+		</field>
+	</record>
+	<record id="action_solse_pe_puerto" model="ir.actions.act_window">
+		<field name="name">Puertos y aeropuertos (Cat. 63/64)</field>
+		<field name="res_model">solse.pe.puerto</field>
+		<field name="view_mode">list,form</field>
+	</record>
+	<menuitem id="menu_solse_pe_puerto"
+			  name="Puertos y aeropuertos"
+			  parent="solse_pe_catalogo.pe_cpe_configuration_menu"
+			  action="action_solse_pe_puerto"
+			  sequence="60"/>
+</odoo>

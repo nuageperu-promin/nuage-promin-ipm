@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_tax_form_plame" model="ir.ui.view">
+		<field name="name">account.tax.form.plame.rxh</field>
+		<field name="model">account.tax</field>
+		<field name="inherit_id" ref="account.view_tax_form"/>
+		<field name="arch" type="xml">
+			<field name="tax_group_id" position="after">
+				<field name="es_retencion_cuarta"
+				       invisible="type_tax_use != 'purchase'"/>
+			</field>
+		</field>
+	</record>
+
+</odoo>

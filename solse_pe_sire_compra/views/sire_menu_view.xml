@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+	
+	<menuitem name="Estructura 08 - Registro de Compras"
+		id="menu_action_sire_report_08"
+		parent="solse_pe_sire_ventas.menu_sire_report"
+		action="action_sire_report_08"
+		sequence="8"/>
+
+
+</data>
+</odoo>

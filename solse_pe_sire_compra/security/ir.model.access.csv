@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_sire_report_08,sire.report.08,model_sire_report_08,,1,1,1,1
+access_solse_pe_compras_recibidas,solse.pe.compras.recibidas,model_solse_pe_compras_recibidas,,1,1,1,1

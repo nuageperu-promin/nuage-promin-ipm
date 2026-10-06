@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="mapeo_contable_view_list" model="ir.ui.view">
+		<field name="name">solse.payroll.mapeo.contable.list</field>
+		<field name="model">solse.payroll.mapeo.contable</field>
+		<field name="arch" type="xml">
+			<list editable="bottom">
+				<field name="regla_id"/>
+				<field name="codigo_regla"/>
+				<field name="estructura_id" optional="show"/>
+				<field name="prefijo_debito"/>
+				<field name="prefijo_credito"/>
+				<field name="nota" optional="show"/>
+			</list>
+		</field>
+	</record>
+	<record id="mapeo_contable_action" model="ir.actions.act_window">
+		<field name="name">Mapeo contable PCGE</field>
+		<field name="res_model">solse.payroll.mapeo.contable</field>
+		<field name="view_mode">list,form</field>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_smiling_face">Mapeo de reglas salariales a prefijos PCGE</p>
+			<p>Las cuentas contables no se fijan por código exacto sino por prefijo,
+			para que el mismo mapeo funcione en planes con distinta longitud de
+			código (6211000, 621100...). Ejecute el asistente "Asignar cuentas
+			contables" para aplicarlo a la compañía activa.</p>
+		</field>
+	</record>
+</odoo>

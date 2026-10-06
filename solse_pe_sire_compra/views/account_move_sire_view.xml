@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- RCE-05: captura manual del documento modificado para NC/ND de
+       compra cuya factura original no está registrada en Odoo. El
+       anclaje es //sheet (estable en account.view_move_form de v19);
+       la visibilidad se limita a las notas de compra. -->
+  <record id="view_move_form_sire_doc_modificado" model="ir.ui.view">
+    <field name="name">account.move.form.sire.doc.modificado</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet" position="inside">
+        <group string="SIRE · Documento modificado (captura manual)"
+               invisible="move_type != 'in_refund' and not debit_origin_id"
+               groups="account.group_account_invoice">
+          <group>
+            <field name="sire_tipo_doc_modificado"
+                   placeholder="01"
+                   invisible="reversed_entry_id or debit_origin_id"/>
+            <field name="sire_serie_doc_modificado"
+                   invisible="reversed_entry_id or debit_origin_id"/>
+          </group>
+          <group>
+            <field name="sire_fecha_doc_modificado"
+                   invisible="reversed_entry_id or debit_origin_id"/>
+            <field name="sire_numero_doc_modificado"
+                   invisible="reversed_entry_id or debit_origin_id"/>
+          </group>
+          <div class="text-muted" colspan="2"
+               invisible="not reversed_entry_id and not debit_origin_id">
+            La nota está enlazada a su comprobante en Odoo: el RCE toma
+            los datos del enlace y la captura manual no aplica.
+          </div>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>

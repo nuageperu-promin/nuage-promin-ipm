@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<record id="configurar_afectacion_wizard_form" model="ir.ui.view">
+			<field name="name">solse.pe.afectacion.compra.wizard.form</field>
+			<field name="model">solse.pe.afectacion.compra.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Asistente de configuración de afectaciones">
+					<sheet>
+						<div class="oe_title">
+							<h1>Configurar afectaciones de compra</h1>
+							<p class="text-muted">
+								Vincula tus impuestos <code>account.tax</code> a las
+								afectaciones, mapeando cada concepto a su columna del SIRE 8.4.
+							</p>
+						</div>
+
+						<group>
+							<field name="company_id" groups="base.group_multi_company"/>
+						</group>
+
+						<group string="Detección automática">
+							<field name="resumen_deteccion" nolabel="1" colspan="2"/>
+						</group>
+
+						<group string="IGV por destino (SIRE 8.4 cols 15-20)">
+							<field name="tax_igv_dg_id"/>
+							<field name="tax_igv_dgng_id"/>
+							<field name="tax_igv_dng_id"/>
+						</group>
+
+						<group string="Otros impuestos">
+							<group>
+								<field name="tax_icbper_id"/>
+								<field name="tax_isc_id"/>
+							</group>
+							<group>
+								<field name="tax_exonerado_id"/>
+								<field name="tax_inafecto_id"/>
+							</group>
+						</group>
+
+						<group string="Opciones avanzadas">
+							<field name="reemplazar"/>
+						</group>
+
+						<div class="alert alert-info" role="alert">
+							<p><b>Mapeo a columnas SIRE 8.4 que se aplicará:</b></p>
+							<ul style="margin-bottom: 0;">
+								<li><b>Gravada DG</b> ← IGV-DG (base→col 15, impuesto→col 16) + ICBPER (col 23) + ISC (col 22)</li>
+								<li><b>Gravada DGNG</b> ← IGV-DGNG (base→col 17, impuesto→col 18) + ICBPER + ISC</li>
+								<li><b>Gravada DNG</b> ← IGV-DNG (base→col 19, impuesto→col 20) + ICBPER + ISC</li>
+								<li><b>Exonerada</b> ← Tax Exonerado (col 21)</li>
+								<li><b>Inafecta</b> ← Tax Inafecto (col 21)</li>
+								<li><b>Importación</b> ← IGV-DG (mismas columnas que Gravada DG)</li>
+							</ul>
+						</div>
+					</sheet>
+					<footer>
+						<button name="action_aplicar" type="object" string="Aplicar configuración" class="btn-primary"/>
+						<button special="cancel" string="Cancelar"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_configurar_afectacion_wizard" model="ir.actions.act_window">
+			<field name="name">Asistente: Configurar afectaciones</field>
+			<field name="res_model">solse.pe.afectacion.compra.wizard</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem name="Asistente: Configurar afectaciones"
+			id="menu_configurar_afectacion_wizard"
+			parent="account.account_invoicing_menu"
+			action="action_configurar_afectacion_wizard"
+			sequence="10"/>
+
+	</data>
+</odoo>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_partner_form_plame" model="ir.ui.view">
+		<field name="name">res.partner.form.plame.rxh</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+			<notebook position="inside">
+				<page string="PLAME 4ta categoría" name="plame_cuarta"
+				      invisible="is_company">
+					<div class="alert alert-info" role="status">
+						Datos exigidos por el archivo <b>.ps4</b> del PDT PLAME.
+						Complete los tres campos de nombre tal como figuran en el RUC.
+					</div>
+					<group>
+						<group string="Identificación">
+							<field name="plame_tipo_documento"/>
+							<field name="plame_domiciliado"/>
+							<field name="plame_convenio_dt"
+							       invisible="plame_domiciliado"/>
+							<field name="plame_datos_completos" readonly="1"/>
+						</group>
+						<group string="Nombre según RUC">
+							<field name="plame_apellido_paterno"/>
+							<field name="plame_apellido_materno"/>
+							<field name="plame_nombres"/>
+							<button name="action_separar_nombre_completo" type="object"
+							        string="Separar desde el nombre completo"
+							        class="btn-link" icon="fa-magic"/>
+						</group>
+					</group>
+					<group string="Constancias de suspensión de retención de 4ta">
+						<field name="plame_suspension_ids" nolabel="1">
+							<list editable="bottom">
+								<field name="ejercicio"/>
+								<field name="numero_constancia"/>
+								<field name="fecha_desde"/>
+								<field name="fecha_hasta"/>
+								<field name="nota"/>
+							</list>
+						</field>
+					</group>
+				</page>
+			</notebook>
+		</field>
+	</record>
+
+	<record id="view_res_partner_filter_plame" model="ir.ui.view">
+		<field name="name">res.partner.select.plame.rxh</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_res_partner_filter"/>
+		<field name="arch" type="xml">
+			<filter name="type_company" position="after">
+				<separator/>
+				<filter name="plame_incompletos"
+				        string="Prestadores PLAME incompletos"
+				        domain="[('supplier_rank', '&gt;', 0), ('is_company', '=', False), ('plame_datos_completos', '=', False)]"
+				        help="Proveedores persona natural a los que les falta algún dato exigido por el archivo .ps4."/>
+			</filter>
+		</field>
+	</record>
+
+</odoo>

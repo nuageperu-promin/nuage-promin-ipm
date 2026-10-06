@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="asignar_cuentas_wizard_view_form" model="ir.ui.view">
+		<field name="name">solse.payroll.asignar.cuentas.wizard.form</field>
+		<field name="model">solse.payroll.asignar.cuentas.wizard</field>
+		<field name="arch" type="xml">
+			<form>
+				<group>
+					<field name="company_id"/>
+					<field name="estado" invisible="1"/>
+				</group>
+				<group invisible="estado != 'hecho'">
+					<field name="resultado" nolabel="1" readonly="1"/>
+				</group>
+				<footer>
+					<button name="action_asignar" string="Asignar cuentas" type="object"
+							class="btn-primary" invisible="estado == 'hecho'"/>
+					<button string="Cerrar" special="cancel" class="btn-secondary"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+	<record id="asignar_cuentas_wizard_action" model="ir.actions.act_window">
+		<field name="name">Asignar cuentas contables</field>
+		<field name="res_model">solse.payroll.asignar.cuentas.wizard</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+</odoo>

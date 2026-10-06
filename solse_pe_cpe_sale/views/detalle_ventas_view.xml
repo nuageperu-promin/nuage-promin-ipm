@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!--se cambio la vista tree por list para v18-->
+    <!-- nueva vista lista lote -->
+    <record id="detalle_ventas_tree" model="ir.ui.view">
+        <field name="name">sale.order.line.cpe.sale.list</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <list create="0" class="lista">
+                <field name="id" invisible="1"/>              
+                <field name="fecha_pedido" widget="date" optional="show"/>
+                <field name="nro_ov" optional="show"/>
+                <field name="nro_comprobante" optional="show"/>
+                <field name="nro_ruc_dni" string="Nro RUC/DNI" optional="show"/>
+                <field name="cliente" string="Cliente"/>
+                <field name="state_id" optional="hide"/>
+                <field name="city_id" optional="hide"/>
+                <field name="l10n_pe_district" string="Distrito" optional="hide"/>
+                <field name="product_id"/>
+                <field name="product_uom_qty"/>
+                <field name="price_unit" widget="monetary" optional="show" />
+                <field name="price_subtotal" optional="show" widget="monetary" decoration-bf="1" sum="Sub Total"/>
+                <field name="price_total" optional="show" widget="monetary" decoration-bf="1" sum="Total"/>
+                <field name="salesman_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="source_id" optional="show" string="Origen"/>
+                <!--<field name="company_id" optional="hide"/>-->
+                <field name="medium_id" optional="hide"/>
+                <field name="company_id" optional="show"/>
+                <!--<field name="uom_po_id" string="Und. Medida" optional="hide"/>-->
+            </list>
+        </field>
+    </record>
+
+    <record id="view_detalles_ventas_search" model="ir.ui.view">
+		<field name="name">sale.order.line.search.cpe.sale.view</field>
+		<field name="model">sale.order.line</field>
+		<field name="arch" type="xml">
+			<search string="Detalle de Ventas">
+				<field name="product_id"/>
+                <field name="nro_ov"/>
+                <field name="nro_comprobante"/>
+                <field name="cliente" string="Cliente"/>
+                <field name="salesman_id"/>
+
+				<group>
+					<filter string="Producto" name='producto' context="{'group_by':'product_id'}"/>
+                    <filter string="Fecha" name='fecha_pedido' context="{'group_by':'fecha_pedido'}"/>
+                    <filter string="Nro OC" name='nro_ov' context="{'group_by':'nro_ov'}"/>
+                    <filter string="Nro. Factura Cliente" name='nro_comprobante' context="{'group_by':'nro_comprobante'}"/>
+                    <filter string="Cliente" name='cliente' context="{'group_by':'cliente'}"/>
+                    <filter string="Vendedor" name='salesman_id' context="{'group_by':'salesman_id'}"/>
+                    <filter string="Departamento" name='state_id' context="{'group_by':'state_id'}"/>
+                    <filter string="Provincia" name='city_id' context="{'group_by':'city_id'}"/>
+                    <filter string="Distrito" name='l10n_pe_district' context="{'group_by':'l10n_pe_district'}"/>
+					<separator orientation="vertical" />
+				</group>
+				
+			</search>
+		</field>
+	</record>
+
+    <!-- accion lote -->
+    <record id="detalle_ventas_action" model="ir.actions.act_window">
+        <field name="name">Detalles Venta</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">list,graph</field>
+        <field name="view_id" ref="detalle_ventas_tree"/>
+        <field name="search_view_id" ref="view_detalles_ventas_search"/>
+        <field name="domain">[('display_type', '=', False)]</field>
+        <field name="context">{}</field>
+    </record> 
+
+    <menuitem id="menu_detalle_venta" name="Ordenes de venta detallado" parent="sale.menu_sale_report" action="detalle_ventas_action" sequence="20"/>
+
+  </data>
+</odoo>

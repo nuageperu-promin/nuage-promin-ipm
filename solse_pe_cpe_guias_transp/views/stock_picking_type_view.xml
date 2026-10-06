@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="view_picking_type_form_guide_mode">
+			<field name="name">stock.picking.type.form.inherit.pe.guide.mode</field>
+			<field name="model">stock.picking.type</field>
+			<field name="inherit_id" ref="stock.view_picking_type_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='sequence_code']" position="after">
+					<field name="pe_guide_mode"
+						   groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

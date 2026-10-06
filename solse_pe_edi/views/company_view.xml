@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Herencia de res.company - sin cambios -->
+        <record model="ir.ui.view" id="view_company_form">
+            <field name="name">res.company.form.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/notebook/page" position="inside">
+                    <group string="Localización Peruana" name="peruvian_localization">
+                        <group>
+                            <field name="sunat_amount"/>
+                            <field name="cuenta_detraccion"/>
+                            <field name="monto_detraccion"/>
+                            <field name="agente_retencion"/>
+                            <field name="por_retencion"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- CCI en res.partner.bank (el formulario del banco individual) -->
+        <record model="ir.ui.view" id="view_partner_bank_form">
+            <field name="name">res.partner.bank.cci.form</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <field name="acc_number" position="after">
+                    <field name="cci"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- CCI en la vista tree/list de bancos en res.partner -->
+        <record model="ir.ui.view" id="view_partner_bank_tree_cci">
+            <field name="name">res.partner.bank.tree.cci</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+            <field name="arch" type="xml">
+                <field name="acc_number" position="after">
+                    <field name="cci"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

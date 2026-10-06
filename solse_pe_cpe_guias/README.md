@@ -1,11 +1,7 @@
-# solse_pe_cpe_guias
+# Para guias con modo transporte privado
+* Para el tipo de documento del conductor no acepta ruc
+* Se debe llenar el campo cbc:FirstName
 
-**Nombre visible:** Guías de Remisión Remitente
-**Orden de instalación dentro del grupo Localización PE:** 16
 
-Código pendiente de copiar desde el servidor actual (ver instructions.txt /
-manual de instalación interno para el procedimiento y el orden de carga).
 
-Este README es un marcador de posición: reemplazar esta carpeta con el
-contenido real del módulo (manteniendo el mismo nombre de carpeta, que es
-el nombre técnico del módulo en Odoo).
+# move_line_ids_without_package 

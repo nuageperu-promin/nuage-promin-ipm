@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- RVIE-03b. La fecha de emisión del documento modificado se captura
+       JUNTO a «Código de documento de origen» y «Número de documento de
+       origen» de solse_pe_cpe, que es de donde salen el tipo, la serie y el
+       número. Un solo campo y en el sitio donde el usuario ya está mirando.
+
+       La primera versión ponía cuatro campos en un grupo propio al pie de
+       la primera pestaña —el xpath iba a //sheet— y duplicaba tres datos
+       que ya se teclean tres centímetros más arriba. -->
+  <record id="view_move_form_rvie_doc_modificado" model="ir.ui.view">
+    <field name="name">account.move.form.rvie.fecha.doc.modificado</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="solse_pe_cpe.invoice_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='origin_doc_number']" position="after">
+        <field name="rvie_origen_fecha"
+               invisible="pe_invoice_code not in ('07','08') or move_type not in ('out_invoice','out_refund')"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

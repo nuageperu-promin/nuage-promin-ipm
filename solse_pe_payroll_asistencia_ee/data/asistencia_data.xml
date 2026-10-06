@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Catálogo: tipos de entrada de trabajo e input. Congelados
+	     (noupdate="1") desde el nacimiento —lección de N-6: reescribir un
+	     catálogo en cada -u dispara recálculos en registros aprobados—.
+	     Lo que la boleta necesita de ellos (estar en unpaid_work_entry_type_ids
+	     e input_line_type_ids) lo asegura configurar_asistencia_ee en Python. -->
+	<data noupdate="1">
+		<record id="work_entry_type_falta_pe" model="hr.work.entry.type">
+			<field name="name">Falta injustificada (asistencias)</field>
+			<field name="code">FALTA</field>
+			<field name="display_code">FAL</field>
+			<field name="color">1</field>
+			<field name="is_leave">True</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="work_entry_type_falta_parcial_pe" model="hr.work.entry.type">
+			<field name="name">Horas no trabajadas (asistencias)</field>
+			<field name="code">FALTA_PARCIAL</field>
+			<field name="display_code">FAP</field>
+			<field name="color">1</field>
+			<field name="is_leave">True</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="input_type_tardanzas" model="hr.payslip.input.type">
+			<field name="code">TARDANZAS</field>
+			<field name="name">Horas de tardanza (asistencias)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+	</data>
+
+	<!-- Regla y mapeo: definición del módulo, se actualiza en cada -u. -->
+	<data noupdate="0">
+		<record id="regla_tar_001" model="hr.salary.rule">
+			<field name="name">Descuento por tardanzas</field>
+			<field name="code">TAR_001</field>
+			<field name="sequence">168</field>
+			<field name="category_id"
+				   ref="solse_pe_payroll.hr_salary_rule_category_dat_001"/>
+			<field name="struct_id"
+				   ref="solse_pe_payroll.hr_payroll_structure_base"/>
+			<field name="appears_on_payslip" eval="True"/>
+			<field name="condition_select">python</field>
+			<!-- EE: `inputs` es un dict plano (hr_payslip.py:1039); se lee
+			     con .get(), como TARD_001 en bloque10. -->
+			<field name="condition_python">result = bool(inputs.get('TARDANZAS') and inputs['TARDANZAS'].amount > 0)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+# Horas de tardanza acumuladas en el periodo (netas de tolerancia),
+# descontadas a valor hora sobre jornada mensual de 240.
+# Signo POSITIVO: en solse_pe_payroll las deducciones son positivas y el
+# NET las resta por categoría (NET = ING_001 - DED, bloque1:345), igual
+# que TARD_001 (bloque10) y ONP_001.
+horas_tarde = inputs['TARDANZAS'].amount
+result = (version.wage / 240.0) * horas_tarde
+			</field>
+			<field name="note">Descuento por tardanzas conciliadas desde el
+módulo de Asistencias. El detalle por día queda en el resumen de la
+boleta como sustento frente al trabajador.</field>
+		</record>
+
+		<!-- Menor gasto de remuneraciones: crédito a 6211 (deducción positiva
+		     con solo cuenta de crédito → hr_payroll_account la lleva al haber). -->
+		<record id="mapeo_tar_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_tar_001"/>
+			<field name="prefijo_credito">6211</field>
+			<field name="nota">Tardanzas: menor gasto de remuneraciones.</field>
+		</record>
+
+		<!-- Ambos con @api.model (trampa 17). configurar_asistencia_ee
+		     declara FALTA/FALTA_PARCIAL no pagados y publica TARDANZAS;
+		     inicializar_todo replica TAR_001 de la base a las estructuras
+		     y aplica el mapeo de cuentas. Idempotentes. -->
+		<function model="solse.payroll.inicializador" name="configurar_asistencia_ee"/>
+		<function model="solse.payroll.inicializador" name="inicializar_todo"/>
+	</data>
+</odoo>

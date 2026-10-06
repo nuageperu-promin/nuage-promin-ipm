@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2026 FM SYSTEMS SOLUTIONS E.I.R.L. (sistemas@solse.pe)
+     Licencia: Other proprietary. Prohibida la redistribucion total o parcial. -->
+<odoo>
+	<data noupdate="1">
+
+		<!-- La GRT usa el mismo endpoint GRE que la GRR. Estos servidores
+		     existen para el cliente que necesite credenciales distintas; si
+		     la compañía no asigna uno, se usa el de guías de remisión. -->
+		<record id="cpe_production_transport_server" model="cpe.server">
+			<field name="name">Guia Electronica Transportista Produccion</field>
+			<field name="url">https://api-cpe.sunat.gob.pe</field>
+			<field name="es_guia">True</field>
+		</record>
+
+		<record id="cpe_dev_transport_server" model="cpe.server">
+			<field name="name">Guia Electronica Transportista Desarrollo</field>
+			<field name="url">https://gre-test.nubefact.com</field>
+			<field name="user">MODDATOS</field>
+			<field name="password">MODDATOS</field>
+			<field name="es_guia">True</field>
+			<field name="client_id">test-85e5b0ae-255c-4891-a595-0b98c65c9854</field>
+			<field name="client_secret">test-Hty/M6QshYvPgItX2P0+Kw==</field>
+		</record>
+
+		<record id="eguide_transport_sequence" model="ir.sequence">
+			<field name="name">Guia Electronica Transportista</field>
+			<field name="code">pe.eguide.transport.sync</field>
+			<field name="prefix">V001-</field>
+			<field name="implementation">no_gap</field>
+			<field name="padding">5</field>
+		</record>
+
+		<record id="eguide_transport_cancel_sequence" model="ir.sequence">
+			<field name="name">Guia Electronica Transportista (Cancelado)</field>
+			<field name="code">pe.eguide.transport.cancel</field>
+			<field name="prefix">VG01-</field>
+			<field name="implementation">no_gap</field>
+			<field name="padding">0</field>
+		</record>
+
+	</data>
+	<data>
+		<!-- Secuencias por compañía: crea las que falten (criterio de la
+		     suite, sin correlativos globales). Fuera del noupdate para que
+		     corra en cada actualización. -->
+		<function model="res.company" name="pe_asegurar_secuencias_guias_transporte_todas"/>
+	</data>
+</odoo>

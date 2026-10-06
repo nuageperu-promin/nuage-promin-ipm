@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_solse_cpe_guias_qa_caso_manager,solse.cpe.guias.qa.caso.manager,model_solse_cpe_guias_qa_caso,solse_pe_cpe.group_solse_pe_cpe_manager,1,1,1,1

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Categoría del módulo -->
+        <record model="ir.module.category" id="module_solse_pe_cpe">
+            <field name="name">Configuración de Comprobantes Electrónicos</field>
+            <field name="description">Configuración de comprobantes electrónicos</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Privilegios -->
+        <record id="privilege_solse_pe_cpe_user" model="res.groups.privilege">
+            <field name="name">Usuario</field>
+            <field name="category_id" ref="module_solse_pe_cpe"/>
+        </record>
+
+        <record id="privilege_solse_pe_cpe_accountant" model="res.groups.privilege">
+            <field name="name">Contador</field>
+            <field name="category_id" ref="module_solse_pe_cpe"/>
+        </record>
+
+        <record id="privilege_solse_pe_cpe_manager" model="res.groups.privilege">
+            <field name="name">Administrador</field>
+            <field name="category_id" ref="module_solse_pe_cpe"/>
+        </record>
+
+        <!-- Grupos -->
+        <record id="group_solse_pe_cpe_user" model="res.groups">
+            <field name="name">Usuario - CPE</field>
+            <field name="privilege_id" ref="privilege_solse_pe_cpe_user"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_solse_pe_cpe_accountant" model="res.groups">
+            <field name="name">Contador - CPE</field>
+            <field name="privilege_id" ref="privilege_solse_pe_cpe_accountant"/>
+            <field name="implied_ids" eval="[(4, ref('group_solse_pe_cpe_user'))]"/>
+        </record>
+
+        <record id="group_solse_pe_cpe_manager" model="res.groups">
+            <field name="name">Administrador - CPE</field>
+            <field name="privilege_id" ref="privilege_solse_pe_cpe_manager"/>
+            <field name="implied_ids" eval="[(4, ref('group_solse_pe_cpe_accountant'))]"/>
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- Reglas de registro (sin cambios) -->
+        <record id="servidores_cpe_rule" model="ir.rule">
+            <field name="name">Servidores Facturación Electrónica</field>
+            <field name="model_id" ref="model_cpe_server"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|', ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+        </record>
+
+        <record id="certificados_cpe_rule" model="ir.rule">
+            <field name="name">Certificados Digital</field>
+            <field name="model_id" ref="model_cpe_certificate"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|', ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+        </record>
+
+        <record id="cpe_rule" model="ir.rule">
+            <field name="name">Comprobantes Electrónicos (XML)</field>
+            <field name="model_id" ref="model_solse_cpe"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|', ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+        </record>
+    </data>
+</odoo>

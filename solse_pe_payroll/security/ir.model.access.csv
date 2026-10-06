@@ -1,0 +1,39 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_health_regime_user,health.regime user,model_health_regime,hr.group_hr_user,1,0,0,0
+access_health_regime_manager,health.regime manager,model_health_regime,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_academic_degree_user,academic.degree user,model_academic_degree,hr.group_hr_user,1,0,0,0
+access_academic_degree_manager,academic.degree manager,model_academic_degree,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_low_reason_user,low.reason user,model_low_reason,hr.group_hr_user,1,0,0,0
+access_low_reason_manager,low.reason manager,model_low_reason,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_mintra_contract_user,mintra.contract user,model_mintra_contract,hr.group_hr_user,1,0,0,0
+access_mintra_contract_manager,mintra.contract manager,model_mintra_contract,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_special_situation_user,special.situation user,model_special_situation,hr.group_hr_user,1,0,0,0
+access_special_situation_manager,special.situation manager,model_special_situation,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_type_contract_user,type.contract user,model_type_contract,hr.group_hr_user,1,0,0,0
+access_type_contract_manager,type.contract manager,model_type_contract,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_variable_payment_user,variable.payment user,model_variable_payment,hr.group_hr_user,1,0,0,0
+access_variable_payment_manager,variable.payment manager,model_variable_payment,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_work_occupation_user,work.occupation user,model_work_occupation,hr.group_hr_user,1,0,0,0
+access_work_occupation_manager,work.occupation manager,model_work_occupation,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_payment_type_user,payment.type user,model_payment_type,hr.group_hr_user,1,0,0,0
+access_payment_type_manager,payment.type manager,model_payment_type,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pension_system_user,pension.system user,model_pension_system,hr.group_hr_user,1,0,0,0
+access_pension_system_manager,pension.system manager,model_pension_system,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_life_insurance_user,life.insurance user,model_life_insurance,hr.group_hr_user,1,0,0,0
+access_life_insurance_manager,life.insurance manager,model_life_insurance,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_employee_regime_user,employee.regime user,model_employee_regime,hr.group_hr_user,1,0,0,0
+access_employee_regime_manager,employee.regime manager,model_employee_regime,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_employee_relative_relation_user,relative.relation user,model_hr_employee_relative_relation,hr.group_hr_user,1,0,0,0
+access_hr_employee_relative_relation_manager,relative.relation manager,model_hr_employee_relative_relation,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_employee_relative_user,hr.employee.relative user,model_hr_employee_relative,hr.group_hr_user,1,1,1,1
+access_eps_management_user,eps.management user,model_eps_management,hr.group_hr_user,1,0,0,0
+access_eps_management_manager,eps.management manager,model_eps_management,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_plame_lines_user,plame.lines user,model_plame_lines,hr.group_hr_user,1,0,0,0
+access_plame_lines_manager,plame.lines manager,model_plame_lines,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_solse_payroll_mapeo_contable_manager,mapeo.contable manager,model_solse_payroll_mapeo_contable,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_solse_payroll_asignar_cuentas_wizard,asignar.cuentas wizard,model_solse_payroll_asignar_cuentas_wizard,hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_solse_payroll_planilla_wizard,solse.payroll.planilla.wizard,model_solse_payroll_planilla_wizard,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_solse_payroll_plame_wizard,solse.payroll.plame.wizard,model_solse_payroll_plame_wizard,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_solse_payroll_bancos_wizard,solse.payroll.bancos.wizard,model_solse_payroll_bancos_wizard,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_solse_payroll_afpnet_wizard,solse.payroll.afpnet.wizard,model_solse_payroll_afpnet_wizard,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_solse_payroll_utilidades_wizard,solse.payroll.utilidades.wizard,model_solse_payroll_utilidades_wizard,hr_payroll.group_hr_payroll_user,1,1,1,1

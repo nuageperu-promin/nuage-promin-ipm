@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_diagnostico_numeracion_form" model="ir.ui.view">
+		<field name="name">solse.diagnostico.numeracion.form</field>
+		<field name="model">solse.diagnostico.numeracion</field>
+		<field name="arch" type="xml">
+			<form string="Diagnóstico de numeración de compras">
+				<div class="alert alert-info" role="alert" invisible="resultado">
+					Revisa que cada comprobante de compra tenga serie y
+					correlativo legibles para el registro de compras, el SIRE y
+					el PLE. No modifica nada: solo señala qué corregir.
+				</div>
+				<group invisible="resultado">
+					<group>
+						<field name="company_id"/>
+					</group>
+					<group>
+						<field name="fecha_desde"/>
+						<field name="fecha_hasta"/>
+					</group>
+				</group>
+				<group invisible="not resultado">
+					<group>
+						<field name="total_revisadas" readonly="1"/>
+						<field name="total_correctas" readonly="1"/>
+						<field name="total_observadas" readonly="1"/>
+					</group>
+				</group>
+				<field name="resultado" nolabel="1" readonly="1"
+					   invisible="not resultado"/>
+				<field name="move_observado_ids" invisible="1"/>
+				<footer>
+					<button name="accion_diagnosticar"
+							string="Diagnosticar"
+							type="object"
+							class="btn-primary"
+							invisible="resultado"/>
+					<button name="accion_ver_observados"
+							string="Ver los observados"
+							type="object"
+							class="btn-primary"
+							invisible="total_observadas == 0"/>
+					<button string="Cerrar" class="btn-secondary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_diagnostico_numeracion" model="ir.actions.act_window">
+		<field name="name">Diagnóstico de numeración de compras</field>
+		<field name="res_model">solse.diagnostico.numeracion</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

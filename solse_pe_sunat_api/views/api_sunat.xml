@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <data>
+  <!-- Se realiza cambio de las vista tree a list en v18-->
+    <record model="ir.ui.view" id="view_solse_sunat_api_tree">
+      <field name="name">solse.sunat.api.list</field>
+      <field name="model">solse.sunat.api</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="company_id"/>
+          <field name="active"/>
+        </list>
+      </field>
+    </record>
+
+    <record id="solse_sunat_api_search_view" model="ir.ui.view">
+        <field name="name">solse.sunat.api.search</field>
+        <field name="model">solse.sunat.api</field>
+        <field name="arch" type="xml">
+            <search string="API SUNAT">
+                <field name="name"/>
+                <group>
+                    <filter string="Codigo Tabla" name="company_id" context="{'group_by':'company_id'}"/>
+                    <filter string="Activo" name="active" context="{'active':True}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+	<record id="view_solse_sunat_api_from" model="ir.ui.view">
+        <field name="name">solse.sunat.api.form</field>
+        <field name="model">solse.sunat.api</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="tipo"/>
+                        <field name="company_id"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <group>
+                    	<field name="user"/>
+                        <field name="password"/>
+                        <field name="client_id"/>
+                        <field name="client_secret"/>
+                        
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_solse_api_sunat" model="ir.actions.act_window">
+        <field name="name">API SUNAT</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">solse.sunat.api</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_solse_sunat_api_tree"/>
+        <field name="help">Display and manage the Peruvian Datas.</field>
+    </record>
+
+
+    <menuitem name="API SUNAT" id="pe_csolse_sunat_api_menu" parent="solse_pe_catalogo.pe_cpe_configuration_menu" action="action_solse_api_sunat" sequence="4" />
+    
+    
+  </data>
+</odoo>

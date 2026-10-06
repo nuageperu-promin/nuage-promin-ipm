@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Vista amigable: parámetros PE agrupados por categoría, con acceso
+	     directo a las vigencias. -->
+	<record id="rule_parameter_pe_view_list" model="ir.ui.view">
+		<field name="name">hr.rule.parameter.pe.list</field>
+		<field name="model">hr.rule.parameter</field>
+		<field name="arch" type="xml">
+			<list>
+				<field name="name"/>
+				<field name="code"/>
+				<field name="categoria_pe"/>
+				<field name="current_value_one_line" string="Valor vigente"/>
+			</list>
+		</field>
+	</record>
+
+	<record id="rule_parameter_pe_view_search" model="ir.ui.view">
+		<field name="name">hr.rule.parameter.pe.search</field>
+		<field name="model">hr.rule.parameter</field>
+		<field name="arch" type="xml">
+			<search>
+				<field name="name"/>
+				<field name="code"/>
+				<filter string="Generales" name="cat_generales" domain="[('categoria_pe', '=', 'generales')]"/>
+				<filter string="Pensiones" name="cat_pensiones" domain="[('categoria_pe', '=', 'pensiones')]"/>
+				<filter string="Salud" name="cat_salud" domain="[('categoria_pe', '=', 'salud')]"/>
+				<filter string="Renta 5ta" name="cat_renta" domain="[('categoria_pe', '=', 'renta')]"/>
+				<filter string="Beneficios" name="cat_beneficios" domain="[('categoria_pe', '=', 'beneficios')]"/>
+				<filter string="Jornada" name="cat_jornada" domain="[('categoria_pe', '=', 'jornada')]"/>
+				<separator/>
+				<filter string="Agrupar por categoría" name="group_categoria" context="{'group_by': 'categoria_pe'}"/>
+			</search>
+		</field>
+	</record>
+
+	<record id="rule_parameter_pe_action" model="ir.actions.act_window">
+		<field name="name">Parámetros de Nómina PE</field>
+		<field name="res_model">hr.rule.parameter</field>
+		<field name="view_mode">list,form</field>
+		<field name="view_id" ref="rule_parameter_pe_view_list"/>
+		<field name="search_view_id" ref="rule_parameter_pe_view_search"/>
+		<field name="domain">[('categoria_pe', '!=', False)]</field>
+		<field name="context">{'search_default_group_categoria': 1}</field>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_smiling_face">Parámetros normativos de la nómina peruana</p>
+			<p>UIT, RMV, tasas de pensiones y salud, tramos de renta de 5ta y
+			factores por régimen, versionados por fecha de vigencia. Para
+			registrar un nuevo valor (p. ej. la RMA trimestral de la SBS),
+			abra el parámetro y agregue una vigencia sin borrar las anteriores:
+			los recálculos de periodos pasados usan la vigencia de su fecha.</p>
+		</field>
+	</record>
+</odoo>

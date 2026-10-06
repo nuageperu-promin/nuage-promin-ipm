@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- El post_init_hook solo corre al instalar; este <function> corre
+	     TAMBIÉN en cada actualización del módulo: replica reglas nuevas a
+	     las estructuras operativas, asigna diarios de salario faltantes y
+	     aplica el mapeo contable. Todo idempotente. -->
+	<data noupdate="0">
+		<function model="solse.payroll.inicializador" name="inicializar_todo"/>
+	</data>
+</odoo>

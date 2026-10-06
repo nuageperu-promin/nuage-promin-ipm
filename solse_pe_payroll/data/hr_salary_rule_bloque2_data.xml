@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 2: Sistema de pensiones (ONP / AFP)
+	     Descuentos del trabajador (categoría DAT_001, importes positivos;
+	     NET los resta vía categories['DED']).
+	     Base afecta: acumulado de la categoría INA_001 al momento del
+	     cálculo (secuencias 110+, posteriores a todos los ingresos).
+	================================================================ -->
+	<data noupdate="0">
+
+		<record id="regla_onp_001" model="hr.salary.rule">
+			<field name="name">ONP - Sistema Nacional de Pensiones</field>
+			<field name="code">ONP_001</field>
+			<field name="sequence">110</field>
+			<field name="category_id" ref="hr_salary_rule_category_dat_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0607')])]"/>
+			<field name="note">D.L. 19990: 13% (parámetro pe_onp_tasa) sobre la remuneración
+afecta. Aplica a afiliados al SNP (código T11 = 02) salvo excepción
+marcada en "No aporta pensión".</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = (
+    (employee.pension_system_id.code or '').zfill(2) == '02'
+    and not employee.no_provide_pension
+)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * payslip._rule_parameter('pe_onp_tasa')
+			</field>
+		</record>
+
+		<record id="regla_afp_apo_001" model="hr.salary.rule">
+			<field name="name">AFP - Aporte obligatorio</field>
+			<field name="code">AFP_APO_001</field>
+			<field name="sequence">112</field>
+			<field name="category_id" ref="hr_salary_rule_category_dat_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0608')])]"/>
+			<field name="note">TUO Ley SPP: 10% (parámetro pe_afp_aporte) al fondo de
+pensiones, sobre la remuneración asegurable sin tope.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = (
+    employee.pension_system_id.cuspp
+    and not employee.no_provide_pension
+)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+result = base_afecta * payslip._rule_parameter('pe_afp_aporte')
+			</field>
+		</record>
+
+		<record id="regla_afp_com_001" model="hr.salary.rule">
+			<field name="name">AFP - Comisión</field>
+			<field name="code">AFP_COM_001</field>
+			<field name="sequence">113</field>
+			<field name="category_id" ref="hr_salary_rule_category_dat_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0601')])]"/>
+			<field name="note">Comisión de la administradora según su clave (parámetro
+pe_afp_comision_flujo, diccionario por AFP). En comisión mixta el
+componente sobre flujo es 0% desde feb-2023 (pe_afp_comision_mixta_flujo);
+el componente sobre saldo lo cobra la AFP directamente del fondo y no
+pasa por planilla.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = (
+    employee.pension_system_id.cuspp
+    and not employee.no_provide_pension
+)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+if employee.commission_type == 'mixed':
+    tasa = payslip._rule_parameter('pe_afp_comision_mixta_flujo')
+else:
+    tasas = payslip._rule_parameter('pe_afp_comision_flujo')
+    clave = employee.pension_system_id.clave_afp
+    tasa = tasas.get(clave, 0.0) if isinstance(tasas, dict) else 0.0
+result = base_afecta * tasa
+			</field>
+		</record>
+
+		<record id="regla_afp_pri_001" model="hr.salary.rule">
+			<field name="name">AFP - Prima de seguro</field>
+			<field name="code">AFP_PRI_001</field>
+			<field name="sequence">114</field>
+			<field name="category_id" ref="hr_salary_rule_category_dat_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0606')])]"/>
+			<field name="note">Seguro de invalidez y sobrevivencia: 1.37% (parámetro
+pe_afp_prima_seguro) sobre la remuneración asegurable con tope en la RMA
+(parámetro pe_afp_rma, actualización trimestral SBS). En nóminas
+semanales el tope se prorratea por las semanas del mes. Exceptuados los
+afiliados marcados "No aplica prima de seguro AFP".</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+result = (
+    employee.pension_system_id.cuspp
+    and not employee.no_provide_pension
+    and not employee.no_apply_afp_premium
+)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+base_afecta = categories['INA_001']
+tope_rma = payslip._rule_parameter('pe_afp_rma')
+# ISM_001 = 1 en mensuales, semanas del mes en semanales
+tope_rma = tope_rma / (result_rules['ISM_001']['total'] or 1.0)
+base_prima = min(base_afecta, tope_rma)
+result = base_prima * payslip._rule_parameter('pe_afp_prima_seguro')
+			</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable: retenciones al trabajador, solo crédito -->
+	<data noupdate="1">
+		<record id="mapeo_onp_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_onp_001"/>
+			<field name="prefijo_credito">4032</field>
+			<field name="nota">ONP por pagar</field>
+		</record>
+		<record id="mapeo_afp_apo_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_afp_apo_001"/>
+			<field name="prefijo_credito">4170</field>
+			<field name="nota">AFP por pagar</field>
+		</record>
+		<record id="mapeo_afp_com_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_afp_com_001"/>
+			<field name="prefijo_credito">4170</field>
+		</record>
+		<record id="mapeo_afp_pri_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_afp_pri_001"/>
+			<field name="prefijo_credito">4170</field>
+		</record>
+	</data>
+</odoo>

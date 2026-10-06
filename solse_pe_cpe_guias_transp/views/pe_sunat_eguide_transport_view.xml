@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="view_pe_sunat_eguide_transport_list">
+			<field name="name">solse.cpe.eguide.transport.list</field>
+			<field name="model">solse.cpe.eguide.transport</field>
+			<field name="arch" type="xml">
+				<list>
+					<field name="name"/>
+					<field name="type"/>
+					<field name="date"/>
+					<field name="response"/>
+					<field name="error_code"/>
+					<field name="state"/>
+				</list>
+			</field>
+		</record>
+
+		<record id="view_pe_sunat_eguide_transport_form" model="ir.ui.view">
+			<field name="name">solse.cpe.eguide.transport.form</field>
+			<field name="model">solse.cpe.eguide.transport</field>
+			<field name="arch" type="xml">
+				<form>
+					<header>
+						<button name="action_draft" string="Borrador"
+								invisible="state not in ['generate', 'cancel']"
+								type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<button name="action_generate" string="Generar"
+								invisible="state not in ['draft']" type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<button name="action_send" string="Enviar"
+								invisible="state not in ['generate']" type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<button name="action_verify" string="Esperar"
+								invisible="state not in ['send']" type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<button name="action_done" string="Hecho"
+								invisible="state not in ['verify']" type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<button name="action_cancel" string="Cancelar"
+								invisible="state not in ['generate', 'send', 'verify']"
+								type="object"
+								groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+						<field name="state" widget="statusbar"
+							   statusbar_visible="draft,generate,send"/>
+					</header>
+					<sheet string="Guía de Remisión Electrónica Transportista">
+						<h1 class="mt0">
+							<field name="name" readonly="1" class="oe_inline"
+								   invisible="state in ['draft','generate']"/>
+						</h1>
+						<group>
+							<group>
+								<field name="type" readonly="1"/>
+								<field name="error_code"/>
+								<field name="response"/>
+							</group>
+							<group>
+								<field name="date" readonly="state not in 'draft'"/>
+								<field name="send_date" readonly="state not in 'draft'"/>
+								<field name="date_end" readonly="state not in 'draft'"/>
+								<field name="ticket"/>
+								<field name="url_doc" widget="url"/>
+								<field name="company_id" options="{'no_create': True}"
+									   groups="base.group_multi_company"/>
+							</group>
+						</group>
+						<notebook colspan="4">
+							<page string="Detalles del comprobante electrónico">
+								<group>
+									<group>
+										<field name="datas" filename="datas_fname"/>
+										<field name="datas_fname" invisible="1"/>
+										<field name="datas_sign" filename="datas_sign_fname"/>
+										<field name="datas_sign_fname" invisible="1"/>
+									</group>
+									<group>
+										<field name="datas_zip" filename="datas_zip_fname"/>
+										<field name="datas_zip_fname" invisible="1"/>
+										<field name="datas_response"
+											   filename="datas_response_fname"/>
+										<field name="datas_response_fname" invisible="1"/>
+									</group>
+								</group>
+								<div>
+									<label for="digest" string="Codigo:"/>
+									<field name="digest" placeholder="Digest value..."/>
+								</div>
+								<div>
+									<label for="signature" string="Valor de la firma:"/>
+								</div>
+								<div>
+									<field name="signature"
+										   placeholder="Valor de la firma..."/>
+								</div>
+								<div>
+									<label for="note" string="Notas adicionales:"/>
+								</div>
+								<div>
+									<field name="note" placeholder="Notas adicionales..."/>
+								</div>
+							</page>
+							<page string="Detalles XML">
+								<div>
+									<field name="xml_document" placeholder="XML Document..."
+										   readonly="state not in 'draft'"
+										   groups="solse_pe_cpe.group_solse_pe_cpe_user"/>
+								</div>
+							</page>
+							<page string="Transferencias" invisible="type not in ['sync']">
+								<field name="picking_ids" readonly="state not in 'draft'"/>
+							</page>
+							<page string="Guía cancelada" invisible="type not in ['low']">
+								<field name="voided_ids" readonly="state not in 'draft'"/>
+							</page>
+						</notebook>
+					</sheet>
+					<chatter/>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_pe_sunat_eguide_transport">
+			<field name="name">Guías Electrónicas Transportista</field>
+			<field name="res_model">solse.cpe.eguide.transport</field>
+			<field name="view_mode">list,form</field>
+		</record>
+
+		<menuitem name="Guias electronicas transportista"
+				  id="pe_eguide_transport_menu"
+				  parent="solse_pe_cpe.pe_cpe_document_menu"
+				  action="action_pe_sunat_eguide_transport"
+				  sequence="2"/>
+
+	</data>
+</odoo>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Formato físico 7.1 — R.S. 234-2006/SUNAT, art. 13 num. 7.3 a), según la
+	plantilla oficial (234_formato71.xls, hoja «F 7.1 Det bs AF»): 26
+	columnas, cabecera de tres datos (art. 6 a) y fila de totales.
+
+	⚠ Este archivo se copia a la variante Enterprise con
+	sincronizar_ple07.py, que cambia el nombre técnico del módulo en
+	report_name y report_file (es lo único que no puede ser relativo).
+	No editarlo en la variante Enterprise.
+-->
+<odoo>
+
+	<record id="paperformat_formato_7_1" model="report.paperformat">
+		<field name="name">PLE 7.1 SUNAT A4 horizontal</field>
+		<field name="default" eval="False"/>
+		<field name="format">A4</field>
+		<field name="page_height">0</field>
+		<field name="page_width">0</field>
+		<field name="orientation">Landscape</field>
+		<field name="margin_top">10</field>
+		<field name="margin_bottom">10</field>
+		<field name="margin_left">5</field>
+		<field name="margin_right">5</field>
+		<field name="header_line" eval="False"/>
+		<field name="header_spacing">5</field>
+		<field name="dpi">90</field>
+	</record>
+
+	<record id="action_reporte_formato_7_1" model="ir.actions.report">
+		<field name="name">Registro de Activos Fijos (Formato 7.1) - PDF SUNAT</field>
+		<field name="model">ple.report.07</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_ple_07_ee.formato_7_1_documento</field>
+		<field name="report_file">solse_pe_ple_07_ee.formato_7_1_documento</field>
+		<field name="paperformat_id" ref="paperformat_formato_7_1"/>
+		<field name="print_report_name">'ACTIVOS_FIJOS_7_1_%s' % (object.year)</field>
+		<field name="binding_model_id" eval="False"/>
+		<field name="binding_type">report</field>
+	</record>
+
+	<template id="formato_7_1_documento">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-set="datos" t-value="o.datos_formato_7_1()"/>
+				<!-- L9.4: div.article, como web.basic_layout. Sin él,
+				     ir.actions.report._prepare_html (19.0) no envuelve el
+				     cuerpo en el layout con <meta charset="utf-8"> y
+				     wkhtmltopdf lo lee en latin-1: tildes en mojibake. -->
+				<div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id" t-att-data-oe-lang="o.env.context.get('lang')">
+				<div class="page">
+					<style>
+						.f71 { font-family: Arial, sans-serif; font-size: 6pt; color: #000; }
+						.f71-titulo { font-size: 9pt; font-weight: bold; margin-bottom: 4pt; }
+						.f71-cabecera { font-size: 7pt; margin-bottom: 6pt; }
+						.f71-cabecera div { margin: 1pt 0; }
+						.f71-cabecera .etiqueta { font-weight: bold; }
+						table.f71-tabla { width: 100%; border-collapse: collapse; }
+						table.f71-tabla th { border: 1px solid #000; background-color: #e0e0e0;
+							font-size: 5pt; font-weight: bold; text-align: center;
+							vertical-align: middle; padding: 1pt; }
+						table.f71-tabla td { border: 1px solid #000; padding: 1pt 2pt;
+							vertical-align: top; }
+						table.f71-tabla td.num { text-align: right; white-space: nowrap; }
+						table.f71-tabla td.centro { text-align: center; }
+						table.f71-tabla tr.totales td { font-weight: bold; background-color: #d0d0d0; }
+						.f71-sin-operaciones { text-align: center; font-weight: bold; padding: 12pt; }
+					</style>
+					<div class="f71">
+						<div class="f71-titulo">FORMATO 7.1: "REGISTRO DE ACTIVOS FIJOS - DETALLE DE LOS ACTIVOS FIJOS"</div>
+						<div class="f71-cabecera">
+							<div><span class="etiqueta">PERÍODO:</span> <t t-esc="datos['cabecera']['periodo']"/></div>
+							<div><span class="etiqueta">RUC:</span> <t t-esc="datos['cabecera']['ruc']"/></div>
+							<div><span class="etiqueta">APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:</span> <t t-esc="datos['cabecera']['razon_social']"/></div>
+						</div>
+						<table class="f71-tabla">
+							<thead>
+								<tr>
+									<th rowspan="2">CÓDIGO RELACIONADO CON EL ACTIVO FIJO</th>
+									<th rowspan="2">CUENTA CONTABLE DEL ACTIVO FIJO</th>
+									<th colspan="4">DETALLE DEL ACTIVO FIJO</th>
+									<th rowspan="2">SALDO INICIAL</th>
+									<th rowspan="2">ADQUISICIONES ADICIONES</th>
+									<th rowspan="2">MEJORAS</th>
+									<th rowspan="2">RETIROS Y/O BAJAS</th>
+									<th rowspan="2">OTROS AJUSTES</th>
+									<th rowspan="2">VALOR HISTÓRICO DEL ACTIVO FIJO AL 31.12</th>
+									<th rowspan="2">AJUSTE POR INFLACIÓN</th>
+									<th rowspan="2">VALOR AJUSTADO DEL ACTIVO FIJO AL 31.12</th>
+									<th rowspan="2">FECHA DE ADQUISICIÓN</th>
+									<th rowspan="2">FECHA DE INICIO DEL USO DEL ACTIVO FIJO</th>
+									<th colspan="2">DEPRECIACIÓN</th>
+									<th rowspan="2">PORCENTAJE DE DEPRECIACIÓN</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA AL CIERRE DEL EJERCICIO ANTERIOR</th>
+									<th rowspan="2">DEPRECIACIÓN DEL EJERCICIO</th>
+									<th rowspan="2">DEPRECIACIÓN DEL EJERCICIO RELACIONADA CON LOS RETIROS Y/O BAJAS</th>
+									<th rowspan="2">DEPRECIACIÓN RELACIONADA CON OTROS AJUSTES</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA HISTÓRICA</th>
+									<th rowspan="2">AJUSTE POR INFLACIÓN DE LA DEPRECIACIÓN</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA AJUSTADA POR INFLACIÓN</th>
+								</tr>
+								<tr>
+									<th>DESCRIPCIÓN</th>
+									<th>MARCA DEL ACTIVO FIJO</th>
+									<th>MODELO DEL ACTIVO FIJO</th>
+									<th>NÚMERO DE SERIE Y/O PLACA DEL ACTIVO FIJO</th>
+									<th>MÉTODO APLICADO</th>
+									<th>N° DE DOCUMENTO DE AUTORIZACIÓN</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr t-if="not datos['filas']">
+									<td colspan="26" class="f71-sin-operaciones">SIN OPERACIONES</td>
+								</tr>
+								<tr t-foreach="datos['filas']" t-as="fila">
+									<td><t t-esc="fila['codigo']"/></td>
+									<td class="centro"><t t-esc="fila['cuenta']"/></td>
+									<td><t t-esc="fila['descripcion']"/></td>
+									<td><t t-esc="fila['marca']"/></td>
+									<td><t t-esc="fila['modelo']"/></td>
+									<td><t t-esc="fila['serie']"/></td>
+									<td class="num"><t t-esc="fila['saldo_inicial_fmt']"/></td>
+									<td class="num"><t t-esc="fila['adquisiciones_fmt']"/></td>
+									<td class="num"><t t-esc="fila['mejoras_fmt']"/></td>
+									<td class="num"><t t-esc="fila['retiros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['otros_ajustes_fmt']"/></td>
+									<td class="num"><t t-esc="fila['valor_historico_fmt']"/></td>
+									<td class="num"><t t-esc="fila['ajuste_inflacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['valor_ajustado_fmt']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_adquisicion']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_uso']"/></td>
+									<td class="centro"><t t-esc="fila['metodo']"/></td>
+									<td class="centro"><t t-esc="fila['documento']"/></td>
+									<td class="num"><t t-esc="fila['porcentaje']"/></td>
+									<td class="num"><t t-esc="fila['dep_anterior_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ejercicio_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_retiros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_otros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_historica_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ajuste_inflacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ajustada_fmt']"/></td>
+								</tr>
+								<tr t-if="datos['filas']" class="totales">
+									<td colspan="6" style="text-align: right;">TOTALES</td>
+									<td class="num"><t t-esc="datos['totales']['saldo_inicial']"/></td>
+									<td class="num"><t t-esc="datos['totales']['adquisiciones']"/></td>
+									<td class="num"><t t-esc="datos['totales']['mejoras']"/></td>
+									<td class="num"><t t-esc="datos['totales']['retiros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['otros_ajustes']"/></td>
+									<td class="num"><t t-esc="datos['totales']['valor_historico']"/></td>
+									<td class="num"><t t-esc="datos['totales']['ajuste_inflacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['valor_ajustado']"/></td>
+									<td colspan="5"/>
+									<td class="num"><t t-esc="datos['totales']['dep_anterior']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ejercicio']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_retiros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_otros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_historica']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ajuste_inflacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ajustada']"/></td>
+								</tr>
+							</tbody>
+						</table>
+						<div style="font-size: 5.5pt; margin-top: 3pt; color: #444;">
+							Retiros y/o bajas:
+							<t t-if="datos['modo_bajas'] == 'descontar'">la baja retira el costo y la depreciación acumulada del bien.</t>
+							<t t-else="">el bien retirado conserva su depreciación acumulada.</t>
+						</div>
+					</div>
+				</div>
+				</div>
+			</t>
+		</t>
+	</template>
+
+</odoo>

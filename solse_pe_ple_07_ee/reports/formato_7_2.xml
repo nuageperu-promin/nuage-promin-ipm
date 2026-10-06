@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Formato físico 7.2 — R.S. 234-2006/SUNAT, art. 13 num. 7.3 b), según la
+	plantilla oficial (234_formato71.xls, hoja «F 7.2 Det bs AF Revaluad»):
+	32 columnas y TOTALES. Datos: models/formato_7_2.py (desde el TXT 7.1).
+	Estilos y cabecera compartidos con el 7.3/7.4; paperformat del 7.1.
+
+	⚠ Se copia a la variante Enterprise con sincronizar_ple07.py, que cambia
+	el nombre técnico del módulo en report_name, report_file y los t-call.
+	No editarlo en la variante Enterprise.
+-->
+<odoo>
+
+	<record id="action_reporte_formato_7_2" model="ir.actions.report">
+		<field name="name">Registro de Activos Fijos - Revaluados (Formato 7.2) - PDF SUNAT</field>
+		<field name="model">ple.report.07</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_ple_07_ee.formato_7_2_documento</field>
+		<field name="report_file">solse_pe_ple_07_ee.formato_7_2_documento</field>
+		<field name="paperformat_id" ref="paperformat_formato_7_1"/>
+		<field name="print_report_name">'ACTIVOS_FIJOS_7_2_%s' % (object.year)</field>
+		<field name="binding_model_id" eval="False"/>
+		<field name="binding_type">report</field>
+	</record>
+
+	<template id="formato_7_2_documento">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-set="datos" t-value="o.datos_formato_7_2()"/>
+				<!-- div.article: ver formato_7_1.xml (charset, L9.4). -->
+				<div class="article" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id" t-att-data-oe-lang="o.env.context.get('lang')">
+				<div class="page">
+					<t t-call="solse_pe_ple_07_ee.formato_7_x_estilos"/>
+					<div class="f7" style="font-size: 5pt;">
+						<div class="f7-titulo">FORMATO 7.2: "REGISTRO DE ACTIVOS FIJOS - DETALLE DE LOS ACTIVOS FIJOS REVALUADOS"</div>
+						<t t-call="solse_pe_ple_07_ee.formato_7_x_cabecera"/>
+						<table class="f7-tabla" style="font-size: 5pt;">
+							<thead>
+								<tr>
+									<th rowspan="2">CÓDIGO RELACIONADO CON EL ACTIVO FIJO</th>
+									<th rowspan="2">CUENTA CONTABLE DEL ACTIVO FIJO</th>
+									<th colspan="4">DETALLE DEL ACTIVO FIJO</th>
+									<th rowspan="2">SALDO INICIAL</th>
+									<th rowspan="2">ADQUISICIONES ADICIONES</th>
+									<th rowspan="2">MEJORAS</th>
+									<th rowspan="2">RETIROS Y/O BAJAS</th>
+									<th rowspan="2">OTROS AJUSTES</th>
+									<th colspan="3">VALOR DE LA REVALUACIÓN EFECTUADA</th>
+									<th rowspan="2">VALOR HISTÓRICO DEL ACTIVO FIJO AL 31.12</th>
+									<th rowspan="2">AJUSTE POR INFLACIÓN</th>
+									<th rowspan="2">VALOR AJUSTADO DEL ACTIVO FIJO AL 31.12</th>
+									<th rowspan="2">FECHA DE ADQUISICIÓN</th>
+									<th rowspan="2">FECHA DE INICIO DEL USO DEL ACTIVO FIJO</th>
+									<th colspan="2">DEPRECIACIÓN</th>
+									<th rowspan="2">PORCENTAJE DE DEPRECIACIÓN</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA AL CIERRE DEL EJERCICIO ANTERIOR</th>
+									<th colspan="3">VALOR DE LA DEPRECIACIÓN</th>
+									<th colspan="3">VALOR DE LA DEPRECIACIÓN DE LA REVALUACIÓN EFECTUADA</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA HISTÓRICA</th>
+									<th rowspan="2">AJUSTE POR INFLACIÓN DE LA DEPRECIACIÓN</th>
+									<th rowspan="2">DEPRECIACIÓN ACUMULADA AJUSTADA POR INFLACIÓN</th>
+								</tr>
+								<tr>
+									<th>DESCRIPCIÓN</th>
+									<th>MARCA DEL ACTIVO FIJO</th>
+									<th>MODELO DEL ACTIVO FIJO</th>
+									<th>NÚMERO DE SERIE Y/O PLACA DEL ACTIVO FIJO</th>
+									<th>VOLUNTARIA</th>
+									<th>POR REORGANIZACIÓN DE SOCIEDADES</th>
+									<th>OTROS</th>
+									<th>MÉTODO APLICADO</th>
+									<th>N° DE DOCUMENTO DE AUTORIZACIÓN</th>
+									<th>DEL EJERCICIO SIN CONSIDERAR LA REVALUACIÓN</th>
+									<th>DEL EJERCICIO RELACIONADA CON LOS RETIROS Y/O BAJAS</th>
+									<th>RELACIONADA CON OTROS AJUSTES</th>
+									<th>VOLUNTARIA</th>
+									<th>POR REORGANIZACIÓN DE SOCIEDADES</th>
+									<th>OTROS</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr t-if="not datos['filas']">
+									<td colspan="32" class="f7-sin-operaciones">SIN OPERACIONES</td>
+								</tr>
+								<tr t-foreach="datos['filas']" t-as="fila">
+									<td><t t-esc="fila['codigo']"/></td>
+									<td class="centro"><t t-esc="fila['cuenta']"/></td>
+									<td><t t-esc="fila['descripcion']"/></td>
+									<td><t t-esc="fila['marca']"/></td>
+									<td><t t-esc="fila['modelo']"/></td>
+									<td><t t-esc="fila['serie']"/></td>
+									<td class="num"><t t-esc="fila['saldo_inicial_fmt']"/></td>
+									<td class="num"><t t-esc="fila['adquisiciones_fmt']"/></td>
+									<td class="num"><t t-esc="fila['mejoras_fmt']"/></td>
+									<td class="num"><t t-esc="fila['retiros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['otros_ajustes_fmt']"/></td>
+									<td class="num"><t t-esc="fila['rev_voluntaria_fmt']"/></td>
+									<td class="num"><t t-esc="fila['rev_reorganizacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['rev_otras_fmt']"/></td>
+									<td class="num"><t t-esc="fila['valor_historico_fmt']"/></td>
+									<td class="num"><t t-esc="fila['ajuste_inflacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['valor_ajustado_fmt']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_adquisicion']"/></td>
+									<td class="centro"><t t-esc="fila['fecha_uso']"/></td>
+									<td class="centro"><t t-esc="fila['metodo']"/></td>
+									<td class="centro"><t t-esc="fila['documento']"/></td>
+									<td class="num"><t t-esc="fila['porcentaje']"/></td>
+									<td class="num"><t t-esc="fila['dep_anterior_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ejercicio_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_retiros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_otros_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_rev_voluntaria_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_rev_reorganizacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_rev_otras_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_historica_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ajuste_inflacion_fmt']"/></td>
+									<td class="num"><t t-esc="fila['dep_ajustada_fmt']"/></td>
+								</tr>
+								<tr t-if="datos['filas']" class="totales">
+									<td colspan="6" style="text-align: right;">TOTALES</td>
+									<td class="num"><t t-esc="datos['totales']['saldo_inicial']"/></td>
+									<td class="num"><t t-esc="datos['totales']['adquisiciones']"/></td>
+									<td class="num"><t t-esc="datos['totales']['mejoras']"/></td>
+									<td class="num"><t t-esc="datos['totales']['retiros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['otros_ajustes']"/></td>
+									<td class="num"><t t-esc="datos['totales']['rev_voluntaria']"/></td>
+									<td class="num"><t t-esc="datos['totales']['rev_reorganizacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['rev_otras']"/></td>
+									<td class="num"><t t-esc="datos['totales']['valor_historico']"/></td>
+									<td class="num"><t t-esc="datos['totales']['ajuste_inflacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['valor_ajustado']"/></td>
+									<td colspan="5"/>
+									<td class="num"><t t-esc="datos['totales']['dep_anterior']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ejercicio']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_retiros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_otros']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_rev_voluntaria']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_rev_reorganizacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_rev_otras']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_historica']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ajuste_inflacion']"/></td>
+									<td class="num"><t t-esc="datos['totales']['dep_ajustada']"/></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="f7-nota">
+							Revaluaciones acumuladas al 31.12. Retiros y/o bajas:
+							<t t-if="datos['modo_bajas'] == 'descontar'">la baja retira el costo y la depreciación acumulada del bien.</t>
+							<t t-else="">el bien retirado conserva su depreciación acumulada.</t>
+						</div>
+					</div>
+				</div>
+				</div>
+			</t>
+		</t>
+	</template>
+
+</odoo>

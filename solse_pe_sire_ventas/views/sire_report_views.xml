@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ================================================================
+             Plantilla base (sire.report.templ)
+             ================================================================ -->
+        <record id="view_sire_report_templ_tree" model="ir.ui.view">
+            <field name="name">sire.report.templ.tree</field>
+            <field name="model">sire.report.templ</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="year" options="{'type':'number','step':1}"/>
+                    <field name="month" column_invisible="1"/>
+                    <field name="day" options="{'type':'number','step':1}" column_invisible="1"/>
+                    <field name="date" column_invisible="1"/>
+                    <field name="state" column_invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <button name="update_report" string="Actualizar Datos" type="object"
+                            class="oe_highlight" invisible="state == 'declarado'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_sire_report_templ_form" model="ir.ui.view">
+            <field name="name">sire.report.templ.form</field>
+            <field name="model">sire.report.templ</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="state" invisible="1"/>
+                        <button name="update_report" string="Actualizar Datos" type="object"
+                                invisible="state == 'declarado'"/>
+                        <button name="generate_report" string="Generar Estructuras" type="object"
+                                class="oe_highlight" invisible="state == 'declarado'"/>
+                        <button name="declarar_sire" string="Declarar SIRE" type="object"
+                                invisible="state == 'declarado'"/>
+                        <button name="regresar_borrador" string="Regresar a Borrador" type="object"
+                                invisible="state == 'draft'"
+                                groups="solse_pe_cpe.group_solse_pe_cpe_accountant"/>
+                    </header>
+                    <sheet>
+                        <div name="button_box" class="oe_button_box"/>
+                        <group name="data_file_groups">
+                            <group name="data_group">
+                                <label for="year" name="year"/>
+                                <div class="o_row" name="year">
+                                    <field name="year" class="oe_edit_only"
+                                           options="{'type':'number','step':1}"/>
+                                    <field name="year_char" class="oe_read_only"/>
+                                </div>
+                                <field name="month" invisible="1"/>
+                                <field name="day" options="{'type':'number','step':1}" invisible="1"/>
+                                <field name="tipo_informacion"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group name="file_group">
+                                <field name="date_generated" invisible="not date_generated"/>
+                                <field name="sire_txt_01_filename" invisible="1"/>
+                                <field name="sire_txt_01_binary" filename="sire_txt_01_filename"
+                                       invisible="not sire_txt_01_binary"/>
+                                <field name="sire_xls_01_filename" invisible="1"/>
+                                <field name="sire_xls_01_binary" filename="sire_xls_01_filename"
+                                       invisible="not sire_xls_01_binary"/>
+                                <field name="datas_zip_fname" invisible="1"/>
+                                <field name="datas_zip" filename="datas_zip_fname"
+                                       invisible="not sire_xls_01_binary"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="sire_txt_01" invisible="1">
+                                <group name="sire_txt_01">
+                                    <field name="sire_txt_01"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_sire_report_templ_search">
+            <field name="name">sire.report.templ.search</field>
+            <field name="model">sire.report.templ</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="company_id"/>
+                    <separator/>
+                    <filter name="group_by_date_year" string="Año" invisible="1"
+                            context="{'group_by':'date:year'}"/>
+                    <filter name="group_by_date_month" string="Mes" invisible="1"
+                            context="{'group_by':'date:month'}"/>
+                    <filter name="group_by_date_day" string="Día" invisible="1"
+                            context="{'group_by':'date:day'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             sire.report.14 - Tree / List
+             ================================================================ -->
+        <record id="view_sire_report_14_tree" model="ir.ui.view">
+            <field name="name">sire.report.14.tree</field>
+            <field name="model">sire.report.14</field>
+            <field name="inherit_id" ref="view_sire_report_templ_tree"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='month']" position="attributes">
+                        <attribute name="column_invisible"/>
+                    </xpath>
+                    <xpath expr="//field[@name='state']" position="attributes">
+                        <attribute name="column_invisible"/>
+                        <attribute name="widget">badge</attribute>
+                        <attribute name="string">Estado</attribute>
+                        <attribute name="decoration-success">state=='declarado'</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='state']" position="after">
+                        <field name="estado_propuesta" optional="show" widget="badge"
+                               decoration-info="estado_propuesta in ('reemplazado')"
+                               decoration-success="estado_propuesta in ('confirmado')"
+                               decoration-warning="estado_propuesta in ('recibido')"
+                               decoration-muted="estado_propuesta in ('solicitado')"/>
+                    </xpath>
+                    <xpath expr="//button[@name='update_report']" position="attributes">
+                        <attribute name="invisible">state == 'declarado' or estado_propuesta in ('confirmado', 'reemplazado')</attribute>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             sire.report.14 - Form
+             ================================================================ -->
+        <record id="view_sire_report_14_form" model="ir.ui.view">
+            <field name="name">sire.report.14.form</field>
+            <field name="model">sire.report.14</field>
+            <field name="inherit_id" ref="view_sire_report_templ_form"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <!-- Campos invisibles auxiliares -->
+                    <xpath expr="//field[@name='month']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+
+                    <!-- Ribbon de estado -->
+                    <xpath expr="//div[@name='button_box']" position="before">
+                        <widget name="web_ribbon" title="Confirmado" bg_color="bg-success"
+                                invisible="estado_propuesta != 'confirmado'"/>
+                        <widget name="web_ribbon" title="Reemplazado" bg_color="bg-info"
+                                invisible="estado_propuesta != 'reemplazado'"/>
+                    </xpath>
+
+                    <!-- Botones smart (button_box) -->
+                    <xpath expr="//div[@name='button_box']" position="inside">
+                        <field name="ticket_solicitar_propuesta" invisible="1"/>
+                        <field name="ticket_confirmar_propuesta" invisible="1"/>
+                        <field name="ticket_reemplazar_propuesta" invisible="1"/>
+                        <field name="estado_propuesta" invisible="1"/>
+                        <field name="cant_facturas_sin_sunat" invisible="1"/>
+
+                        <button type="object" name="validar_conexion"
+                                string="Validar Conexión" icon="fa-plug"
+                                class="text-secondary"/>
+                        <button type="object" name="solicitar_propuesta"
+                                string="Solicitar Propuesta"
+                                invisible="ticket_solicitar_propuesta > 0"/>
+                        <button type="object" name="consultar_estado_propuesta"
+                                string="Consultar Ticket"
+                                invisible="ticket_confirmar_propuesta == 0 and ticket_reemplazar_propuesta == 0"/>
+                        <button type="object" name="abrir_facturas_sin_sunat"
+                                class="oe_stat_button" icon="fa-exclamation-triangle"
+                                invisible="cant_facturas_sin_sunat == 0">
+                            <field name="cant_facturas_sin_sunat" widget="statinfo"
+                                   string="No en SUNAT"/>
+                        </button>
+                    </xpath>
+
+                    <!-- Mes visible + documentos -->
+                    <xpath expr="//field[@name='company_id']" position="after">
+                        <field name="documento_compra_ids" widget="many2many_tags"/>
+                    </xpath>
+
+                    <!-- Sección TICKET / PROPUESTA SUNAT -->
+                    <xpath expr="//group[@name='file_group']" position="after">
+                        <group string="TICKET / PROPUESTA SUNAT" col="2">
+                            <field name="ticket_sire" readonly="1"/>
+                            <field name="estado_ticket_sire" readonly="1" widget="badge"
+                                   decoration-success="estado_ticket_sire == 'confirmado'"
+                                   decoration-warning="estado_ticket_sire == 'recibido'"/>
+                            <field name="estado_propuesta" readonly="1" widget="badge"
+                                   decoration-success="estado_propuesta in ('confirmado','reemplazado')"
+                                   decoration-warning="estado_propuesta == 'recibido'"
+                                   decoration-muted="estado_propuesta == 'solicitado'"/>
+                            <field name="nombre_archivo_propuesta" invisible="1"/>
+                            <field name="archivo_propuesta" filename="nombre_archivo_propuesta"
+                                   invisible="not archivo_propuesta" string="Propuesta"/>
+
+                            <div class="o_row" colspan="2">
+                                <button type="object" name="descargar_propuesta"
+                                        string="Descargar Propuesta"
+                                        invisible="archivo_propuesta or ticket_solicitar_propuesta == 0"
+                                        class="btn btn-secondary btn-sm"/>
+                                <button type="object" name="procesar_propuesta"
+                                        string="Procesar Propuesta"
+                                        invisible="not archivo_propuesta"
+                                        class="btn btn-primary btn-sm"/>
+                                <button type="object" name="confirmar_propuesta"
+                                        string="Aceptar Propuesta"
+                                        invisible="not archivo_propuesta or not ventas_registradas or tipo_informacion != 'aceptar'"
+                                        class="btn btn-success btn-sm"/>
+                                <button type="object" name="reemplazar_propuesta"
+                                        string="Reemplazar Propuesta"
+                                        invisible="not archivo_propuesta or not ventas_registradas or tipo_informacion != 'reemplazar' or not datas_zip"
+                                        class="btn btn-warning btn-sm oe_highlight"/>
+                            </div>
+                        </group>
+                    </xpath>
+
+                    <!-- Tabs de contenido -->
+                    <xpath expr="//notebook" position="inside">
+
+                        <!-- Tab 1: Comprobantes Odoo -->
+                        <page name="report_14_invoice" string="Ventas del Período">
+                            <field name="invoice_ids" nolabel="1"/>
+                        </page>
+
+                        <!-- Tab 2: Propuesta SUNAT -->
+                        <page name="ventas_registradas" string="Propuesta SUNAT">
+                            <div class="o_row mb-2">
+                                <button name="enlazar_facturas" string="Enlazar y Comparar"
+                                        type="object" class="btn btn-sm btn-primary"
+                                        invisible="not ventas_registradas"
+                                        icon="fa-link"/>
+                                <button name="abrir_propuesta_lista" string="Abrir en Lista"
+                                        type="object" class="btn btn-sm btn-secondary"
+                                        invisible="not ventas_registradas"
+                                        icon="fa-table"/>
+                                <button name="crear_facturas" string="Crear Facturas"
+                                        type="object" class="btn btn-sm btn-secondary"
+                                        invisible="not ventas_registradas"
+                                        icon="fa-plus-circle"/>
+                                <button name="abrir_facturas" string="Ver Facturas Enlazadas"
+                                        type="object" class="btn btn-sm btn-secondary"
+                                        invisible="not ventas_registradas"
+                                        icon="fa-external-link"/>
+                                <button name="recalcular_tipo_respuesta"
+                                        string="Recalcular Respuesta"
+                                        type="object" class="btn btn-sm btn-secondary"
+                                        invisible="not ventas_registradas"
+                                        icon="fa-refresh"/>
+                            </div>
+                            <field name="ventas_registradas" nolabel="1">
+                                <list delete="0" create="0"
+                                      decoration-success="estado_comparacion == 'ok'"
+                                      decoration-warning="estado_comparacion == 'diferencia'"
+                                      decoration-danger="estado_comparacion == 'sin_odoo'">
+                                    <field name="estado_comparacion" widget="badge"
+                                           decoration-success="estado_comparacion == 'ok'"
+                                           decoration-warning="estado_comparacion == 'diferencia'"
+                                           decoration-danger="estado_comparacion == 'sin_odoo'"
+                                           optional="show" string="Estado"/>
+                                    <field name="factura_enlazada" optional="show"/>
+                                    <field name="tipo_cpdoc" optional="show" string="Tipo Doc"/>
+                                    <field name="serie_del_cdp" optional="show" string="Serie"/>
+                                    <field name="nro_cp_o_doc_nro_inicial" optional="show" string="Correlativo"/>
+                                    <field name="nro_doc_identidad" optional="show" string="Doc. Identidad"/>
+                                    <field name="apellidos_nombres_razon_social" optional="show" string="Cliente"/>
+                                    <field name="fecha_de_emision" optional="show"/>
+                                    <field name="bi_gravada" optional="show" sum="Total"/>
+                                    <field name="igv__ipm" optional="show" sum="Total"/>
+                                    <field name="total_cp" optional="show" sum="Total"/>
+                                    <field name="moneda" optional="show"/>
+                                    <field name="observacion" optional="hide" string="Observación"/>
+                                    <button type="object" name="enlazar_con_factura"
+                                            string="Enlazar" optional="show"
+                                            invisible="factura_enlazada"/>
+                                    <button type="object" name="crear_factura"
+                                            string="Crear" optional="show"
+                                            invisible="factura_enlazada"/>
+                                    <button type="object" name="ver_factura"
+                                            string="Ver Factura" optional="show"
+                                            invisible="not factura_enlazada"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- Tab 3: Ajuste Posterior (Servicio 5.6) -->
+                        <page name="ajuste_posterior" string="Ajuste Posterior">
+                            <group string="SUBIDA ZIP (SERVICIO 5.6 - codProceso=87)" col="2">
+                                <field name="nombre_zip_ajuste_posterior" invisible="1"/>
+                                <field name="zip_ajuste_posterior"
+                                       filename="nombre_zip_ajuste_posterior"
+                                       string="ZIP Ajuste Posterior"/>
+                                <field name="nombre_zip_ajuste_posterior"
+                                       string="Nombre ZIP Ajuste"
+                                       readonly="1"/>
+                                <field name="estado_ajuste_posterior" widget="badge"
+                                       decoration-success="estado_ajuste_posterior == 'procesado'"
+                                       decoration-warning="estado_ajuste_posterior == 'enviado'"/>
+                            </group>
+                            <group string="ENVÍO (SERVICIO 5.6 - codProceso=87)" col="2">
+                                <field name="ticket_ajuste_posterior" readonly="1"/>
+                                <field name="nro_ajuste_posterior" readonly="1"/>
+                                <field name="notas_ajuste_posterior"/>
+                            </group>
+                            <div class="o_row">
+                                <button type="object" name="enviar_ajuste_posterior"
+                                        string="Subir ZIP Ajuste"
+                                        class="btn btn-primary"
+                                        icon="fa-upload"
+                                        invisible="not zip_ajuste_posterior"/>
+                            </div>
+                        </page>
+
+                        <!-- Tab 4: Ajuste Períodos Anteriores (Servicio 5.7) -->
+                        <page name="ajuste_per_anteriores" string="Ajuste Per. Anteriores">
+                            <group string="PERÍODO A CORREGIR" col="2">
+                                <field name="anio_periodo_anterior" string="Año período a corregir"/>
+                                <field name="mes_periodo_anterior" string="Mes período a corregir"/>
+                            </group>
+                            <group string="SUBIDA ZIP (SERVICIO 5.7 - codProceso=88)" col="2">
+                                <field name="nombre_zip_ajuste_anterior" invisible="1"/>
+                                <field name="zip_ajuste_anterior"
+                                       filename="nombre_zip_ajuste_anterior"
+                                       string="ZIP Ajuste Per. Anteriores"/>
+                                <field name="nombre_zip_ajuste_anterior"
+                                       string="Nombre ZIP Ajuste Per. Ant."
+                                       readonly="1"/>
+                                <field name="estado_ajuste_anterior" widget="badge"
+                                       decoration-success="estado_ajuste_anterior == 'procesado'"
+                                       decoration-warning="estado_ajuste_anterior == 'enviado'"/>
+                            </group>
+                            <group string="RESULTADO" col="2">
+                                <field name="ticket_ajuste_anterior" readonly="1"/>
+                                <field name="nro_ajuste_anterior" readonly="1"/>
+                                <field name="notas_ajuste_anterior"/>
+                            </group>
+                            <div class="o_row">
+                                <button type="object" name="enviar_ajuste_posterior_periodo_anterior"
+                                        string="Subir ZIP Ajuste"
+                                        class="btn btn-primary"
+                                        icon="fa-upload"
+                                        invisible="not zip_ajuste_anterior"/>
+                            </div>
+                        </page>
+
+                        <!-- Tab 5: Tickets -->
+                        <page name="page_tickets" string="Tickets">
+                            <field name="ticket_ids" nolabel="1">
+                                <list>
+                                    <field name="name" optional="show" string="Ticket"/>
+                                    <field name="tipo_cosulta" optional="show"/>
+                                    <field name="datos_crudo" optional="hide"/>
+                                    <button type="object" name="descargar_propuesta"
+                                            string="Descargar" optional="show"
+                                            invisible="not datos_crudo"/>
+                                </list>
+                            </field>
+                        </page>
+
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             sire.report.14 - Search
+             ================================================================ -->
+        <record id="view_sire_report_14_search" model="ir.ui.view">
+            <field name="name">sire.report.14.search</field>
+            <field name="model">sire.report.14</field>
+            <field name="inherit_id" ref="view_sire_report_templ_search"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//filter[@name='group_by_date_year']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             Actions
+             ================================================================ -->
+        <record id="action_sire_report_14" model="ir.actions.act_window">
+            <field name="name">Registro de Ventas e Ingresos</field>
+            <field name="res_model">sire.report.14</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_sire_report_14_search"/>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_group_by_date_year': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear nuevo período SIRE Ventas
+                </p>
+                <p>
+                    Gestione aquí los registros de ventas e ingresos para la declaración SIRE ante SUNAT.
+                </p>
+            </field>
+        </record>
+
+
+        <!-- ================================================================
+             solse.pe.ventas.recibidas — Vista lista con filtros y action
+             ================================================================ -->
+        <record id="view_ventas_recibidas_tree" model="ir.ui.view">
+            <field name="name">solse.pe.ventas.recibidas.tree</field>
+            <field name="model">solse.pe.ventas.recibidas</field>
+            <field name="arch" type="xml">
+                <list string="Propuesta SUNAT" decoration-success="estado_comparacion == 'ok'"
+                      decoration-warning="estado_comparacion == 'diferencia'"
+                      decoration-danger="estado_comparacion == 'sin_odoo'"
+                      multi_edit="1">
+                    <field name="estado_comparacion" widget="badge"
+                           decoration-success="estado_comparacion == 'ok'"
+                           decoration-warning="estado_comparacion == 'diferencia'"
+                           decoration-danger="estado_comparacion == 'sin_odoo'"
+                           optional="show" string="Estado"/>
+                    <field name="factura_enlazada" optional="show"/>
+                    <field name="tipo_cpdoc" optional="show" string="Tipo Doc"/>
+                    <field name="serie_del_cdp" optional="show" string="Serie"/>
+                    <field name="nro_cp_o_doc_nro_inicial" optional="show" string="Correlativo"/>
+                    <field name="nro_doc_identidad" optional="show" string="Doc. Identidad"/>
+                    <field name="apellidos_nombres_razon_social" optional="show" string="Cliente"/>
+                    <field name="fecha_de_emision" optional="show"/>
+                    <field name="bi_gravada" optional="show" sum="Total BI"/>
+                    <field name="igv__ipm" optional="show" sum="Total IGV"/>
+                    <field name="total_cp" optional="show" sum="Total CP"/>
+                    <field name="moneda" optional="show"/>
+                    <field name="observacion" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_ventas_recibidas_search" model="ir.ui.view">
+            <field name="name">solse.pe.ventas.recibidas.search</field>
+            <field name="model">solse.pe.ventas.recibidas</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="serie_del_cdp" string="Serie"/>
+                    <field name="nro_cp_o_doc_nro_inicial" string="Correlativo"/>
+                    <field name="apellidos_nombres_razon_social" string="Cliente"/>
+                    <field name="nro_doc_identidad" string="Doc. Identidad"/>
+                    <separator/>
+                    <filter name="filter_ok" string="OK" domain="[('estado_comparacion','=','ok')]"/>
+                    <filter name="filter_diferencia" string="Con Diferencia"
+                            domain="[('estado_comparacion','=','diferencia')]"/>
+                    <filter name="filter_sin_odoo" string="Sin Enlace Odoo"
+                            domain="[('estado_comparacion','=','sin_odoo')]"/>
+                    <filter name="filter_sin_factura" string="Sin Factura Enlazada"
+                            domain="[('factura_enlazada','=',False)]"/>
+                    <separator/>
+                    <filter name="group_by_estado" string="Estado"
+                            context="{'group_by': 'estado_comparacion'}"/>
+                    <filter name="group_by_serie" string="Serie"
+                            context="{'group_by': 'serie_del_cdp'}"/>
+                    <filter name="group_by_tipo" string="Tipo Doc"
+                            context="{'group_by': 'tipo_cpdoc'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_ventas_recibidas_list" model="ir.actions.act_window">
+            <field name="name">Propuesta SUNAT - Detalle</field>
+            <field name="res_model">solse.pe.ventas.recibidas</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_ventas_recibidas_search"/>
+            <field name="context">{'search_default_group_by_estado': 1}</field>
+        </record>
+
+    </data>
+</odoo>

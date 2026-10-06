@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="res_config_settings_view_form_plame" model="ir.ui.view">
+		<field name="name">res.config.settings.form.plame.rxh</field>
+		<field name="model">res.config.settings</field>
+		<field name="inherit_id" ref="account.res_config_settings_view_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//app[@name='account']" position="inside">
+				<block title="PLAME - Recibos por Honorarios" id="plame_rxh_container">
+					<setting id="plame_regimen_pensionario_setting"
+					         help="Valor del campo 10 del archivo .4ta. Los archivos aceptados por el PDT en producción lo envían vacío.">
+						<field name="plame_regimen_pensionario"/>
+					</setting>
+					<setting id="plame_rellenar_numero_setting"
+					         help="Completa el número del comprobante a 8 posiciones con ceros. Desactivado escribe el número tal cual (75), que es el formato verificado contra el PDT.">
+						<field name="plame_rellenar_numero"/>
+					</setting>
+					<setting id="plame_dias_tolerancia_setting"
+					         help="Días entre emisión y pago a partir de los cuales el asistente muestra una advertencia. Cero desactiva el aviso.">
+						<field name="plame_dias_tolerancia_emision"/>
+					</setting>
+				</block>
+			</xpath>
+		</field>
+	</record>
+
+</odoo>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 10: Complementos (cierre de alcance v1)
+	     - Sobretasa nocturna (D.S. 007-2002-TR art. 8: jornada nocturna
+	       10pm-6am con sobretasa mínima del 35% sobre la RMV; parámetro
+	       pe_nocturna_sobretasa). Implementación por horas: input de
+	       HORAS nocturnas -> valor hora nocturno mínimo garantizado =
+	       max(valor hora propio, RMV/240) × sobretasa. Nota: el piso
+	       legal es que el nocturno habitual no gane menos de RMV×1.35
+	       mensual; esta regla paga la sobretasa por hora reportada.
+	     - Tardanzas: input de MINUTOS -> descuento minuto = sueldo/240/60.
+	     - Inasistencias: las ausencias no pagadas del calendario YA
+	       descuentan días en RB/RBS; esta regla informativa consolida el
+	       monto para PLAME 0705 (no vuelve a descontar).
+	     - Utilidades: importe por input (lo calcula el wizard de reparto
+	       D.Leg. 892). Inafectas a aportes, AFECTAS a renta de 5ta.
+	================================================================ -->
+	<data noupdate="0">
+		<record id="input_type_bnoc" model="hr.payslip.input.type">
+			<field name="code">BNOC_001</field>
+			<field name="name">Horas nocturnas (cantidad)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_tard" model="hr.payslip.input.type">
+			<field name="code">TARD_001</field>
+			<field name="name">Tardanzas (minutos)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+		<record id="input_type_util" model="hr.payslip.input.type">
+			<field name="code">UTIL_001</field>
+			<field name="name">Participación de utilidades (importe)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="regla_bnoc_001" model="hr.salary.rule">
+			<field name="name">Sobretasa por trabajo nocturno</field>
+			<field name="code">BNOC_001</field>
+			<field name="sequence">10</field>
+			<field name="category_id" ref="hr_salary_rule_category_ina_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">D.S. 007-2002-TR art. 8: sobretasa mínima 35% (parámetro
+pe_nocturna_sobretasa) por hora en horario nocturno (10pm-6am). Valor
+hora garantizado con piso RMV/240. Remunerativa: afecta a aportes y
+renta.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(inputs.get('BNOC_001') and inputs['BNOC_001'].amount > 0)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+sobretasa = payslip._rule_parameter('pe_nocturna_sobretasa')
+rmv = payslip._rule_parameter('pe_rmv')
+valor_hora = max(version.wage / 240.0, rmv / 240.0)
+result = inputs['BNOC_001'].amount * valor_hora * sobretasa
+			</field>
+		</record>
+
+		<record id="regla_tard_001" model="hr.salary.rule">
+			<field name="name">Descuento por tardanzas</field>
+			<field name="code">TARD_001</field>
+			<field name="sequence">137</field>
+			<field name="category_id" ref="hr_payroll.DED"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Minutos de tardanza del mes por el valor minuto
+(sueldo/240/60). Se reporta como concepto T22 0704. Las inasistencias
+completas se registran como ausencias no pagadas (descuentan el día en
+la remuneración) — no usar este input para días completos.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(inputs.get('TARD_001') and inputs['TARD_001'].amount > 0)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+valor_minuto = version.wage / 240.0 / 60.0
+result = inputs['TARD_001'].amount * valor_minuto
+			</field>
+		</record>
+
+		<record id="regla_util_001" model="hr.salary.rule">
+			<field name="name">Participación en las utilidades</field>
+			<field name="code">UTIL_001</field>
+			<field name="sequence">33</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">D.Leg. 892: importe calculado por el wizard "Reparto de
+utilidades" (50% por días laborados + 50% por remuneraciones, tope 18
+sueldos). Inafecta a aportes; AFECTA a renta de 5ta (entra a la
+proyección vía la base del periodo). Se paga en la boleta del mes que
+corresponda, dentro de los 30 días de la DJ anual.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = bool(inputs.get('UTIL_001') and inputs['UTIL_001'].amount > 0)</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = inputs['UTIL_001'].amount</field>
+		</record>
+	</data>
+
+	<data noupdate="0">
+		<!-- Mapeo PLAME -->
+		<record id="regla_bnoc_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0309')])]"/>
+		</record>
+		<record id="regla_tard_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0704')])]"/>
+		</record>
+		<record id="regla_util_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0911')])]"/>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<record id="mapeo_bnoc_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_bnoc_001"/>
+			<field name="prefijo_debito">6211</field>
+		</record>
+		<record id="mapeo_util_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_util_001"/>
+			<field name="prefijo_debito">6221</field>
+		</record>
+	</data>
+</odoo>

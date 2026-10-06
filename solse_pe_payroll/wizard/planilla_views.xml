@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="planilla_wizard_view_form" model="ir.ui.view">
+		<field name="name">solse.payroll.planilla.wizard.form</field>
+		<field name="model">solse.payroll.planilla.wizard</field>
+		<field name="arch" type="xml">
+			<form>
+				<group>
+					<group>
+						<field name="mes"/>
+						<field name="anio"/>
+					</group>
+					<group>
+						<field name="incluir_semanales"/>
+					</group>
+				</group>
+				<group invisible="not archivo">
+					<field name="archivo" filename="archivo_nombre" readonly="1"/>
+					<field name="archivo_nombre" invisible="1"/>
+				</group>
+				<footer>
+					<button name="action_pdf" string="Imprimir PDF" type="object" class="btn-primary"/>
+					<button name="action_excel" string="Generar Excel" type="object" class="btn-primary"/>
+					<button string="Cerrar" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_planilla_wizard" model="ir.actions.act_window">
+		<field name="name">Planilla de sueldos</field>
+		<field name="res_model">solse.payroll.planilla.wizard</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="menu_pe_planilla" parent="menu_solse_pe_payroll_root"
+			  name="Planilla de sueldos" action="action_planilla_wizard"
+			  sequence="30"/>
+</odoo>

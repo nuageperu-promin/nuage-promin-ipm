@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="paperformat_planilla_pe" model="report.paperformat">
+		<field name="name">Planilla PE (A4 apaisado)</field>
+		<field name="format">A4</field>
+		<field name="orientation">Landscape</field>
+		<field name="margin_top">8</field>
+		<field name="margin_bottom">8</field>
+		<field name="margin_left">5</field>
+		<field name="margin_right">5</field>
+		<field name="header_spacing">4</field>
+		<field name="dpi">90</field>
+	</record>
+
+	<record id="action_reporte_planilla" model="ir.actions.report">
+		<field name="name">Planilla de sueldos (PE)</field>
+		<field name="model">solse.payroll.planilla.wizard</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_payroll.reporte_planilla</field>
+		<field name="report_file">solse_pe_payroll.reporte_planilla</field>
+		<field name="paperformat_id" ref="paperformat_planilla_pe"/>
+	</record>
+
+	<template id="reporte_planilla">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="w">
+				<t t-call="web.basic_layout">
+					<div class="page" style="font-size: 8.5px;">
+						<t t-set="datos" t-value="w.obtener_datos()"/>
+						<t t-set="filas" t-value="datos[0]"/>
+						<t t-set="totales" t-value="datos[1]"/>
+						<div class="text-center" style="margin-bottom: 4px;">
+							<h5 style="margin: 0;">PLANILLA DE SUELDOS — <t t-out="w._nombre_periodo().upper()"/></h5>
+							<div style="font-size: 8px;">
+								<span t-field="w.env.company.name"/> — RUC <span t-out="w.env.company.vat or ''"/>
+							</div>
+						</div>
+						<table class="table table-sm table-bordered" style="font-size: 8px;">
+							<thead>
+								<tr class="text-center" style="background-color: #714B67; color: white;">
+									<th>DNI</th>
+									<th style="text-align: left;">Apellidos y nombres</th>
+									<th>Rem. básica</th>
+									<th>Asig. fam.</th>
+									<th>HH.EE.</th>
+									<th>Otros ing.</th>
+									<th>Total ing.</th>
+									<th>ONP</th>
+									<th>AFP</th>
+									<th>5ta</th>
+									<th>Otros dsc.</th>
+									<th>Total dsc.</th>
+									<th>Neto</th>
+									<th>ESSALUD</th>
+									<th>Otros aport.</th>
+								</tr>
+							</thead>
+							<tbody>
+								<t t-foreach="filas" t-as="fila">
+									<tr>
+										<td><t t-out="fila['dni']"/></td>
+										<td><t t-out="fila['nombre']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['rb']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['asf']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['hhee']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['otros_ing']"/></td>
+										<td class="text-end" style="font-weight: bold;"><t t-out="'%.2f' % fila['total_ing']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['onp']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['afp']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['r5ta']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['otros_desc']"/></td>
+										<td class="text-end" style="font-weight: bold;"><t t-out="'%.2f' % fila['total_desc']"/></td>
+										<td class="text-end" style="font-weight: bold;"><t t-out="'%.2f' % fila['neto']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['essalud']"/></td>
+										<td class="text-end"><t t-out="'%.2f' % fila['otros_aportes']"/></td>
+									</tr>
+								</t>
+								<tr style="background-color: #F0E9EE; font-weight: bold;">
+									<td colspan="2" class="text-end">TOTALES</td>
+									<td class="text-end"><t t-out="'%.2f' % totales['rb']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['asf']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['hhee']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['otros_ing']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['total_ing']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['onp']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['afp']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['r5ta']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['otros_desc']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['total_desc']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['neto']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['essalud']"/></td>
+									<td class="text-end"><t t-out="'%.2f' % totales['otros_aportes']"/></td>
+								</tr>
+							</tbody>
+						</table>
+						<table style="width: 60%; margin: 30px auto 0;">
+							<tr class="text-center">
+								<td style="width: 50%;">
+									<div style="border-top: 1px solid #000; width: 80%; margin: 0 auto;">CONTADOR</div>
+								</td>
+								<td style="width: 50%;">
+									<div style="border-top: 1px solid #000; width: 80%; margin: 0 auto;">GERENCIA</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+</odoo>

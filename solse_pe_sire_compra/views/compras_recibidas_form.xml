@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ── Formulario de detalle completo de un registro SIRE ── -->
+        <record id="view_compras_recibidas_form" model="ir.ui.view">
+            <field name="name">solse.pe.compras.recibidas.form</field>
+            <field name="model">solse.pe.compras.recibidas</field>
+            <field name="arch" type="xml">
+                <form string="Detalle compra SIRE">
+                    <sheet>
+                        <group string="Identificación del comprobante">
+                            <group>
+                                <field name="tipo_doc" string="Tipo documento"/>
+                                <field name="serie"/>
+                                <field name="nro_correlativo" string="Correlativo"/>
+                                <field name="nro_final" string="Nro. final"/>
+                                <field name="anio" string="Año"/>
+                                <field name="car_sunat" string="CAR SUNAT"/>
+                            </group>
+                            <group>
+                                <field name="fecha_emision"/>
+                                <field name="fecha_vencimiento"/>
+                                <field name="moneda"/>
+                                <field name="tipo_cambio"/>
+                                <field name="periodo"/>
+                            </group>
+                        </group>
+
+                        <group string="Proveedor">
+                            <group>
+                                <field name="tipo_doc_identidad" string="Tipo doc. identidad"/>
+                                <field name="nro_doc_identidad" string="Nro. documento"/>
+                                <field name="apellidos_nombre_rz" string="Razón social / Nombre"/>
+                            </group>
+                            <group>
+                                <field name="factura_enlazada"/>
+                                <field name="estado_enlace"/>
+                            </group>
+                        </group>
+
+                        <group string="Importes">
+                            <group string="Gravadas DG (cols. 15/16)">
+                                <field name="bi_gravado_dg" string="Base imponible DG"/>
+                                <field name="igv_dg" string="IGV DG"/>
+                            </group>
+                            <group string="Gravadas DGNG (cols. 17/18)">
+                                <field name="bi_gravado_dgng" string="Base imponible DGNG"/>
+                                <field name="igv_dgng" string="IGV DGNG"/>
+                            </group>
+                            <group string="Gravadas DGN (cols. 19/20)">
+                                <field name="bi_gravado_dgn" string="Base imponible DGN"/>
+                                <field name="igv_dgn" string="IGV DGN"/>
+                            </group>
+                            <group string="Otros (cols. 21-25)">
+                                <field name="valor_ng" string="Adq. no gravadas (col. 21)"/>
+                                <field name="isc" string="ISC (col. 22)"/>
+                                <field name="icbper" string="ICBPER (col. 23)"/>
+                                <field name="otros_cargos" string="Otros cargos (col. 24)"/>
+                                <field name="total_cp" string="Total CP (col. 25)"/>
+                            </group>
+                        </group>
+
+                        <group string="Documento modificado (NC/ND)">
+                            <group>
+                                <field name="fecha_doc_modificado"/>
+                                <field name="tipo_cp_modificado"/>
+                                <field name="serie_cp_modificado"/>
+                                <field name="nro_cp_modificado"/>
+                                <field name="cod_dam_dsi"/>
+                            </group>
+                        </group>
+
+                        <group string="Datos adicionales SIRE">
+                            <group>
+                                <field name="bss_sss" string="Clasif. bienes/servicios"/>
+                                <field name="proyecto_operadores" string="ID proyecto operadores"/>
+                                <field name="porc_part" string="% participación"/>
+                                <field name="ibm" string="IBM"/>
+                                <field name="car_orig" string="CAR orig / Ind. E o I"/>
+                                <field name="detraccion" string="Detracción"/>
+                                <field name="tipo_nota" string="Tipo de nota"/>
+                                <field name="est_comp" string="Estado comprobante"/>
+                                <field name="incal" string="Incal"/>
+                                <field name="clu1" string="CLU1"/>
+                            </group>
+                            <group>
+                                <field name="observacion" string="Observación SIRE"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

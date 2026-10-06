@@ -1,0 +1,320 @@
+<odoo>
+  <data>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         sire.report.08  list
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_sire_report_08_tree" model="ir.ui.view">
+      <field name="name">sire.report.08.tree</field>
+      <field name="model">sire.report.08</field>
+      <field name="inherit_id" ref="solse_pe_sire_ventas.view_sire_report_templ_tree"/>
+      <field name="mode">primary</field>
+      <field name="arch" type="xml">
+        <data>
+          <xpath expr="//field[@name='month']" position="attributes">
+            <attribute name="invisible"/>
+          </xpath>
+        </data>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         sire.report.08  form
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_sire_report_08_form" model="ir.ui.view">
+      <field name="name">sire.report.08.form</field>
+      <field name="model">sire.report.08</field>
+      <field name="inherit_id" ref="solse_pe_sire_ventas.view_sire_report_templ_form"/>
+      <field name="mode">primary</field>
+      <field name="arch" type="xml">
+        <data>
+          <!-- Ocultar campo month heredado -->
+          <xpath expr="//field[@name='month']" position="attributes">
+            <attribute name="invisible"/>
+          </xpath>
+          <!-- Ocultar botón declarar_sire heredado -->
+          <xpath expr="//button[@name='declarar_sire']" position="attributes">
+            <attribute name="invisible">1</attribute>
+          </xpath>
+
+          <!-- Botones de acción en el header -->
+          <xpath expr="//div[@name='button_box']" position="inside">
+            <button type="object" name="validar_conexion" string="Validar Conexión"
+                    class="btn-secondary" icon="fa-plug"/>
+            <button type="object" name="descargar_propuesta" string="Solicitar Propuesta"/>
+            <button type="object" name="consultar_ticket" string="Consultar Ticket"
+                    invisible="not ticket_sire"/>
+            <button type="object" name="procesar_propuesta" string="Procesar Propuesta"
+                    invisible="not archivo_propuesta"/>
+            <button type="object" name="confirmar_propuesta" string="Aceptar Propuesta"
+                    class="btn-success"
+                    invisible="not compras_registradas or tipo_informacion != 'aceptar'"/>
+            <button type="object" name="reemplazar_propuesta" string="Reemplazar Propuesta"
+                    class="btn-warning"
+                    invisible="not compras_registradas or tipo_informacion != 'reemplazar'"/>
+          </xpath>
+
+          <!-- Documentos + proveedor base + datos de ticket/propuesta -->
+          <xpath expr="//field[@name='company_id']" position="after">
+            <field name="documento_compra_ids" widget="many2many_tags"/>
+            <field name="proveedor_base_id"
+                   help="Contacto a usar para comprobantes sin RUC/DNI (nro_doc_identidad vacío o 0). Típico: documentos tipo S3 u otros sin proveedor identificado."/>
+          </xpath>
+          <xpath expr="//group[@name='file_group']" position="after">
+            <group string="Ticket / Propuesta SUNAT">
+              <field name="tipo_ticket" invisible="1"/>
+              <field name="ticket_sire"/>
+              <field name="estado_ticket_sire"/>
+              <field name="estado_propuesta"/>
+              <field name="nombre_archivo_propuesta" invisible="1"/>
+              <field name="archivo_propuesta" filename="nombre_archivo_propuesta"
+                     invisible="not archivo_propuesta"/>
+            </group>
+          </xpath>
+
+          <!-- Pestañas adicionales -->
+          <xpath expr="//notebook" position="inside">
+
+            <!-- Facturas del período -->
+            <page name="report_08_bill" string="Compras del período">
+              <field name="bill_ids" nolabel="1"/>
+            </page>
+
+            <!-- Propuesta SUNAT -->
+            <page name="compras_registradas" string="Propuesta SUNAT">
+              <div class="o_row mb-2">
+                <button name="enlazar_facturas" string="Enlazar y Validar" type="object"
+                        class="btn-primary" icon="fa-link"
+                        invisible="not compras_registradas"/>
+                <button name="crear_facturas" string="Crear Facturas (masivo)" type="object"
+                        class="btn-secondary" icon="fa-plus-circle"
+                        invisible="not compras_registradas"/>
+                <button name="abrir_facturas" string="Ver enlazadas" type="object"
+                        class="btn-secondary" icon="fa-list"
+                        invisible="not compras_registradas"/>
+                <button name="abrir_facturas_no_declaradas" string="No declaradas en SUNAT" type="object"
+                        class="btn-warning" icon="fa-exclamation-triangle"
+                        invisible="not compras_registradas"/>
+                <button name="abrir_lista_propuesta" string="Abrir en Lista" type="object"
+                        class="btn-secondary" icon="fa-table"
+                        invisible="not compras_registradas"/>
+                <button name="recalcular_tipo_respuesta" string="Recalcular" type="object"
+                        class="btn-secondary" icon="fa-refresh"
+                        invisible="not compras_registradas"/>
+              </div>
+              <field name="compras_registradas" nolabel="1">
+                <list decoration-success="estado_enlace == 'ok'"
+                      decoration-warning="estado_enlace == 'diferencia'"
+                      decoration-danger="estado_enlace == 'solo_sunat'"
+                      editable="bottom">
+                  <field name="estado_enlace" optional="show" readonly="1"/>
+                  <field name="factura_enlazada" optional="show"/>
+                  <field name="tipo_doc" optional="show"/>
+                  <field name="serie" optional="show"/>
+                  <field name="nro_correlativo" optional="show"/>
+                  <field name="nro_doc_identidad" optional="show"/>
+                  <field name="apellidos_nombre_rz" optional="show"/>
+                  <field name="fecha_emision" optional="show"/>
+                  <field name="total_cp" optional="show"/>
+                  <field name="moneda" optional="show"/>
+                  <field name="observacion" optional="show" readonly="1"/>
+                  <field name="bi_gravado_dg" optional="hide"/>
+                  <field name="igv_dg" optional="hide"/>
+                  <button type="object" name="enlazar_con_factura" string="Enlazar"
+                          icon="fa-link"
+                          invisible="factura_enlazada"/>
+                  <button type="object" name="crear_factura" string="Crear factura"
+                          icon="fa-plus"
+                          invisible="factura_enlazada"/>
+                  <button type="object" name="ver_factura" string="Ver factura"
+                          icon="fa-external-link"
+                          invisible="not factura_enlazada"/>
+                  <button type="object" name="ver_detalle" string="Ver detalle"
+                          icon="fa-search"
+                          title="Ver todos los campos del registro SIRE"/>
+                </list>
+              </field>
+            </page>
+
+            <!-- Ajuste posterior — período actual -->
+            <page name="ajuste_posterior" string="Ajuste posterior">
+              <group string="Archivo ZIP del ajuste (servicio 5.18)">
+                <field name="ajuste_zip_binario" filename="ajuste_zip_nombre" widget="binary"
+                       help="Si lo deja vacío se usará el ZIP generado del período"/>
+                <field name="ajuste_zip_nombre"
+                       help="Si lo deja vacío se completará automáticamente"/>
+                <field name="ajuste_estado" readonly="1"/>
+                <field name="ajuste_tus_upload_url" invisible="1"/>
+                <field name="ajuste_tus_offset" invisible="1"/>
+              </group>
+              <group string="Estado del ajuste (servicio 5.19)" col="2">
+                <field name="ajuste_ticket" readonly="1"
+                       placeholder="Se completa automáticamente"
+                       help="Se completa automáticamente al subir el ZIP"/>
+                <field name="ajuste_num_posterior" readonly="1"
+                       placeholder="Se completa automáticamente"
+                       help="Se completa automáticamente al enviar"/>
+                <field name="ajuste_notas" readonly="1" colspan="2"/>
+              </group>
+              <div class="o_row mb-2">
+                <button name="cargar_ajuste_zip" string="1. Subir ZIP ajuste" type="object"
+                        class="btn-primary" icon="fa-upload"
+                        invisible="ajuste_estado == 'enviado'"/>
+                <button name="enviar_ajuste" string="2. Enviar ajuste" type="object"
+                        class="btn-success" icon="fa-paper-plane"
+                        invisible="ajuste_estado != 'subido'"/>
+                <button name="reiniciar_ajuste_tus" string="Reiniciar" type="object"
+                        class="btn-secondary" icon="fa-undo"
+                        invisible="ajuste_estado == 'borrador' or ajuste_estado == 'enviado'"/>
+              </div>
+            </page>
+
+            <!-- Ajuste períodos anteriores al SIRE -->
+            <page name="ajuste_periodos_prev" string="Ajuste per. anteriores">
+              <group string="Período a corregir">
+                <field name="ajuste_prev_anio"
+                       placeholder="Ej: 2020"
+                       help="Año del período a corregir. Ejemplo: 2020"/>
+                <field name="ajuste_prev_mes"
+                       placeholder="Ej: 12"
+                       help="Número del mes con dos dígitos: 01=Enero, 02=Febrero, ... 12=Diciembre"/>
+              </group>
+              <group string="Archivo ZIP del ajuste (servicio 5.24)">
+                <field name="ajuste_prev_zip_binario" filename="ajuste_prev_zip_nombre" widget="binary"/>
+                <field name="ajuste_prev_zip_nombre"/>
+                <field name="ajuste_prev_estado" readonly="1"/>
+                <field name="ajuste_prev_tus_upload_url" invisible="1"/>
+                <field name="ajuste_prev_tus_offset" invisible="1"/>
+              </group>
+              <group string="Estado del ajuste (servicio 5.25)" col="2">
+                <field name="ajuste_prev_ticket" readonly="1"
+                       placeholder="Se completa automáticamente"
+                       help="Se completa automáticamente al subir el ZIP"/>
+                <field name="ajuste_prev_num_posterior" readonly="1"
+                       placeholder="Se completa automáticamente"
+                       help="Se completa automáticamente al enviar"/>
+                <field name="ajuste_prev_notas" readonly="1" colspan="2"/>
+              </group>
+              <div class="o_row mb-2">
+                <button name="cargar_ajuste_prev_zip" string="1. Subir ZIP ajuste" type="object"
+                        class="btn-primary" icon="fa-upload"
+                        invisible="ajuste_prev_estado == 'enviado'"/>
+                <button name="enviar_ajuste_prev" string="2. Enviar ajuste" type="object"
+                        class="btn-success" icon="fa-paper-plane"
+                        invisible="ajuste_prev_estado != 'subido'"/>
+                <button name="reiniciar_ajuste_prev_tus" string="Reiniciar" type="object"
+                        class="btn-secondary" icon="fa-undo"
+                        invisible="ajuste_prev_estado == 'borrador' or ajuste_prev_estado == 'enviado'"/>
+              </div>
+            </page>
+
+          </xpath>
+        </data>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Search
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_sire_report_08_search" model="ir.ui.view">
+      <field name="name">sire.report.08.search</field>
+      <field name="model">sire.report.08</field>
+      <field name="inherit_id" ref="solse_pe_sire_ventas.view_sire_report_templ_search"/>
+      <field name="mode">primary</field>
+      <field name="arch" type="xml">
+        <data>
+          <xpath expr="//filter[@name='group_by_date_year']" position="attributes">
+            <attribute name="invisible"/>
+          </xpath>
+        </data>
+      </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Action
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="action_sire_report_08" model="ir.actions.act_window">
+      <field name="name">Registro de Compras SIRE</field>
+      <field name="res_model">sire.report.08</field>
+      <field name="view_mode">list,form</field>
+      <field name="domain">[]</field>
+      <field name="context">{"search_default_group_by_date_year": 1}</field>
+    </record>
+
+  </data>
+
+  <!-- ── Vista lista standalone de Propuesta SUNAT ──────────────── -->
+  <record id="view_compras_recibidas_list" model="ir.ui.view">
+    <field name="name">solse.pe.compras.recibidas.list</field>
+    <field name="model">solse.pe.compras.recibidas</field>
+    <field name="arch" type="xml">
+      <list decoration-success="estado_enlace == 'ok'"
+            decoration-warning="estado_enlace == 'diferencia'"
+            decoration-danger="estado_enlace == 'solo_sunat'">
+        <field name="estado_enlace"/>
+        <field name="periodo_id" string="Período"/>
+        <field name="factura_enlazada"/>
+        <field name="tipo_doc"/>
+        <field name="serie"/>
+        <field name="nro_correlativo"/>
+        <field name="nro_doc_identidad"/>
+        <field name="apellidos_nombre_rz"/>
+        <field name="fecha_emision"/>
+        <field name="total_cp"/>
+        <field name="moneda"/>
+        <field name="observacion"/>
+        <button type="object" name="enlazar_con_factura" string="Enlazar"
+                icon="fa-link" invisible="factura_enlazada"/>
+        <button type="object" name="ver_factura" string="Ver factura"
+                icon="fa-external-link" invisible="not factura_enlazada"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_compras_recibidas_search" model="ir.ui.view">
+    <field name="name">solse.pe.compras.recibidas.search</field>
+    <field name="model">solse.pe.compras.recibidas</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="apellidos_nombre_rz" string="Proveedor"/>
+        <field name="nro_doc_identidad" string="RUC/DNI"/>
+        <field name="serie"/>
+        <field name="nro_correlativo"/>
+        <field name="periodo_id" string="Período"/>
+        <!-- Filtros rápidos por estado -->
+        <filter name="filter_ok" string="✔ Coinciden"
+                domain="[('estado_enlace','=','ok')]"/>
+        <filter name="filter_diferencia" string="⚠ Con diferencia"
+                domain="[('estado_enlace','=','diferencia')]"/>
+        <filter name="filter_solo_sunat" string="✘ Solo en SUNAT"
+                domain="[('estado_enlace','=','solo_sunat')]"/>
+        <separator/>
+        <filter name="filter_sin_enlace" string="Sin factura enlazada"
+                domain="[('factura_enlazada','=',False)]"/>
+        <filter name="filter_con_enlace" string="Con factura enlazada"
+                domain="[('factura_enlazada','!=',False)]"/>
+        <!-- Agrupaciones -->
+        <separator/>
+        <filter name="group_estado" string="Estado" context="{'group_by':'estado_enlace'}"/>
+        <filter name="group_periodo" string="Período" context="{'group_by':'periodo_id'}"/>
+        <filter name="group_proveedor" string="Proveedor" context="{'group_by':'apellidos_nombre_rz'}"/>
+        <filter name="group_tipo_doc" string="Tipo Doc" context="{'group_by':'tipo_doc'}"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="action_compras_recibidas_list" model="ir.actions.act_window">
+    <field name="name">Propuesta SUNAT — Detalle</field>
+    <field name="res_model">solse.pe.compras.recibidas</field>
+    <field name="view_mode">list,form</field>
+    <field name="view_id" ref="view_compras_recibidas_list"/>
+    <field name="search_view_id" ref="view_compras_recibidas_search"/>
+    <field name="context">{"search_default_filter_diferencia": 0}</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        No hay registros de propuesta SUNAT para mostrar.
+      </p>
+    </field>
+  </record>
+
+</odoo>

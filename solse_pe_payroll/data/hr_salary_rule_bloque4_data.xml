@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 4: Renta de 5ta categoría
+	     Método de retención mensual del art. 40 del Reglamento LIR:
+	     proyección anual (remuneraciones + gratificaciones por percibir
+	     + percibido acumulado), deducción de 7 UIT, tramos progresivos
+	     y dozavos según el mes (12 / 9 / 8 / 5 / 4 / saldo).
+	     Los acumulados usan payslip._sum(), que solo considera boletas
+	     VALIDADAS o PAGADAS: los meses deben cerrarse en orden.
+	================================================================ -->
+	<data noupdate="0">
+
+		<record id="regla_bar5_001" model="hr.salary.rule">
+			<field name="name">Base afecta a renta de 5ta (auxiliar)</field>
+			<field name="code">BAR5_001</field>
+			<field name="sequence">105</field>
+			<field name="category_id" ref="hr_salary_rule_category_bas_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="note">Acumulador anual para la proyección de 5ta: registra la
+remuneración del periodo afecta a renta. Hoy equivale a los ingresos
+afectos (INA_001); cuando las estructuras de gratificaciones y
+beneficios calculen, sus boletas aportarán su propio BAR5_001 (la
+bonificación extraordinaria es afecta a renta aunque no a aportes).</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+# Base afecta a renta = ingresos afectos a aportes (INA) + utilidades
+# (inafectas a aportes pero GRAVADAS con 5ta, D.Leg. 892 / art. 34 LIR)
+result = categories['INA_001'] + result_rules['UTIL_001']['total']
+			</field>
+		</record>
+
+		<record id="regla_r5ta_001" model="hr.salary.rule">
+			<field name="name">Renta de 5ta categoría</field>
+			<field name="code">R5TA_001</field>
+			<field name="sequence">130</field>
+			<field name="category_id" ref="hr_payroll.DED"/>
+			<field name="struct_id" ref="hr_payroll_structure_base"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0605')])]"/>
+			<field name="note">Retención mensual de renta de 5ta (art. 40 Rgto. LIR):
+1) Proyección anual: percibido acumulado del ejercicio (BAR5_001 de
+boletas validadas) + remuneración del mes por los meses restantes +
+gratificaciones por percibir (con factor del régimen laboral y la
+bonificación extraordinaria según ESSALUD/EPS).
+2) Deducción de 7 UIT (parámetros pe_renta5_deduccion_uit y pe_uit).
+3) Tramos progresivos (pe_renta5_tramos).
+4) Dozavo según el mes: ene-mar /12; abr (menos ret. ene-mar) /9;
+may-jul (menos ene-abr) /8; ago (menos ene-jul) /5; set-nov (menos
+ene-ago) /4; dic: saldo anual.
+Limitación v1: la proyección de gratificaciones asume semestres
+completos (truncas por ingreso reciente se afinan en el bloque de
+gratificaciones). Solo aplica en nóminas mensuales; la deducción
+adicional de 3 UIT (gastos deducibles) no se retiene en planilla por
+diseño de la norma.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+# Solo en boletas de periodo mensual (las semanales no retienen aquí:
+# el criterio es la longitud real del periodo, no schedule_pay).
+result = (payslip.date_to - payslip.date_from).days >= 20
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+anio = payslip.date_from.year
+mes = payslip.date_from.month
+uit = payslip._rule_parameter('pe_uit')
+deduccion = payslip._rule_parameter('pe_renta5_deduccion_uit') * uit
+tramos = payslip._rule_parameter('pe_renta5_tramos')
+factores = payslip._rule_parameter('pe_regimen_factores')
+
+clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+factor_grati = factores.get(clave_regimen, (1.0, 30, 30))[0]
+
+# 1) Proyección anual
+base_mes = categories['INA_001']
+inicio_anio = date(anio, 1, 1)
+percibido = 0.0
+if mes > 1:
+    fin_mes_anterior = date(anio, mes, 1) - relativedelta(days=1)
+    percibido = payslip._sum('BAR5_001', inicio_anio, fin_mes_anterior)
+
+meses_restantes = 12 - mes + 1
+proyeccion_remuneraciones = base_mes * meses_restantes
+
+if employee.management_eps:
+    bono = payslip._rule_parameter('pe_grati_bono_eps')
+else:
+    bono = payslip._rule_parameter('pe_grati_bono_essalud')
+gratis_pendientes = len([m for m in (7, 12) if m >= mes])
+proyeccion_gratis = version.wage * factor_grati * (1.0 + bono) * gratis_pendientes
+
+renta_bruta = percibido + proyeccion_remuneraciones + proyeccion_gratis
+
+# 2) Deducción 7 UIT
+renta_neta = renta_bruta - deduccion
+
+result = 0.0
+if renta_neta > 0:
+    # 3) Tramos progresivos
+    impuesto = 0.0
+    limite_anterior = 0.0
+    for limite_uit, tasa in tramos:
+        tope = (limite_uit * uit) if limite_uit else renta_neta
+        tramo = min(renta_neta, tope) - limite_anterior
+        if tramo &lt;= 0:
+            break
+        impuesto += tramo * tasa
+        limite_anterior = tope
+
+    # 4) Retención del mes (dozavos)
+    if mes &lt;= 3:
+        retencion = impuesto / 12.0
+    elif mes == 4:
+        previas = payslip._sum('R5TA_001', inicio_anio, date(anio, 3, 31))
+        retencion = (impuesto - previas) / 9.0
+    elif mes &lt;= 7:
+        previas = payslip._sum('R5TA_001', inicio_anio, date(anio, 4, 30))
+        retencion = (impuesto - previas) / 8.0
+    elif mes == 8:
+        previas = payslip._sum('R5TA_001', inicio_anio, date(anio, 7, 31))
+        retencion = (impuesto - previas) / 5.0
+    elif mes &lt;= 11:
+        previas = payslip._sum('R5TA_001', inicio_anio, date(anio, 8, 31))
+        retencion = (impuesto - previas) / 4.0
+    else:
+        previas = payslip._sum('R5TA_001', inicio_anio, date(anio, 11, 30))
+        retencion = impuesto - previas
+    result = max(retencion, 0.0)
+			</field>
+		</record>
+	</data>
+
+	<data noupdate="1">
+		<record id="mapeo_r5ta_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_r5ta_001"/>
+			<field name="prefijo_credito">40173</field>
+			<field name="nota">Renta de 5ta por pagar (retención)</field>
+		</record>
+	</data>
+</odoo>

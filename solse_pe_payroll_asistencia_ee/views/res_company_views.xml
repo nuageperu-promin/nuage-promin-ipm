@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_company_form_asistencia" model="ir.ui.view">
+		<field name="name">res.company.form.asistencia</field>
+		<field name="model">res.company</field>
+		<field name="inherit_id" ref="base.view_company_form"/>
+		<field name="arch" type="xml">
+			<notebook position="inside">
+				<page string="Nómina PE - Asistencias" name="pagina_nomina_asistencia">
+					<group>
+						<group string="Conciliación de asistencias">
+							<field name="asistencia_tolerancia_minutos"/>
+							<field name="asistencia_descontar_tardanzas"/>
+							<field name="asistencia_autocargar"/>
+						</group>
+						<group string="Fase 2: evaluación por horas">
+							<field name="asistencia_evaluar_horas"/>
+							<field name="asistencia_margen_horas"
+								   invisible="not asistencia_evaluar_horas"/>
+						</group>
+					</group>
+				</page>
+			</notebook>
+		</field>
+	</record>
+</odoo>

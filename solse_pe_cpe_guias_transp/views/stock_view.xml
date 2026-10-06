@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="view_warehouse_guide_transport">
+			<field name="name">stock.warehouse.form.inherit.solse.cpe.eguide.transport</field>
+			<field name="model">stock.warehouse</field>
+			<field name="inherit_id" ref="stock.view_warehouse"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='partner_id']" position="after">
+					<field name="eguide_transport_sequence_id"
+						   groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+				</xpath>
+			</field>
+		</record>
+
+		<!--
+			Extensión ADITIVA de la vista del módulo de guías. La página de
+			la GRR no se reemplaza ni se le cambia el `name`: solo se le
+			agrega una condición de visibilidad por modalidad. Así ambas
+			guías conviven y la GRR sigue funcionando igual que antes.
+		-->
+		<record model="ir.ui.view" id="view_picking_form_guide_transport">
+			<field name="name">stock.picking.form.inherit.solse.cpe.eguide.transport</field>
+			<field name="model">stock.picking</field>
+			<field name="inherit_id" ref="solse_pe_cpe_guias.view_company_form"/>
+			<field name="arch" type="xml">
+
+				<xpath expr="//button[@name='action_generate_eguide']" position="attributes">
+					<attribute name="invisible">pe_guide_mode == 'carrier' or pe_is_eguide == False or pe_guide_state in ['send','verify','done']</attribute>
+				</xpath>
+
+				<xpath expr="//button[@name='action_generate_eguide']" position="after">
+					<field name="pe_guide_mode" invisible="1"/>
+					<field name="pe_guide_transport_state" invisible="1"/>
+					<button name="action_generate_eguide_transport"
+							string="Generar Guía E. Transportista"
+							type="object"
+							invisible="pe_guide_mode != 'carrier' or pe_is_eguide == False or pe_guide_transport_state in ['send','verify','done']"
+							groups="solse_pe_cpe.group_solse_pe_cpe_user"/>
+				</xpath>
+
+				<xpath expr="//page[@name='peruvian_customization']" position="attributes">
+					<attribute name="invisible">state not in ['done'] or pe_guide_mode == 'carrier'</attribute>
+				</xpath>
+
+				<!-- Los obligatorios de la GRR no aplican en modalidad transportista:
+				     al quedar ocultos, el formulario avisaba "Faltan campos
+				     obligatorios" sin poder señalar cuál (19.0.1.0.4). -->
+				<xpath expr="//page[@name='peruvian_customization']//field[@name='pe_transfer_code']" position="attributes">
+					<attribute name="required">pe_is_eguide and pe_guide_mode != 'carrier'</attribute>
+				</xpath>
+				<xpath expr="//page[@name='peruvian_customization']//field[@name='pe_transport_mode']" position="attributes">
+					<attribute name="required">pe_is_eguide and pe_guide_mode != 'carrier'</attribute>
+				</xpath>
+				<xpath expr="//page[@name='peruvian_customization']//field[@name='pe_carrier_id']" position="attributes">
+					<attribute name="required">pe_transport_mode == '01' and pe_guide_mode != 'carrier'</attribute>
+				</xpath>
+				<xpath expr="//page[@name='peruvian_customization']//field[@name='pe_delivery_date']" position="attributes">
+					<attribute name="required">pe_transport_mode == '01' and pe_guide_mode != 'carrier'</attribute>
+				</xpath>
+
+				<!-- Modalidad visible y editable por transferencia (decisión 2 del
+				     handoff); el valor por defecto viene del tipo de operación. -->
+				<xpath expr="//page[@name='peruvian_customization']//field[@name='pe_is_eguide']" position="before">
+					<field name="pe_guide_mode" readonly="pe_guide_number != '/'"
+						   groups="solse_pe_cpe.group_solse_pe_cpe_user"/>
+				</xpath>
+
+				<xpath expr="//page[@name='peruvian_customization']" position="after">
+					<page string="Guía Transportista"
+						  name="peruvian_customization_transport"
+						  invisible="state not in ['done'] or pe_guide_mode != 'carrier'">
+						<group>
+							<group>
+								<field name="pe_guide_mode" readonly="pe_guide_number != '/'"
+									   groups="solse_pe_cpe.group_solse_pe_cpe_user"/>
+								<field name="pe_is_eguide" readonly="pe_guide_number != '/'"/>
+								<field name="pe_guide_transport_id"
+									   groups="solse_pe_cpe.group_solse_pe_cpe_user"
+									   invisible="pe_is_eguide == False" readonly="1"/>
+								<field name="pe_response_transp"
+									   invisible="pe_is_eguide == False" readonly="1"/>
+								<field name="pe_note_transp"
+									   invisible="pe_is_eguide == False" readonly="1"/>
+								<button name="regenerar_y_reenviar_xml_transp"
+										type="object" string="Regenerar y reenviar XML"
+										invisible="pe_guide_transport_id == False"
+										groups="solse_pe_cpe.group_solse_pe_cpe_manager"/>
+							</group>
+							<group>
+								<field name="pe_guide_number"
+									   invisible="pe_is_eguide == False" readonly="1"/>
+								<field name="pe_voided_transport_id"
+									   groups="solse_pe_cpe.group_solse_pe_cpe_user"
+									   invisible="1"/>
+								<field name="pe_error_code_transp"
+									   invisible="pe_is_eguide == False" readonly="1"/>
+								<field name="ocultar_en_pdf"
+									   invisible="pe_is_eguide == False"/>
+							</group>
+						</group>
+
+						<group string="Partes del traslado"
+							   groups="solse_pe_cpe.group_solse_pe_cpe_user">
+							<group>
+								<field name="pe_grt_remitente_id"
+									   required="pe_is_eguide and pe_guide_mode == 'carrier'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_punto_partida_id"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+							<group>
+								<field name="pe_grt_destinatario_id"
+									   required="pe_is_eguide and pe_guide_mode == 'carrier'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_punto_llegada_id"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+						</group>
+
+						<group string="Datos del traslado"
+							   groups="solse_pe_cpe.group_solse_pe_cpe_user">
+							<group>
+								<field name="pe_grt_fecha_inicio_traslado"
+									   required="pe_is_eguide and pe_guide_mode == 'carrier'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_gross_weight"
+									   required="pe_is_eguide and pe_guide_mode == 'carrier'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_peso_unidad"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_anotacion"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+							<group>
+								<field name="pe_grt_registro_mtc"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_autorizacion_numero"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_autorizacion_entidad"
+									   invisible="pe_grt_autorizacion_numero == False"
+									   required="pe_grt_autorizacion_numero != False"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_tipo_evento"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+						</group>
+
+						<group string="Indicadores SUNAT"
+							   groups="solse_pe_cpe.group_solse_pe_cpe_user">
+							<group>
+								<field name="pe_grt_pagador_flete"
+									   required="pe_is_eguide and pe_guide_mode == 'carrier'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_pagador_tercero_id"
+									   invisible="pe_grt_pagador_flete != 'tercero'"
+									   required="pe_grt_pagador_flete == 'tercero'"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_subcontratado"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_subcontratador_id"
+									   invisible="pe_grt_subcontratado == False"
+									   required="pe_grt_subcontratado == True"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+							<group>
+								<field name="pe_grt_traslado_total"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_transbordo_programado"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_retorno_vehiculo_vacio"
+									   readonly="pe_guide_number != '/'"/>
+								<field name="pe_grt_retorno_envase_vacio"
+									   readonly="pe_guide_number != '/'"/>
+							</group>
+						</group>
+
+						<group string="Documentos relacionados"
+							   groups="solse_pe_cpe.group_solse_pe_cpe_user">
+							<field name="pe_documento_relacionado_ids" nolabel="1"
+								   readonly="pe_guide_number != '/'">
+								<list editable="bottom">
+									<field name="sequence" widget="handle"/>
+									<field name="codigo_documento" required="1"/>
+									<field name="numero_documento" required="1"/>
+									<field name="emisor_requerido" column_invisible="1"/>
+									<field name="emisor_id" required="emisor_requerido"
+										   options="{'no_create': True}"/>
+								</list>
+							</field>
+						</group>
+
+						<group string="Vehículos y conductores"
+							   groups="solse_pe_cpe.group_solse_pe_cpe_user">
+							<field name="pe_fleet_ids" nolabel="1"
+								   readonly="pe_guide_number != '/'">
+								<list editable="bottom">
+									<field name="fleet_id" string="Vehículo"/>
+									<field name="name" string="Placa" required="1"/>
+									<field name="pe_tuce" string="TUCE"/>
+									<field name="driver_id" string="Conductor" required="1"/>
+									<field name="is_main" string="Principal"/>
+								</list>
+							</field>
+						</group>
+
+						<div>
+							<label for="pe_digest_transp" string="Valor de codigo:"
+								   invisible="pe_is_eguide == False"/>
+							<field name="pe_digest_transp"
+								   invisible="pe_is_eguide == False" readonly="1"/>
+						</div>
+						<div>
+							<label for="pe_signature_transp" string="Valor de la firma:"
+								   invisible="pe_is_eguide == False"/>
+						</div>
+						<div>
+							<field name="pe_signature_transp"
+								   invisible="pe_is_eguide == False" readonly="1"/>
+						</div>
+					</page>
+				</xpath>
+			</field>
+		</record>
+
+	</data>
+</odoo>

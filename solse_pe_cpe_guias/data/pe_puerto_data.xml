@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Puertos del Catálogo 63 verificados contra el anexo de la
+     R.S. 123-2022/SUNAT (Nombre · Código · Ubigeo). El anexo completo se
+     carga por importación cuando el cliente lo necesite. -->
+<odoo noupdate="1">
+	<record id="puerto_callao" model="solse.pe.puerto">
+		<field name="name">Callao</field>
+		<field name="codigo">CLL</field>
+		<field name="tipo">1</field>
+		<field name="ubigeo">070101</field>
+	</record>
+	<record id="puerto_paita" model="solse.pe.puerto">
+		<field name="name">Paita</field>
+		<field name="codigo">PAI</field>
+		<field name="tipo">1</field>
+		<field name="ubigeo">200501</field>
+	</record>
+	<record id="puerto_bayovar" model="solse.pe.puerto">
+		<field name="name">Bayóvar</field>
+		<field name="codigo">PUB</field>
+		<field name="tipo">1</field>
+		<field name="ubigeo">200801</field>
+	</record>
+</odoo>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     PARÁMETROS DE NÓMINA PE (hr.rule.parameter)
+	     noupdate=0 en definiciones (el módulo controla códigos/categorías)
+	     noupdate=1 en valores (el cliente registra nuevas vigencias sin
+	     que la actualización del módulo se las pise).
+	     Consumo en reglas: payslip._rule_parameter('pe_uit')
+	================================================================ -->
+	<data noupdate="0">
+
+		<!-- Generales -->
+		<record id="param_pe_uit" model="hr.rule.parameter">
+			<field name="name">UIT - Unidad Impositiva Tributaria</field>
+			<field name="code">pe_uit</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">generales</field>
+		</record>
+		<record id="param_pe_rmv" model="hr.rule.parameter">
+			<field name="name">RMV - Remuneración Mínima Vital</field>
+			<field name="code">pe_rmv</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">generales</field>
+		</record>
+		<record id="param_pe_asig_familiar" model="hr.rule.parameter">
+			<field name="name">Asignación familiar (10% RMV)</field>
+			<field name="code">pe_asig_familiar</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">generales</field>
+		</record>
+
+		<!-- Pensiones -->
+		<record id="param_pe_onp_tasa" model="hr.rule.parameter">
+			<field name="name">ONP - Tasa de aporte (D.L. 19990)</field>
+			<field name="code">pe_onp_tasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+		</record>
+		<record id="param_pe_afp_aporte" model="hr.rule.parameter">
+			<field name="name">AFP - Aporte obligatorio al fondo</field>
+			<field name="code">pe_afp_aporte</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+		</record>
+		<record id="param_pe_afp_prima_seguro" model="hr.rule.parameter">
+			<field name="name">AFP - Prima de seguro (invalidez y sobrevivencia)</field>
+			<field name="code">pe_afp_prima_seguro</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+		</record>
+		<record id="param_pe_afp_rma" model="hr.rule.parameter">
+			<field name="name">AFP - Remuneración Máxima Asegurable (tope prima, trimestral SBS)</field>
+			<field name="code">pe_afp_rma</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+			<field name="description"><![CDATA[<p><b>¡Atención!</b> La SBS actualiza este tope <b>cada trimestre</b>
+			(enero, abril, julio, octubre). Verificar el valor vigente en
+			www.sbs.gob.pe y registrar la nueva vigencia. El dashboard de nómina
+			mostrará una advertencia si la última vigencia supera los 95 días.</p>]]></field>
+		</record>
+		<record id="param_pe_afp_comision_flujo" model="hr.rule.parameter">
+			<field name="name">AFP - Comisión sobre flujo por administradora</field>
+			<field name="code">pe_afp_comision_flujo</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+			<field name="description"><![CDATA[<p>Diccionario por clave de AFP
+			(habitat / integra / prima / profuturo). La clave se toma del campo
+			"Clave AFP" del sistema pensionario del trabajador.</p>]]></field>
+		</record>
+		<record id="param_pe_afp_comision_mixta_flujo" model="hr.rule.parameter">
+			<field name="name">AFP - Componente de flujo de la comisión mixta</field>
+			<field name="code">pe_afp_comision_mixta_flujo</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">pensiones</field>
+		</record>
+
+		<!-- Salud -->
+		<record id="param_pe_essalud_tasa" model="hr.rule.parameter">
+			<field name="name">ESSALUD - Tasa de aporte del empleador</field>
+			<field name="code">pe_essalud_tasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">salud</field>
+		</record>
+		<record id="param_pe_eps_credito_max" model="hr.rule.parameter">
+			<field name="name">EPS - Crédito máximo contra ESSALUD (proporción del aporte)</field>
+			<field name="code">pe_eps_credito_max</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">salud</field>
+		</record>
+
+		<!-- Renta de 5ta -->
+		<record id="param_pe_renta5_tramos" model="hr.rule.parameter">
+			<field name="name">Renta 5ta - Tramos progresivos (límite en UIT, tasa)</field>
+			<field name="code">pe_renta5_tramos</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">renta</field>
+			<field name="description"><![CDATA[<p>Lista de tuplas (límite_superior_en_UIT, tasa).
+			None en el límite del último tramo significa "sin tope".</p>]]></field>
+		</record>
+		<record id="param_pe_renta5_deduccion_uit" model="hr.rule.parameter">
+			<field name="name">Renta 5ta - Deducción fija (en UIT)</field>
+			<field name="code">pe_renta5_deduccion_uit</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">renta</field>
+		</record>
+
+		<!-- Beneficios sociales -->
+		<record id="param_pe_grati_bono_essalud" model="hr.rule.parameter">
+			<field name="name">Gratificación - Bonificación extraordinaria (afiliados ESSALUD)</field>
+			<field name="code">pe_grati_bono_essalud</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">beneficios</field>
+		</record>
+		<record id="param_pe_grati_bono_eps" model="hr.rule.parameter">
+			<field name="name">Gratificación - Bonificación extraordinaria (afiliados EPS)</field>
+			<field name="code">pe_grati_bono_eps</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">beneficios</field>
+		</record>
+		<record id="param_pe_regimen_factores" model="hr.rule.parameter">
+			<field name="name">Factores por régimen laboral (gratificación, días CTS, días vacaciones)</field>
+			<field name="code">pe_regimen_factores</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">beneficios</field>
+			<field name="description"><![CDATA[<p>Diccionario por clave de régimen
+			(campo "Clave de cálculo" del régimen laboral): factor de gratificación,
+			días de CTS por año y días de vacaciones por año.
+			General (1.0, 30, 30) · Pequeña empresa (0.5, 15, 15) ·
+			Microempresa (0.0, 0, 15) · Agrario: la BETA integra estos beneficios
+			en la remuneración diaria (tratamiento propio en reglas).</p>]]></field>
+		</record>
+		<record id="param_pe_utilidades_pct" model="hr.rule.parameter">
+			<field name="name">Participación en utilidades - Porcentaje según actividad (D.Leg. 892)</field>
+			<field name="code">pe_utilidades_pct</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">beneficios</field>
+			<field name="description"><![CDATA[<p>10% pesca/telecomunicaciones/industria ·
+			8% minería/comercio/restaurantes · 5% otras actividades.
+			<b>Registrar el valor según el CIIU de la compañía.</b></p>]]></field>
+		</record>
+		<record id="param_pe_senati_tasa" model="hr.rule.parameter">
+			<field name="name">SENATI - Tasa de contribución</field>
+			<field name="code">pe_senati_tasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">beneficios</field>
+		</record>
+
+		<!-- Jornada -->
+		<record id="param_pe_hhee_recargo_1" model="hr.rule.parameter">
+			<field name="name">Horas extras - Recargo primeras 2 horas</field>
+			<field name="code">pe_hhee_recargo_1</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">jornada</field>
+		</record>
+		<record id="param_pe_hhee_recargo_2" model="hr.rule.parameter">
+			<field name="name">Horas extras - Recargo horas siguientes</field>
+			<field name="code">pe_hhee_recargo_2</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">jornada</field>
+		</record>
+		<record id="param_pe_nocturna_sobretasa" model="hr.rule.parameter">
+			<field name="name">Jornada nocturna - Sobretasa sobre la RMV</field>
+			<field name="code">pe_nocturna_sobretasa</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="categoria_pe">jornada</field>
+		</record>
+	</data>
+
+	<!-- Valores con vigencias: el cliente los administra, no se pisan -->
+	<data noupdate="1">
+		<!-- UIT: D.S. 260-2024-EF (2025) y D.S. 301-2025-EF (2026) -->
+		<record id="param_pe_uit_2025" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_uit"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">5350</field>
+		</record>
+		<record id="param_pe_uit_2026" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_uit"/>
+			<field name="date_from" eval="'2026-01-01'"/>
+			<field name="parameter_value">5500</field>
+		</record>
+
+		<!-- RMV: D.S. 006-2024-TR -->
+		<record id="param_pe_rmv_2025" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_rmv"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">1130</field>
+		</record>
+		<record id="param_pe_asig_familiar_2025" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_asig_familiar"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">113.0</field>
+		</record>
+
+		<!-- Pensiones -->
+		<record id="param_pe_onp_tasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_onp_tasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.13</field>
+		</record>
+		<record id="param_pe_afp_aporte_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_afp_aporte"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.10</field>
+		</record>
+		<record id="param_pe_afp_prima_seguro_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_afp_prima_seguro"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0137</field>
+		</record>
+		<record id="param_pe_afp_rma_2026t2" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_afp_rma"/>
+			<field name="date_from" eval="'2026-04-01'"/>
+			<field name="parameter_value">12598.91</field>
+		</record>
+		<record id="param_pe_afp_comision_flujo_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_afp_comision_flujo"/>
+			<field name="date_from" eval="'2026-01-01'"/>
+			<field name="parameter_value">{'habitat': 0.0147, 'integra': 0.0155, 'prima': 0.0160, 'profuturo': 0.0169}</field>
+		</record>
+		<record id="param_pe_afp_comision_mixta_flujo_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_afp_comision_mixta_flujo"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0</field>
+		</record>
+
+		<!-- Salud -->
+		<record id="param_pe_essalud_tasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_essalud_tasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.09</field>
+		</record>
+		<record id="param_pe_eps_credito_max_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_eps_credito_max"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.25</field>
+		</record>
+
+		<!-- Renta 5ta -->
+		<record id="param_pe_renta5_tramos_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_renta5_tramos"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">[(5, 0.08), (20, 0.14), (35, 0.17), (45, 0.20), (None, 0.30)]</field>
+		</record>
+		<record id="param_pe_renta5_deduccion_uit_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_renta5_deduccion_uit"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">7</field>
+		</record>
+
+		<!-- Beneficios -->
+		<record id="param_pe_grati_bono_essalud_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_grati_bono_essalud"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.09</field>
+		</record>
+		<record id="param_pe_grati_bono_eps_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_grati_bono_eps"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0675</field>
+		</record>
+		<record id="param_pe_regimen_factores_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_regimen_factores"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">{'general': (1.0, 30, 30), 'pequena': (0.5, 15, 15), 'micro': (0.0, 0, 15), 'agrario': (1.0, 30, 30), 'otro': (1.0, 30, 30)}</field>
+		</record>
+		<record id="param_pe_senati_tasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_senati_tasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.0075</field>
+		</record>
+
+		<!-- Jornada -->
+		<record id="param_pe_hhee_recargo_1_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_hhee_recargo_1"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.25</field>
+		</record>
+		<record id="param_pe_hhee_recargo_2_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_hhee_recargo_2"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.35</field>
+		</record>
+		<record id="param_pe_nocturna_sobretasa_v" model="hr.rule.parameter.value">
+			<field name="rule_parameter_id" ref="param_pe_nocturna_sobretasa"/>
+			<field name="date_from" eval="'2025-01-01'"/>
+			<field name="parameter_value">0.35</field>
+		</record>
+
+		<!-- Advertencia en dashboard: RMA de AFP desactualizada -->
+		<record id="dashboard_warning_rma_afp" model="hr.payroll.dashboard.warning">
+			<field name="name">RMA de AFP posiblemente desactualizada (tope trimestral SBS)</field>
+			<field name="country_id" ref="base.pe"/>
+			<field name="color">1</field>
+			<field name="evaluation_code">
+alerta = self.env['hr.rule.parameter'].verificar_vigencia_rma()
+if alerta:
+    parametro = self.env['hr.rule.parameter'].search([('code', '=', 'pe_afp_rma')], limit=1)
+    warning_count = 1
+    warning_records = parametro
+			</field>
+		</record>
+	</data>
+</odoo>

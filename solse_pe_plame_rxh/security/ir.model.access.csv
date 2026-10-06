@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_plame_suspension_cuarta_user,plame.suspension.cuarta.user,model_plame_suspension_cuarta,account.group_account_invoice,1,1,1,1
+access_plame_suspension_cuarta_manager,plame.suspension.cuarta.manager,model_plame_suspension_cuarta,account.group_account_manager,1,1,1,1
+access_plame_rxh_exportar,plame.rxh.exportar,model_plame_rxh_exportar,account.group_account_user,1,1,1,1
+access_plame_rxh_exportar_linea,plame.rxh.exportar.linea,model_plame_rxh_exportar_linea,account.group_account_user,1,1,1,1

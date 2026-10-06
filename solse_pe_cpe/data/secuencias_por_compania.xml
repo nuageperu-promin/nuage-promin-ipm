@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- L-6 · En esta suite las secuencias de comprobantes electronicos
+		     son POR COMPANIA. Esto crea las que falten en cada empresa; las
+		     existentes no se tocan. Corre en cada actualizacion del modulo. -->
+		<function model="res.company" name="pe_asegurar_secuencias_cpe_todas"/>
+	</data>
+</odoo>

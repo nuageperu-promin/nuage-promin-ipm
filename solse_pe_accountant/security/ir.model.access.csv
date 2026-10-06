@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wizard_asignar_tabla34,solse.wizard.asignar.tabla34,model_solse_wizard_asignar_tabla34,account.group_account_manager,1,1,1,1
+access_wizard_diagnostico_tabla34,solse.wizard.diagnostico.tabla34,model_solse_wizard_diagnostico_tabla34,account.group_account_user,1,1,1,1

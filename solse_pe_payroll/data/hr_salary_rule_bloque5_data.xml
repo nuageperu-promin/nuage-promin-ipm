@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- ================================================================
+	     FASE 2 - BLOQUE 5: Gratificaciones (Ley 27735 / Ley 30334)
+	     Estructura propia (no replicada desde la base). La gratificación
+	     es INAFECTA a aportes previsionales y ESSALUD (Ley 30334) y
+	     AFECTA a renta de 5ta: por eso vive en la categoría INN_001 y
+	     aporta su propio BAR5_001. La retención de 5ta correspondiente
+	     NO se hace en esta boleta: la proyección mensual (R5TA_001) ya
+	     incorpora las gratificaciones por percibir y percibidas.
+	     La bonificación extraordinaria (9% ESSALUD / 6.75% EPS) sustituye
+	     el aporte que el empleador habría hecho: se paga al trabajador.
+	================================================================ -->
+	<data noupdate="0">
+
+		<record id="input_type_grati_001" model="hr.payslip.input.type">
+			<field name="code">GRATI_001</field>
+			<field name="name">Importe Gratificación (override)</field>
+			<field name="country_id" ref="base.pe"/>
+		</record>
+
+		<record id="regla_grati_001" model="hr.salary.rule">
+			<field name="name">Gratificación</field>
+			<field name="code">GRATI_001</field>
+			<field name="sequence">10</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="utilities">1</field>
+			<field name="note">Ley 27735: remuneración computable (sueldo + asignación
+familiar si corresponde) por sextos según meses calendario completos
+laborados en el semestre (ene-jun para Fiestas Patrias, jul-dic para
+Navidad; diciembre computa por presunción de labor), por el factor del
+régimen laboral (general 1.0, pequeña empresa 0.5, microempresa 0.0:
+sin gratificación). El semestre se determina por el mes de la boleta
+(julio o diciembre); en cualquier otro mes la regla NO calcula, para
+bloquear boletas de gratificación creadas por error fuera de periodo.
+Input GRATI_001 permite forzar el importe.
+Limitación v1: no promedia remuneraciones variables (comisiones/HHEE
+percibidas 3+ meses del semestre); se afina con el bloque de variables.</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">
+# Solo se paga gratificación en julio y diciembre; las truncas por cese
+# se calculan en la estructura de Liquidación.
+factores = payslip._rule_parameter('pe_regimen_factores')
+clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+result = (
+    payslip.date_from.month in (7, 12)
+    and factores.get(clave_regimen, (1.0, 30, 30))[0] > 0
+)
+			</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if inputs.get('GRATI_001') and inputs['GRATI_001'].amount > 0:
+    result = inputs['GRATI_001'].amount
+else:
+    factores = payslip._rule_parameter('pe_regimen_factores')
+    clave_regimen = version.labor_regime_id.clave_regimen or 'general'
+    factor = factores.get(clave_regimen, (1.0, 30, 30))[0]
+
+    # Remuneración computable: sueldo + asignación familiar vigente
+    computable = version.wage
+    tiene_af = False
+    for pariente in employee.relative_ids:
+        nombre_relacion = (pariente.relation_id.name or '').lower()
+        if 'hij' in nombre_relacion:
+            limite_edad = pariente.max_age or 18
+            if pariente.age &lt; limite_edad or pariente.disability:
+                tiene_af = True
+                break
+    if tiene_af:
+        computable += payslip._rule_parameter('pe_asig_familiar')
+
+    # Semestre según el mes de la boleta
+    anio = payslip.date_from.year
+    if payslip.date_from.month &lt;= 7:
+        inicio_semestre = date(anio, 1, 1)
+        fin_semestre = date(anio, 6, 30)
+    else:
+        inicio_semestre = date(anio, 7, 1)
+        fin_semestre = date(anio, 12, 31)
+
+    # Meses calendario completos laborados en el semestre
+    inicio_laboral = version.contract_date_start or inicio_semestre
+    inicio_computo = inicio_laboral if inicio_laboral > inicio_semestre else inicio_semestre
+    fin_computo = fin_semestre
+    if version.contract_date_end and version.contract_date_end &lt; fin_semestre:
+        fin_computo = version.contract_date_end
+
+    meses = 0
+    cursor = date(inicio_computo.year, inicio_computo.month, 1)
+    if inicio_computo.day > 1:
+        cursor = cursor + relativedelta(months=1)
+    while cursor &lt;= fin_computo:
+        fin_mes = cursor + relativedelta(months=1, days=-1)
+        if fin_mes &lt;= fin_computo:
+            meses += 1
+        cursor = cursor + relativedelta(months=1)
+    meses = min(meses, 6)
+
+    result = computable * factor * meses / 6.0
+			</field>
+		</record>
+
+		<record id="regla_bono_grati_001" model="hr.salary.rule">
+			<field name="name">Bonificación extraordinaria (Ley 30334)</field>
+			<field name="code">BONO_GRATI_001</field>
+			<field name="sequence">20</field>
+			<field name="category_id" ref="hr_salary_rule_category_inn_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="note">Ley 30334: el aporte a ESSALUD que habría correspondido
+sobre la gratificación se paga al trabajador como bonificación
+extraordinaria: 9% (pe_grati_bono_essalud) o 6.75% si el trabajador
+está afiliado a una EPS (pe_grati_bono_eps).</field>
+			<field name="condition_select">python</field>
+			<field name="condition_python">result = result_rules['GRATI_001']['total'] > 0</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">
+if employee.management_eps:
+    tasa = payslip._rule_parameter('pe_grati_bono_eps')
+else:
+    tasa = payslip._rule_parameter('pe_grati_bono_essalud')
+result = result_rules['GRATI_001']['total'] * tasa
+			</field>
+		</record>
+
+		<record id="regla_bar5_grati" model="hr.salary.rule">
+			<field name="name">Base afecta a renta de 5ta (gratificación)</field>
+			<field name="code">BAR5_001</field>
+			<field name="sequence">105</field>
+			<field name="category_id" ref="hr_salary_rule_category_bas_001"/>
+			<field name="struct_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="appears_on_payslip">0</field>
+			<field name="note">Gratificación + bonificación extraordinaria: afectas a renta
+de 5ta. Alimenta el acumulado anual que lee la proyección mensual.</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001']</field>
+		</record>
+
+		<record id="regla_gross_grati" model="hr.salary.rule">
+			<field name="name">Total gratificación</field>
+			<field name="code">GROSS</field>
+			<field name="sequence">100</field>
+			<field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="struct_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001']</field>
+		</record>
+
+		<record id="regla_net_grati" model="hr.salary.rule">
+			<field name="name">Neto a pagar</field>
+			<field name="code">NET</field>
+			<field name="sequence">200</field>
+			<field name="category_id" ref="hr_payroll.NET"/>
+			<field name="struct_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="appears_on_payslip">1</field>
+			<field name="amount_select">code</field>
+			<field name="amount_python_compute">result = categories['ING_001'] - categories['DED']</field>
+		</record>
+	</data>
+
+	<!-- Mapeo contable: gratificaciones a 6214/4114 (específico de estructura) -->
+	<data noupdate="1">
+		<record id="mapeo_grati_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_grati_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="prefijo_debito">6214</field>
+		</record>
+		<record id="mapeo_bono_grati_001" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_bono_grati_001"/>
+			<field name="estructura_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="prefijo_debito">6214</field>
+		</record>
+		<record id="mapeo_net_grati" model="solse.payroll.mapeo.contable">
+			<field name="regla_id" ref="regla_net_grati"/>
+			<field name="estructura_id" ref="hr_payroll_structure_gratificaciones"/>
+			<field name="prefijo_credito">4114</field>
+			<field name="nota">Gratificaciones por pagar</field>
+		</record>
+	</data>
+</odoo>

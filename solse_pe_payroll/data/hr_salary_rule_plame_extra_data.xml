@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Conceptos T22 de los ingresos (bloques 1/5/8/9). Los descuentos y
+	     aportes ya se mapearon en sus bloques. Actualización parcial de
+	     los records de reglas ya definidos. -->
+	<data noupdate="0">
+		<record id="regla_rb_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0121')])]"/>
+		</record>
+		<record id="regla_rbs_002" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0121')])]"/>
+		</record>
+		<record id="regla_asf_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0201')])]"/>
+		</record>
+		<record id="regla_he25_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0105')])]"/>
+		</record>
+		<record id="regla_he35_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0106')])]"/>
+		</record>
+		<record id="regla_mov_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0909')])]"/>
+		</record>
+		<record id="regla_grati_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0406')])]"/>
+		</record>
+		<record id="regla_bono_grati_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0312')])]"/>
+		</record>
+		<record id="regla_vac_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0118')])]"/>
+		</record>
+		<record id="regla_vac_trunca_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0114')])]"/>
+		</record>
+		<record id="regla_grati_trunca_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0406')])]"/>
+		</record>
+		<record id="regla_bono_grati_trunca_001" model="hr.salary.rule">
+			<field name="plame_ids" eval="[(6, 0, [ref('plame_line_0313')])]"/>
+		</record>
+	</data>
+</odoo>

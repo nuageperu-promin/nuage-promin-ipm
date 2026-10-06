@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Los casos se definen en models/casos_definidos.py. Esta función
+		     crea los que falten y NO toca los existentes (equivale al
+		     noupdate); el botón "Actualizar casos precargados" los
+		     reescribe desde la definición. -->
+		<function model="solse.cpe.guias.qa.caso" name="cargar_casos_definidos"/>
+	</data>
+</odoo>

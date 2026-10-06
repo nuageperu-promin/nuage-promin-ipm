@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_account_asset_form_solse_ple07" model="ir.ui.view">
+		<field name="name">account.asset.form.solse.ple07</field>
+		<field name="model">account.asset</field>
+		<field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//notebook" position="inside">
+				<page name="sunat_ple07" string="SUNAT PLE 7">
+					<group>
+						<group name="ple07_identificacion" string="Identificación (7.1)">
+							<field name="codigo_af" placeholder="AF + ID si se deja vacío"/>
+							<field name="codigo_catalogo_af"/>
+							<field name="codigo_existencia_af"
+								invisible="codigo_catalogo_af == '9'"/>
+							<field name="tipo_af"/>
+							<field name="estado_af"/>
+							<field name="marca_af"/>
+							<field name="modelo_af"/>
+							<field name="serie_placa_af"/>
+						</group>
+						<group name="ple07_depreciacion" string="Depreciación tributaria">
+							<field name="num_autorizacion_metodo"/>
+							<field name="porcentaje_dep_tributaria"/>
+						</group>
+					</group>
+					<group>
+						<group name="ple07_revaluaciones" string="Revaluaciones (captura manual)">
+							<field name="fecha_revaluacion"/>
+							<field name="valor_revaluacion_voluntaria"/>
+							<field name="valor_revaluacion_reorganizacion"/>
+							<field name="valor_otras_revaluaciones"/>
+							<field name="dep_revaluacion_voluntaria"/>
+							<field name="dep_revaluacion_reorganizacion"/>
+							<field name="dep_otras_revaluaciones"/>
+						</group>
+						<group name="ple07_leasing" string="Arrendamiento financiero (7.4)">
+							<field name="es_leasing"/>
+							<field name="numero_contrato_leasing" invisible="not es_leasing" required="es_leasing"/>
+							<field name="fecha_contrato_leasing" invisible="not es_leasing" required="es_leasing"/>
+							<field name="fecha_inicio_leasing" invisible="not es_leasing" required="es_leasing"/>
+							<field name="numero_cuotas_leasing" invisible="not es_leasing" required="es_leasing"/>
+							<field name="monto_total_leasing" invisible="not es_leasing" required="es_leasing"/>
+						</group>
+					</group>
+					<group name="ple07_me" string="Moneda extranjera (7.3 — detectado del asiento origen)">
+						<group>
+							<field name="moneda_adquisicion_id"/>
+							<field name="valor_adquisicion_me"/>
+						</group>
+					</group>
+				</page>
+			</xpath>
+		</field>
+	</record>
+</odoo>
