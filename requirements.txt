@@ -4,7 +4,7 @@
 
 Pillow
 lxml
-PySimpleSOAP
+pysimplesoap @ git+https://github.com/nuageperu-promin/pysimplesoap.git@master
 future
 tornado
 xmlsec
