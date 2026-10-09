@@ -4,7 +4,7 @@ from lxml import etree
 from io import StringIO, BytesIO
 import xmlsec
 from collections import OrderedDict
-from pysimplesoap.client import SoapFault, fetch
+from pysimplesoap.client import SoapFault
 from odoo.exceptions import UserError, RedirectWarning
 import base64, zipfile
 from datetime import date, datetime, timedelta
