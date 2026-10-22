@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="zk_request_log_view_list" model="ir.ui.view">
+        <field name="name">zk.request.log.list</field>
+        <field name="model">zk.request.log</field>
+        <field name="arch" type="xml">
+            <list string="Peticiones del reloj" create="0" edit="0">
+                <field name="create_date"/>
+                <field name="device_id"/>
+                <field name="method"/>
+                <field name="path"/>
+                <field name="query"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="zk_request_log_view_form" model="ir.ui.view">
+        <field name="name">zk.request.log.form</field>
+        <field name="model">zk.request.log</field>
+        <field name="arch" type="xml">
+            <form string="Petición del reloj" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <field name="create_date"/>
+                        <field name="device_id"/>
+                        <field name="serial"/>
+                        <field name="method"/>
+                        <field name="path"/>
+                        <field name="query"/>
+                        <field name="status"/>
+                    </group>
+                    <group string="Cuerpo recibido"><field name="body" nolabel="1"/></group>
+                    <group string="Respuesta enviada"><field name="response" nolabel="1"/></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="zk_request_log_action" model="ir.actions.act_window">
+        <field name="name">Peticiones del reloj (diagnóstico)</field>
+        <field name="res_model">zk.request.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
