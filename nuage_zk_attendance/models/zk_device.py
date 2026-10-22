@@ -103,7 +103,11 @@ class ZkDevice(models.Model):
     def _compute_server(self):
         base = self.env['ir.config_parameter'].sudo().get_param('web.base.url', '')
         parsed = urlparse(base)
-        https = parsed.scheme == 'https'
+        host = parsed.hostname or ''
+        # Detrás de un proxy (nginx, Odoo.sh) web.base.url suele quedar en http://
+        # aunque el acceso público sea HTTPS. Solo servidores locales usan HTTP.
+        local = host in ('localhost', '127.0.0.1', '::1') or host.replace('.', '').isdigit()
+        https = parsed.scheme == 'https' or not local
         port = parsed.port or (443 if https else 80)
         for dev in self:
             dev.server_host = parsed.hostname or ''
