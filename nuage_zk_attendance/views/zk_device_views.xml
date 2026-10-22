@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="zk_device_view_list" model="ir.ui.view">
+        <field name="name">zk.device.list</field>
+        <field name="model">zk.device</field>
+        <field name="arch" type="xml">
+            <list string="Relojes marcadores" decoration-muted="state == 'draft'"
+                  decoration-danger="state == 'confirmed' and not is_online">
+                <field name="name"/>
+                <field name="serial_number"/>
+                <field name="model_name" optional="show"/>
+                <field name="location" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="last_activity"/>
+                <field name="is_online" widget="boolean"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'confirmed'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="zk_device_view_form" model="ir.ui.view">
+        <field name="name">zk.device.form</field>
+        <field name="model">zk.device</field>
+        <field name="arch" type="xml">
+            <form string="Reloj marcador">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmar"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'confirmed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_logs" type="object" class="oe_stat_button"
+                                icon="fa-clock-o">
+                            <field name="log_count" widget="statinfo" string="Marcaciones"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ej. Ingreso principal"/></h1>
+                    </div>
+                    <group>
+                        <group string="Equipo">
+                            <field name="active" invisible="1"/>
+                            <field name="serial_number"/>
+                            <field name="model_name"/>
+                            <field name="location"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="timezone"/>
+                        </group>
+                        <group string="Conexión">
+                            <field name="is_online" widget="boolean"/>
+                            <field name="last_activity"/>
+                            <field name="last_ip"/>
+                            <field name="push_version"/>
+                            <field name="att_stamp"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Configurar el reloj" name="setup">
+                            <div class="alert alert-info" role="alert">
+                                En el reloj: <b>Menú → Comunicación → Servidor en la nube
+                                (Conf. Srvr. de Nube)</b>. Modo de servidor: <b>ADMS</b>.
+                                Active <b>Nombre de dominio</b> y escriba los datos de abajo
+                                (sin "https://"). Active la opción <b>HTTPS</b> si el reloj la
+                                ofrece y reinicie el equipo.
+                            </div>
+                            <group>
+                                <field name="server_host"/>
+                                <field name="server_port"/>
+                                <field name="server_https"/>
+                            </group>
+                        </page>
+                        <page string="Reglas de marcación" name="rules">
+                            <group>
+                                <group>
+                                    <field name="punch_mode"/>
+                                    <field name="dedupe_seconds"/>
+                                    <field name="max_shift_hours"/>
+                                    <field name="auto_close_stale"/>
+                                </group>
+                                <group>
+                                    <field name="process_from"/>
+                                    <field name="debug"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="zk_device_view_search" model="ir.ui.view">
+        <field name="name">zk.device.search</field>
+        <field name="model">zk.device</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="serial_number"/>
+                <filter name="confirmed" string="Confirmados" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="zk_device_action" model="ir.actions.act_window">
+        <field name="name">Relojes marcadores</field>
+        <field name="res_model">zk.device</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

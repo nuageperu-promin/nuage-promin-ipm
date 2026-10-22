@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_zk_device" name="Relojes marcadores"
+              parent="hr_attendance.menu_hr_attendance_configuration"
+              action="zk_device_action" sequence="20"/>
+    <menuitem id="menu_zk_attendance_log" name="Marcaciones del reloj"
+              parent="hr_attendance.menu_hr_attendance_reporting"
+              action="zk_attendance_log_action" sequence="50"
+              groups="hr_attendance.group_hr_attendance_user"/>
+    <menuitem id="menu_zk_request_log" name="Peticiones del reloj (diagnóstico)"
+              parent="hr_attendance.menu_hr_attendance_configuration"
+              action="zk_request_log_action" sequence="30"
+              groups="base.group_no_one"/>
+</odoo>
