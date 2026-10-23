@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_oc_res_company_form" model="ir.ui.view">
+        <field name="name">res.company.form.nuage.oc</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Órdenes de compra (PROMIN)" name="nuage_oc">
+                    <group>
+                        <field name="nuage_oc_usar_formato"/>
+                    </group>
+                    <group string="OC Local">
+                        <field name="nuage_oc_notas_local" placeholder="Vacío = notas estándar de PROMIN (una por línea)"/>
+                        <field name="nuage_oc_pie_local"/>
+                    </group>
+                    <group string="OC Importación">
+                        <field name="nuage_oc_notas_importacion" placeholder="Vacío = notas estándar de PROMIN (una por línea)"/>
+                        <field name="nuage_oc_pie_importacion"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
