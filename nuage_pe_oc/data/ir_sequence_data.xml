@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- El número siguiente se ajusta en Ajustes > Técnico > Secuencias
+         (por ejemplo 561 para local y 696 para importación). -->
+    <record id="nuage_seq_oc_local" model="ir.sequence">
+        <field name="name">OC Local (PROMIN)</field>
+        <field name="code">nuage.oc.local</field>
+        <field name="prefix">PMS-</field>
+        <field name="padding">7</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="nuage_seq_oc_importacion" model="ir.sequence">
+        <field name="name">OC Importación (PROMIN)</field>
+        <field name="code">nuage.oc.importacion</field>
+        <field name="prefix">PMI-</field>
+        <field name="padding">7</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

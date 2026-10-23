@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_paperformat_oc" model="report.paperformat">
+        <field name="name">OC Nuage (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="nuage_action_report_oc" model="ir.actions.report">
+        <field name="name">Orden de compra (PROMIN)</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nuage_pe_oc.report_oc_document</field>
+        <field name="report_file">nuage_pe_oc.report_oc_document</field>
+        <field name="print_report_name">'OC-%s' % (object.name or 'borrador').replace('/', '-')</field>
+        <field name="paperformat_id" ref="nuage_paperformat_oc"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_oc_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="d" t-value="datos[o.id]"/>
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000;">
+                    <meta charset="utf-8"/>
+                    <style>
+                        .oc td, .oc th { padding: 2px 4px; vertical-align: top; }
+                        .oc .box { border: 1px solid #000; }
+                        .oc .lbl { font-size: 7pt; color: #333; }
+                        .oc .rojo { color: #c00000; }
+                        .oc table.items { width: 100%; border-collapse: collapse; }
+                        .oc table.items th { border: 1px solid #000; background: #e6e6e6; text-align: center; font-size: 8pt; }
+                        .oc table.items td { border-left: 1px solid #000; border-right: 1px solid #000; font-size: 8pt; }
+                        .oc table.items tr.cierre td { border-top: 1px solid #000; }
+                        .oc .der { text-align: right; }
+                        .oc .cen { text-align: center; }
+                    .oc .hd { background: #e1e1f5; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 8.5pt; }
+                        .oc .cen2 { border-left: 1px solid #000; }
+                        .oc table.mini { width: 100%; border-collapse: collapse; }
+                        .oc table.mini th { background: #e1e1f5; border: 1px solid #000; text-align: center; font-size: 9.5pt; }
+                        .oc table.mini td { border: 1px solid #000; text-align: center; font-size: 9.5pt; }
+                        .oc.loc .grid td { font-size: 8.5pt; }
+                        .oc.loc table.items td { padding-top: 1px; padding-bottom: 1px; }
+                        .oc.loc table.items th { background: #e1e1f5; }
+                    </style>
+                    <t t-if="d['tipo'] == 'local'">
+                    <div class="oc loc">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td colspan="2" style="padding:0;">
+                                    <img t-if="d['logo']" t-att-src="d['logo']" style="max-height:80px; max-width:60%;"/>
+                                    <div t-else="" style="font-weight:bold; font-size:18pt; color:#1f4e9c;" t-out="o.company_id.name"/>
+                                    <div style="font-size:8pt;" t-out="d['contacto_1']"/>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="font-size:8pt; padding:0; vertical-align:bottom;" t-out="d['contacto_2']"/>
+                                <td style="padding:0;">
+                                    <table style="width:100%; border-collapse:collapse; border:1px solid #000; border-bottom:0;">
+                                        <tr>
+                                            <td style="font-weight:bold; font-size:12pt; border-right:1px solid #000; width:50%;">ORDEN DE COMPRA</td>
+                                            <td style="font-weight:bold; font-size:12pt; text-align:center;" t-out="d['numero']"/>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="grid" style="width:100%; border-collapse:collapse; table-layout:fixed; border:1px solid #000;">
+                            <tr>
+                                <th class="hd">PROVEEDOR</th>
+                                <th class="hd">FECHA EMISION DE ORDEN</th>
+                                <th class="hd">ENTREGA EN:</th>
+                            </tr>
+                            <tr>
+                                <td rowspan="9" style="border-right:1px solid #000; vertical-align:top;">
+                                    <div style="font-weight:bold; font-size:12pt;" t-out="d['proveedor']['nombre']"/>
+                                    <div t-if="d['proveedor']['ruc']" style="font-weight:bold; font-size:12pt;">RUC: <t t-out="d['proveedor']['ruc']"/></div>
+                                    <div style="height:14px;"/>
+                                    <div t-out="d['proveedor']['direccion']"/>
+                                    <div>Telf: <t t-out="d['proveedor']['telefono']"/></div>
+                                    <div>ATTE: <t t-out="d['proveedor']['contacto']"/></div>
+                                </td>
+                                <td class="cen" style="border-right:1px solid #000;" t-out="d['fecha']"/>
+                                <td rowspan="3" style="vertical-align:top;" t-out="d['entrega_direccion'] or d['entrega_nombre']"/>
+                            </tr>
+                            <tr><th class="hd cen2">FORMA DE PAGO</th></tr>
+                            <tr><td class="cen" style="border-right:1px solid #000;" t-out="d['forma_pago']"/></tr>
+                            <tr><th class="hd cen2">MONEDA</th><th class="hd">FACTURAR A NOMBRE DE:</th></tr>
+                            <tr>
+                                <td class="cen" style="border-right:1px solid #000;" t-out="d['moneda']"/>
+                                <td rowspan="5" style="vertical-align:top;">
+                                    <div t-out="d['facturar']['nombre']"/>
+                                    <div t-out="d['facturar']['direccion']"/>
+                                    <div t-if="d['facturar']['ruc']">RUC: <t t-out="d['facturar']['ruc']"/></div>
+                                </td>
+                            </tr>
+                            <tr><th class="hd cen2">Nº DE COTIZACION</th></tr>
+                            <tr><td class="cen" style="border-right:1px solid #000;" t-out="d['cotizacion']"/></tr>
+                            <tr><th class="hd cen2">REGISTRO</th></tr>
+                            <tr><td class="cen" style="border-right:1px solid #000;" t-out="d['registro']"/></tr>
+                            <tr><th class="hd" colspan="3" style="border-top:1px solid #000;">NOTAS</th></tr>
+                            <tr>
+                                <td colspan="3" style="border-top:1px solid #000;">
+                                    <div t-foreach="d['notas']" t-as="nota" class="rojo" style="font-size:8.5pt;" t-out="nota"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="items" style="border:1px solid #000;">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;">ITEM</th>
+                                    <th style="width:9%;">CANT</th>
+                                    <th style="width:5%;">U.M</th>
+                                    <th>DESCRIPCIÓN</th>
+                                    <th style="width:13%;">CAT. No</th>
+                                    <th style="width:10%;">ENTREGA</th>
+                                    <th style="width:8%;">P. UNIT</th>
+                                    <th style="width:12%;">PRECIO TOTAL <t t-out="d['simbolo']"/></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="d['items']" t-as="it">
+                                    <tr t-if="it['nota']">
+                                        <td colspan="3"></td>
+                                        <td class="rojo" t-out="it['desc']"/>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                    <tr t-else="">
+                                        <td class="cen" t-out="it['n']"/>
+                                        <td class="der" t-out="it['cant']"/>
+                                        <td class="cen" t-out="it['um']"/>
+                                        <td t-out="it['desc']"/>
+                                        <td class="cen" t-out="it['cat']"/>
+                                        <td class="cen" t-out="it['entrega']"/>
+                                        <td class="der" t-out="it['pu']"/>
+                                        <td class="der" t-out="it['total']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td colspan="8" style="height:130px; vertical-align:bottom; text-align:center; font-weight:bold; font-size:10pt;">
+                                        <div t-foreach="d['pie']" t-as="linea" t-out="linea"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="height:10px;"/>
+                        <table style="width:100%; border-collapse:separate; table-layout:fixed;">
+                            <tr>
+                                <td style="width:28%;">
+                                    <table class="mini"><tr><th>TOTAL BRUTO &#160;&#160; <t t-out="d['simbolo']"/></th></tr><tr><td t-out="d['bruto']"/></tr></table>
+                                </td>
+                                <td style="width:6%;"></td>
+                                <td style="width:28%;">
+                                    <table class="mini"><tr><th>IGV &#160;&#160; <t t-out="d['porcentaje_igv']"/> % &#160;&#160; <t t-out="d['simbolo']"/></th></tr><tr><td t-out="d['igv']"/></tr></table>
+                                </td>
+                                <td style="width:10%;"></td>
+                                <td style="width:28%;">
+                                    <table class="mini"><tr><th>TOTAL NETO &#160;&#160; <t t-out="d['simbolo']"/></th></tr><tr><td t-out="d['total']"/></tr></table>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="height:8px;"/>
+                        <table style="width:100%; border:1px solid #000; border-collapse:collapse; font-weight:bold; font-size:8pt;">
+                            <tr>
+                                <td style="width:55%; padding:6px;">COMPRADOR: <t t-out="d['comprador']"/></td>
+                                <td style="padding:6px;">APROBADO POR: <t t-out="d['aprobado_por']"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                    </t>
+                    <t t-else="">
+                    <div class="oc loc imp">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td style="padding:0;" colspan="2">
+                                    <img t-if="d['logo']" t-att-src="d['logo']" style="max-height:80px; max-width:60%;"/>
+                                    <div t-else="" style="font-weight:bold; font-size:18pt; color:#1f4e9c;" t-out="o.company_id.name"/>
+                                    <div style="font-size:8pt;" t-out="d['contacto_1']"/>
+                                </td>
+                                <td rowspan="2" style="padding:0; vertical-align:bottom; width:38%;">
+                                    <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
+                                        <tr>
+                                            <td style="font-weight:bold; font-size:11pt; border-right:1px solid #000; width:50%;">PURCHASE ORDER</td>
+                                            <td style="font-weight:bold; font-size:11pt; text-align:center;" t-out="d['numero']"/>
+                                        </tr>
+                                        <tr style="border-top:1px solid #000;">
+                                            <td style="font-weight:bold; font-size:11pt; border-right:1px solid #000;">OUR REFERENCE</td>
+                                            <td style="font-weight:bold; font-size:11pt; text-align:center;" t-out="d['referencia']"/>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="font-size:8pt; padding:0; vertical-align:bottom;" t-out="d['contacto_2']"/>
+                            </tr>
+                        </table>
+                        <table class="grid" style="width:100%; border-collapse:collapse; table-layout:fixed; border:1px solid #000;">
+                            <tr>
+                                <th class="hd">SUPPLIER/PROVEEDOR</th>
+                                <th class="hd">ORDER DATE/FECHA ORDEN</th>
+                                <th class="hd">SHIP TO:</th>
+                            </tr>
+                            <tr>
+                                <td rowspan="7" style="border-right:1px solid #000; vertical-align:top;">
+                                    <div style="font-weight:bold; font-size:12pt;" t-out="d['proveedor']['nombre']"/>
+                                    <div t-if="d['proveedor']['ruc']" style="font-weight:bold; font-size:12pt;">RUC: <t t-out="d['proveedor']['ruc']"/></div>
+                                    <div style="height:14px;"/>
+                                    <div t-out="d['proveedor']['direccion']"/>
+                                    <div>Telf: <t t-out="d['proveedor']['telefono']"/></div>
+                                    <div>ATTE: <t t-out="d['proveedor']['contacto']"/></div>
+                                </td>
+                                <td class="cen" style="border-right:1px solid #000;" t-out="d['fecha']"/>
+                                <td rowspan="5" style="vertical-align:top;">
+                                    <div t-out="d['entrega_nombre']"/>
+                                    <div t-out="d['entrega_direccion']"/>
+                                </td>
+                            </tr>
+                            <tr><th class="hd cen2">PAYMENT TERMS/F.PAGO</th></tr>
+                            <tr><td class="cen" style="border-right:1px solid #000;" t-out="d['forma_pago']"/></tr>
+                            <tr><th class="hd cen2">CURRENCY/MONEDA</th></tr>
+                            <tr><td class="cen" style="border-right:1px solid #000;" t-out="d['moneda']"/></tr>
+                            <tr><th class="hd cen2">INCOTERMS 2000</th><th class="hd">INVOICE TO</th></tr>
+                            <tr>
+                                <td class="cen" style="border-right:1px solid #000;" t-out="d['incoterm']"/>
+                                <td rowspan="3" style="vertical-align:top;">
+                                    <div t-out="d['facturar']['nombre']"/>
+                                    <div t-out="d['facturar']['direccion']"/>
+                                    <div t-if="d['facturar']['ruc']">RUC: <t t-out="d['facturar']['ruc']"/></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="hd" style="border-top:1px solid #000;">QUOTE NUMBER/Nº DE COTIZ.</th>
+                                <th class="hd" style="border-top:1px solid #000;">METHOD OF SHIPMENT</th>
+                            </tr>
+                            <tr>
+                                <td class="cen" style="height:18px; border-right:1px solid #000;" t-out="d['cotizacion']"/>
+                                <td class="cen" style="border-right:1px solid #000;" t-out="d['metodo_envio']"/>
+                            </tr>
+                            <tr><th class="hd" colspan="3" style="border-top:1px solid #000;">NOTES / NOTAS</th></tr>
+                            <tr>
+                                <td colspan="3" style="border-top:1px solid #000;">
+                                    <table style="width:100%;">
+                                        <tr>
+                                            <td t-foreach="d['notas_columnas']" t-as="col" style="width:50%;">
+                                                <div t-foreach="col" t-as="nota" class="rojo" style="font-size:8.5pt;" t-out="nota"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="items" style="border:1px solid #000;">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;">ITEM</th>
+                                    <th style="width:9%;">QTY</th>
+                                    <th style="width:5%;">U.M</th>
+                                    <th>DESCRIPTION/DESCRIPCIÓN</th>
+                                    <th style="width:13%;">CAT. No</th>
+                                    <th style="width:9%;">DELYVERY DATE</th>
+                                    <th style="width:8%;">UNIT PRICE</th>
+                                    <th style="width:13%;">TOTAL PRICE <t t-out="d['simbolo']"/></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="d['items']" t-as="it">
+                                    <tr t-if="it['nota']">
+                                        <td colspan="3"></td>
+                                        <td class="rojo" t-out="it['desc']"/>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                    <tr t-else="">
+                                        <td class="cen" t-out="it['n']"/>
+                                        <td class="der" t-out="it['cant']"/>
+                                        <td class="cen" t-out="it['um']"/>
+                                        <td t-out="it['desc']"/>
+                                        <td class="cen" t-out="it['cat']"/>
+                                        <td class="cen" t-out="it['entrega']"/>
+                                        <td class="der" t-out="it['pu']"/>
+                                        <td class="der" t-out="it['total']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td></td><td></td><td></td>
+                                    <td style="height:150px; vertical-align:bottom; padding-left:40px; font-weight:bold; font-size:10pt;">
+                                        <div t-foreach="d['pie']" t-as="linea" t-out="linea"/>
+                                    </td>
+                                    <td></td><td></td><td></td><td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="height:10px;"/>
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="width:55%;"></td>
+                                <td style="width:45%;">
+                                    <table class="mini"><tr><th style="width:55%;">TOTAL &#160;&#160; <t t-out="d['simbolo']"/></th><td t-out="d['bruto']"/></tr></table>
+                                    <div style="height:6px;"/>
+                                    <table class="mini"><tr><th style="width:55%;">TOTAL ORDER &#160;&#160; <t t-out="d['simbolo']"/></th><td t-out="d['total']"/></tr></table>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="height:8px;"/>
+                        <table style="width:100%; border:1px solid #000; border-collapse:collapse; font-weight:bold; font-size:8pt;">
+                            <tr>
+                                <td style="width:55%; padding:6px;">COMPRADOR: <t t-out="d['comprador']"/></td>
+                                <td style="padding:6px;">APROBADO POR: <t t-out="d['aprobado_por']"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
