@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Los libros PLE de este módulo son modelos propios (_name nuevo): la
+             regla multiempresa de ple.report.templ no les aplica, hay que
+             declararla para cada uno. -->
+        <record id="ple_report_01_company_rule" model="ir.rule">
+            <field name="name">PLE 01 por empresa</field>
+            <field name="model_id" ref="model_ple_report_01"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_report_03_company_rule" model="ir.rule">
+            <field name="name">PLE 03 por empresa</field>
+            <field name="model_id" ref="model_ple_report_03"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="ple_report_03_archivo_company_rule" model="ir.rule">
+            <field name="name">PLE 03 archivo por empresa</field>
+            <field name="model_id" ref="model_ple_report_03_archivo"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">[('report_id.company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

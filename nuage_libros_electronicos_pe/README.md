@@ -3,12 +3,13 @@
 Libros electrónicos PLE de SUNAT que `solse_pe_ple_pro` no trae. Se instala
 **encima** de `solse_pe_ple_pro` y reutiliza sus campos y helpers.
 
-**Versión:** 19.0.1.0.0 · **Estado:** Libro 1 listo para probar en *develop*.
+**Versión:** 19.0.1.1.0 · **Estado:** Libro 1 y estructura 3.1 listos para probar en *develop*.
 
 | Libro | Estructuras | Estado |
 |---|---|---|
 | 1 — Caja y Bancos | 1.1 (010100) efectivo · 1.2 (010200) cuenta corriente | Hecho |
-| 3 — Inventarios y Balances | 3.x | Pendiente |
+| 3 — Inventarios y Balances | 3.1 (030100) estado de situación financiera | Hecho |
+| 3 — Inventarios y Balances | 3.17, 3.18–3.20, 3.24, 3.25, 3.16.1/3.16.2 y detalles 3.2–3.15 | Pendiente |
 | 12 / 13 — Inventario permanente | 12.1 (unidades) · 13.1 (valorizado) | Pendiente |
 | Accionarial | 3.16.2 | Pendiente |
 
@@ -75,14 +76,67 @@ Todas salen de la hoja oficial «1 Libro Caja y Bancos» y de «Reglas Generales
 - No bloquea si la empresa está marcada como *eximida de presentar Caja y
   Bancos*: el libro se puede generar igual.
 
+## Libro 3 — Inventarios y Balances
+
+### Estructura 3.1 — Estado de situación financiera
+
+Menú: **SUNAT → Libros electrónicos (PLE) → Estructura 03 - Libro Inventarios y
+Balances**. Un registro por año; el balance es **al 31 de diciembre** (código de
+oportunidad `01`). Los archivos quedan en la pestaña *Archivos generados* y el
+formulario muestra la verificación: total activo, total pasivo y patrimonio,
+diferencia y resultado sin cerrar.
+
+Cómo se calcula:
+
+- **Saldo de cada cuenta** = suma de los apuntes publicados hasta el 31/12. Es la
+  misma fuente del Balance de comprobación nativo, así que los totales deben
+  coincidir con ese reporte (no se usa su motor: es solo Enterprise y cambia
+  entre versiones).
+- **Rubro de la cuenta** = el primer rubro válido (del 3.1 y del sector de la
+  empresa) entre `pe_t34_esf`, el campo legado `pe_tabla34_id` y
+  `pe_t34_patrimonio`. El asistente *Asignar Rubros EEFF (Tabla 34)* deja las
+  cuentas 50x–59x solo en `pe_t34_patrimonio` (con rubros `1D07xx`, que son del
+  3.1), por eso también se lee ese campo.
+- **Saldo del rubro** = suma de sus cuentas en su sentido natural (activo: debe −
+  haber; pasivo y patrimonio: haber − debe). Una depreciación acumulada resta de
+  su rubro y una pérdida acumulada sale con signo menos.
+- **Resultado sin cerrar**: si las cuentas de ingresos y gastos aún tienen saldo
+  (asiento de cierre pendiente) se informa en el *Rubro del resultado no
+  cerrado* (por defecto `1D0707` Resultados Acumulados, sector 01). Con el cierre
+  registrado no se usa.
+- Una fila por rubro (C1, C2 y C3 son llave única); los rubros en cero no se
+  informan. El catálogo (C2) es el *Sector contable* de la compañía (`01`).
+
+La generación **se detiene** (y lo explica) cuando:
+
+- una cuenta con saldo no tiene un rubro válido — lista las cuentas;
+- hay resultado sin cerrar y no hay rubro donde informarlo;
+- el estado no cuadra (activo ≠ pasivo + patrimonio, tolerancia de un céntimo).
+
+Puntos abiertos del 3.1 (por validar con el PLE de SUNAT):
+
+- **Subtotales y totales no se generan.** Solo salen los rubros asignados a
+  cuentas; no los de total (`1D01ST`, `1D020T`, `1D070T`…) ni los de agrupación
+  (`1D0121`, `1D0118`…). Falta confirmar si el validador los exige.
+- **Corriente / no corriente.** El asistente de asignación manda todo el pasivo a
+  rubros corrientes (`1D03xx`) y no usa los no corrientes (`1D04xx`): la deuda de
+  largo plazo hay que asignarla a mano o saldrá como corriente.
+- **Nombre del archivo** con mes y día del balance (`…20261231030100 01…`), según
+  la hoja de nombres de SUNAT.
+- **Solo la oportunidad `01`** (31 de diciembre); no se generan los balances de
+  fusión, cese o libre propósito (`02` a `07`).
+- Importes en soles.
+
 ## Pruebas
 
-La capa de formato (`models/ple_01_format.py`) son funciones puras y se prueba
-sin Odoo:
+La capa de formato (`models/ple_01_format.py`, `models/ple_03_format.py`) son
+funciones puras y se prueba sin Odoo:
 
 ```
 python3 -m unittest discover -s nuage_libros_electronicos_pe/tests -v
 ```
 
-El modelo (`models/ple_report_01.py`) hay que probarlo instalado, en *develop*,
-con un mes que tenga cobros en efectivo y pagos bancarios.
+Los modelos (`ple_report_01.py`, `ple_report_03.py`) hay que probarlos instalados,
+en *develop*: el Libro 1 con un mes que tenga cobros en efectivo y pagos
+bancarios, y el 3.1 con un ejercicio cuyo plan de cuentas ya tenga rubros
+asignados (y comparando los totales con el Balance de comprobación nativo).

@@ -17,10 +17,10 @@ versión de un desarrollo propio:
 
 ---
 
-## 2026-10-24 — nuage_libros_electronicos_pe (nuevo, 19.0.1.0.0)
+## 2026-10-24 — nuage_libros_electronicos_pe (nuevo, 19.0.1.1.0)
 
-- **Motivo:** se perdieron los módulos de los libros PLE de Caja y Bancos, Inventarios y Balances, Inventario Permanente y Accionarial; no estaban en el repositorio ni en su historial (solo la instancia demo de SOLSE los conservaba). Se reconstruyen desde la estructura oficial de SUNAT, empezando por el Libro 1.
-- **Acción:** módulo nuevo en rama `feature/ple-01-caja-bancos` con las estructuras 1.1 (efectivo) y 1.2 (cuenta corriente). Depende de `solse_pe_ple_pro`. Instalar primero en *develop* y probar con un mes que tenga efectivo y pagos bancarios. Los diarios de banco deben tener número de cuenta (si no, la generación se detiene y los lista). Ver `nuage_libros_electronicos_pe/README.md`.
+- **Motivo:** se perdieron los módulos de los libros PLE de Caja y Bancos, Inventarios y Balances, Inventario Permanente y Accionarial; no estaban en el repositorio ni en su historial (solo la instancia demo de SOLSE los conservaba). Se reconstruyen desde la estructura oficial de SUNAT, empezando por el Libro 1 y la estructura 3.1.
+- **Acción:** módulo nuevo en rama `feature/ple-01-caja-bancos` con las estructuras 1.1 (efectivo), 1.2 (cuenta corriente) y 3.1 (estado de situación financiera). Depende de `solse_pe_ple_pro` y `solse_pe_accountant`. Instalar primero en *develop*. Libro 1: los diarios de banco deben tener número de cuenta (si no, la generación se detiene y los lista). 3.1: el plan de cuentas debe tener rubros de la Tabla 34 asignados (asistente *Asignar Rubros EEFF*); comparar los totales con el Balance de comprobación nativo. Ver `nuage_libros_electronicos_pe/README.md`.
 
 ---
 

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ple_report_03_list" model="ir.ui.view">
+            <field name="name">ple.report.03.list</field>
+            <field name="model">ple.report.03</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_list"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <!-- El balance es anual: se deja el mes oculto, como en la plantilla. -->
+                </data>
+            </field>
+        </record>
+
+        <record id="view_ple_report_03_form" model="ir.ui.view">
+            <field name="name">ple.report.03.form</field>
+            <field name="model">ple.report.03</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_form"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='company_id']" position="after">
+                        <field name="rubro_resultado_id" options="{'no_create': True}"
+                               invisible="state == 'declarado'"/>
+                    </xpath>
+                    <xpath expr="//group[@name='data_file_groups']" position="after">
+                        <group string="Verificación del balance al 31 de diciembre" name="verificacion"
+                               invisible="not date_generated">
+                            <group>
+                                <field name="total_activo"/>
+                                <field name="total_pasivo_patrimonio"/>
+                                <field name="diferencia_balance"/>
+                            </group>
+                            <group>
+                                <field name="resultado_no_cerrado"/>
+                            </group>
+                        </group>
+                    </xpath>
+                    <xpath expr="//notebook" position="inside">
+                        <page name="archivos" string="Archivos generados">
+                            <field name="archivo_ids" nolabel="1">
+                                <list create="0" delete="0" edit="0">
+                                    <field name="estructura"/>
+                                    <field name="txt_filename" column_invisible="1"/>
+                                    <field name="txt_binary" filename="txt_filename"/>
+                                    <field name="xls_filename" column_invisible="1"/>
+                                    <field name="xls_binary" filename="xls_filename"/>
+                                </list>
+                            </field>
+                        </page>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="view_ple_report_03_search" model="ir.ui.view">
+            <field name="name">ple.report.03.search</field>
+            <field name="model">ple.report.03</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_search"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//filter[@name='group_by_date_year']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="action_ple_report_03" model="ir.actions.act_window">
+            <field name="name">Libro de Inventarios y Balances</field>
+            <field name="res_model">ple.report.03</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_group_by_date_year': 1}</field>
+        </record>
+
+        <menuitem name="Estructura 03 - Libro Inventarios y Balances"
+            id="menu_action_ple_report_03"
+            parent="solse_pe_ple_pro.menu_ple_report"
+            action="action_ple_report_03"
+            sequence="3"/>
+    </data>
+</odoo>

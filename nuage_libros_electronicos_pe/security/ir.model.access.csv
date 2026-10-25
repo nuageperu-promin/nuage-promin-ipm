@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ple_report_01_usuario,ple.report.01 usuario,model_ple_report_01,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
 access_ple_report_01_gerente,ple.report.01 gerente,model_ple_report_01,solse_pe_ple_pro.group_ple_gerente,1,1,1,1
+access_ple_report_03_usuario,ple.report.03 usuario,model_ple_report_03,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
+access_ple_report_03_gerente,ple.report.03 gerente,model_ple_report_03,solse_pe_ple_pro.group_ple_gerente,1,1,1,1
+access_ple_report_03_archivo_usuario,ple.report.03.archivo usuario,model_ple_report_03_archivo,solse_pe_ple_pro.group_ple_usuario,1,0,0,0
+access_ple_report_03_archivo_gerente,ple.report.03.archivo gerente,model_ple_report_03_archivo,solse_pe_ple_pro.group_ple_gerente,1,1,1,1

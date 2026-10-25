@@ -33,7 +33,7 @@ del nombre, no por carpetas:
 | `promin_trazabilidad_compras` | Pendiente de especificación |
 | `promin_control_obligaciones_financieras` | Pendiente de especificación |
 | `promin_asiento_cierre_contable` | Pendiente de especificación |
-| `nuage_libros_electronicos_pe` | Libro 1 (Caja y Bancos) hecho en rama `feature/ple-01-caja-bancos`; faltan Libros 3, 12, 13 y Accionarial |
+| `nuage_libros_electronicos_pe` | Libro 1 (Caja y Bancos) y estructura 3.1 hechos en rama `feature/ple-01-caja-bancos`; faltan el resto del Libro 3, 12, 13 y Accionarial |
 | `promin_libro_activo_fijo` | Pendiente de especificación |
 | `promin_gestion_ubicaciones_almacen` | Pendiente de especificación |
 | `promin_rentabilidad_lote_capa2` | Pendiente de especificación |
