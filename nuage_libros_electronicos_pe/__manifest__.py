@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2026 NUAGE PERU SAC
 {
-    'name': 'Libros electrónicos PLE (PROMIN)',
+    'name': 'Libros electrónicos PLE (Nuage)',
     'summary': 'Libro Caja y Bancos (estructuras 1.1 y 1.2) del PLE de SUNAT',
     'description': """
 Libros electrónicos PLE — PROMIN

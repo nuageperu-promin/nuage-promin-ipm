@@ -4,7 +4,7 @@
 
 Ejecutar desde la raíz del repositorio:
 
-    python3 -m unittest discover -s promin_libros_electronicos_pe/tests -v
+    python3 -m unittest discover -s nuage_libros_electronicos_pe/tests -v
 
 El directorio no tiene ``__init__.py`` a propósito: Odoo no lo carga como
 suite de pruebas del módulo, y estas pruebas no necesitan base de datos.

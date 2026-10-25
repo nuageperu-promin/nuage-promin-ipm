@@ -1,4 +1,4 @@
-# promin_libros_electronicos_pe
+# nuage_libros_electronicos_pe
 
 Libros electrónicos PLE de SUNAT que `solse_pe_ple_pro` no trae. Se instala
 **encima** de `solse_pe_ple_pro` y reutiliza sus campos y helpers.
@@ -81,7 +81,7 @@ La capa de formato (`models/ple_01_format.py`) son funciones puras y se prueba
 sin Odoo:
 
 ```
-python3 -m unittest discover -s promin_libros_electronicos_pe/tests -v
+python3 -m unittest discover -s nuage_libros_electronicos_pe/tests -v
 ```
 
 El modelo (`models/ple_report_01.py`) hay que probarlo instalado, en *develop*,
