@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ple_report_01_list" model="ir.ui.view">
+            <field name="name">ple.report.01.list</field>
+            <field name="model">ple.report.01</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_list"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='month']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="view_ple_report_01_form" model="ir.ui.view">
+            <field name="name">ple.report.01.form</field>
+            <field name="model">ple.report.01</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_form"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='month']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+                    <xpath expr="//group[@name='file_group']" position="inside">
+                        <div class="o_td_label o_form_label"/>
+                        <div><br/></div>
+                        <field name="ple_txt_02_filename" invisible="1"/>
+                        <field name="ple_txt_02_binary" filename="ple_txt_02_filename" invisible="ple_txt_02_binary == False"/>
+                        <field name="ple_xls_02_filename" invisible="1"/>
+                        <field name="ple_xls_02_binary" filename="ple_xls_02_filename" invisible="ple_xls_02_binary == False"/>
+                    </xpath>
+                    <xpath expr="//notebook" position="inside">
+                        <page name="ple_txt_02" invisible="1">
+                            <group name="ple_txt_02">
+                                <field name="ple_txt_02"/>
+                            </group>
+                        </page>
+                        <page name="report_01_line" string="Líneas">
+                            <field name="line_ids" nolabel="1"/>
+                        </page>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="view_ple_report_01_search" model="ir.ui.view">
+            <field name="name">ple.report.01.search</field>
+            <field name="model">ple.report.01</field>
+            <field name="inherit_id" ref="solse_pe_ple_pro.view_ple_report_templ_search"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//filter[@name='group_by_date_year']" position="attributes">
+                        <attribute name="invisible"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="action_ple_report_01" model="ir.actions.act_window">
+            <field name="name">Libro Caja y Bancos</field>
+            <field name="res_model">ple.report.01</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_group_by_date_year': 1}</field>
+        </record>
+
+        <menuitem name="Estructura 01 - Libro Caja y Bancos"
+            id="menu_action_ple_report_01"
+            parent="solse_pe_ple_pro.menu_ple_report"
+            action="action_ple_report_01"
+            sequence="1"/>
+    </data>
+</odoo>

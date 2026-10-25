@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-24 — promin_libros_electronicos_pe (nuevo, 19.0.1.0.0)
+
+- **Motivo:** se perdieron los módulos de los libros PLE de Caja y Bancos, Inventarios y Balances, Inventario Permanente y Accionarial; no estaban en el repositorio ni en su historial (solo la instancia demo de SOLSE los conservaba). Se reconstruyen desde la estructura oficial de SUNAT, empezando por el Libro 1.
+- **Acción:** módulo nuevo en rama `feature/ple-01-caja-bancos` con las estructuras 1.1 (efectivo) y 1.2 (cuenta corriente). Depende de `solse_pe_ple_pro`. Instalar primero en *develop* y probar con un mes que tenga efectivo y pagos bancarios. Los diarios de banco deben tener número de cuenta (si no, la generación se detiene y los lista). Ver `promin_libros_electronicos_pe/README.md`.
+
+---
+
 ## 2026-10-23 — nuage_pe_oc y nuage_pe_factura_pdf (nuevos, 19.0.1.0.0 y 19.0.1.1.0)
 
 - **Motivo:** formatos PDF de PROMIN enviados por Alicia Quispe: orden de compra local (PMS) e importación (PMI), factura electrónica y notas de crédito/débito.
