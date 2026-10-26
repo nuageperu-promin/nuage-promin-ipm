@@ -3,7 +3,7 @@
 {
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'SIRE SUNAT - Compras',
-	'version': '19.0.2.6',
+	'version': '19.0.2.7',
 	'license': 'Other proprietary',
 	'summary': 'Compras para la declaración de SIRE a SUNAT',
 	'category': 'Financial',
@@ -101,6 +101,7 @@
 		'security/ir.model.access.csv',
 		'views/sire_report_views.xml',
 		'views/compras_recibidas_form.xml',
+		'views/crear_factura_wizard_views.xml',
 		'views/sire_menu_view.xml',
 		'views/account_move_sire_view.xml',
 	],

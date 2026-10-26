@@ -123,7 +123,7 @@
                   <button type="object" name="enlazar_con_factura" string="Enlazar"
                           icon="fa-link"
                           invisible="factura_enlazada"/>
-                  <button type="object" name="crear_factura" string="Crear factura"
+                  <button type="object" name="action_abrir_wizard_crear_factura" string="Crear factura"
                           icon="fa-plus"
                           invisible="factura_enlazada"/>
                   <button type="object" name="ver_factura" string="Ver factura"

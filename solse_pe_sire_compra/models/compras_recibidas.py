@@ -484,7 +484,26 @@ class ComprasRecibidas(models.Model):
 			)
 		return tipo_doc
 
-	def crear_factura(self):
+	def action_abrir_wizard_crear_factura(self):
+		"""Abre el modal para completar Etiqueta, Cuenta, Analitica y Diario
+		antes de generar el borrador de la factura."""
+		self.ensure_one()
+		if self.factura_enlazada:
+			raise UserError("Este comprobante ya tiene una factura enlazada.")
+		return {
+			"type": "ir.actions.act_window",
+			"name": "Crear factura",
+			"res_model": "solse.pe.sire.crear.factura.wizard",
+			"view_mode": "form",
+			"target": "new",
+			"context": {"default_compra_id": self.id},
+		}
+
+	def crear_factura(self, etiqueta=None, account_id=None,
+	                  analytic_distribution=None, journal_id=None):
+		"""Crea el borrador de factura. Los 4 parametros opcionales vienen del
+		wizard de la propuesta SUNAT; la creacion masiva no los envia y
+		conserva el comportamiento anterior."""
 		self.ensure_one()
 		if self.factura_enlazada:
 			return
@@ -500,14 +519,26 @@ class ComprasRecibidas(models.Model):
 		)
 		move_type = "in_refund" if (self.tipo_doc or "") == "07" else "in_invoice"
 
+		lineas = self.obtener_lineas_a_facturar()
+		# Valores elegidos por el usuario en el wizard (se aplican a todas las lineas)
+		for _cmd, _id, linea_vals in lineas:
+			if etiqueta:
+				linea_vals["name"] = etiqueta
+			if account_id:
+				linea_vals["account_id"] = account_id
+			if analytic_distribution:
+				linea_vals["analytic_distribution"] = analytic_distribution
+
 		vals = {
 			"move_type": move_type,
 			"invoice_date": self.fecha_emision,
 			"company_id": self.periodo_id.company_id.id,
 			"partner_id": contacto.id,
 			"ref": "%s-%s" % (self.serie or "", self.nro_correlativo or ""),
-			"invoice_line_ids": self.obtener_lineas_a_facturar(),
+			"invoice_line_ids": lineas,
 		}
+		if journal_id:
+			vals["journal_id"] = journal_id
 		if moneda:
 			vals["currency_id"] = moneda.id
 		if tipo_documento:
