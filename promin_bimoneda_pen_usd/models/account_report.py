@@ -46,6 +46,12 @@ class AccountReport(models.Model):
             self = self.with_context(nuage_balance_usd=True)
         return super(AccountReport, self)._compute_formula_batch_with_engine_domain(options, *args, **kwargs)
 
+    def _compute_formula_batch_with_engine_account_codes(self, options, *args, **kwargs):
+        # Motor usado por los reportes del PCGE (variantes «PE»).
+        if options.get('nuage_moneda') == 'USD':
+            self = self.with_context(nuage_balance_usd=True)
+        return super(AccountReport, self)._compute_formula_batch_with_engine_account_codes(options, *args, **kwargs)
+
     def _currency_table_apply_rate(self, value):
         if self.env.context.get('nuage_balance_usd') and value.code == 'account_move_line.balance':
             # Ya está en dólares: no se aplica la tabla de conversión de compañías.
