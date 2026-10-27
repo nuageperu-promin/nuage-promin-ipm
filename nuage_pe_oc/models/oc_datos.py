@@ -91,11 +91,15 @@ def _columnas(lineas):
     return [lineas[:mitad], lineas[mitad:]]
 
 
-def preparar_datos(orden):
-    """Devuelve el diccionario que consume la plantilla del reporte."""
+def preparar_datos(orden, formato='local'):
+    """Devuelve el diccionario que consume la plantilla del reporte.
+
+    ``formato`` es el diseño a imprimir: 'local' o 'importacion'. No depende
+    del tipo de OC (una OC PMS puede ser local o de importación).
+    """
     company = orden.company_id
     partner = orden.partner_id
-    tipo = getattr(orden, 'nuage_tipo_oc', None) or 'local'
+    tipo = formato if formato in ('local', 'importacion') else 'local'
     moneda_codigo = orden.currency_id.name
     moneda_nombre, simbolo = MONEDAS.get(moneda_codigo, (moneda_codigo, moneda_codigo))
 

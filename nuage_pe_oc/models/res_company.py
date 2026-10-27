@@ -7,9 +7,8 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     nuage_oc_usar_formato = fields.Boolean(
-        'Numerar OC como PMS/PMI (PROMIN)', default=False,
-        help='Si está activo, las órdenes de compra nuevas se numeran con las '
-             'secuencias PMS-0000000 (local) y PMI-0000000 (importación). El '
+        'Numerar OC por tipo (PROMIN)', default=False,
+        help='Si está activo, las órdenes de compra nuevas se numeran según su tipo (PMA-, PMC-, PMI-, PML-, PMS-, PMT-, SRV-). El '
              'reporte PDF está disponible aunque esta casilla esté apagada.')
     nuage_oc_notas_local = fields.Text(
         'Notas OC local', help='Una nota por línea. Vacío = texto de PROMIN.')

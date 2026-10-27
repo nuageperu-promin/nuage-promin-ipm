@@ -13,16 +13,36 @@
     </record>
 
     <record id="nuage_action_report_oc" model="ir.actions.report">
-        <field name="name">Orden de compra (PROMIN)</field>
+        <field name="name">Orden de Compra Local (PROMIN)</field>
         <field name="model">purchase.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">nuage_pe_oc.report_oc_document</field>
-        <field name="report_file">nuage_pe_oc.report_oc_document</field>
+        <field name="report_name">nuage_pe_oc.report_oc_local</field>
+        <field name="report_file">nuage_pe_oc.report_oc_local</field>
         <field name="print_report_name">'OC-%s' % (object.name or 'borrador').replace('/', '-')</field>
         <field name="paperformat_id" ref="nuage_paperformat_oc"/>
         <field name="binding_model_id" ref="purchase.model_purchase_order"/>
         <field name="binding_type">report</field>
     </record>
+
+    <record id="nuage_action_report_oc_importacion" model="ir.actions.report">
+        <field name="name">Orden de Compra Importación (PROMIN)</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nuage_pe_oc.report_oc_importacion</field>
+        <field name="report_file">nuage_pe_oc.report_oc_importacion</field>
+        <field name="print_report_name">'OC-%s' % (object.name or 'borrador').replace('/', '-')</field>
+        <field name="paperformat_id" ref="nuage_paperformat_oc"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_oc_local">
+        <t t-call="nuage_pe_oc.report_oc_document"/>
+    </template>
+
+    <template id="report_oc_importacion">
+        <t t-call="nuage_pe_oc.report_oc_document"/>
+    </template>
 
     <template id="report_oc_document">
         <t t-call="web.basic_layout">
