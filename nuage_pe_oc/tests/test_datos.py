@@ -6,7 +6,7 @@ from types import SimpleNamespace as NS
 from odoo.addons.nuage_pe_oc.models import oc_datos
 
 
-def _orden(tipo='local'):
+def _orden(tipo='pml'):
     company = NS(
         name='PROVEEDORES MINEROS SAC', vat='20100000001', phone='01 1234567',
         website='https://www.promin.pe', logo=False,
@@ -43,6 +43,6 @@ class TestDatos(unittest.TestCase):
         self.assertTrue(d['notas'])
 
     def test_importacion(self):
-        d = oc_datos.preparar_datos(_orden('importacion'))
+        d = oc_datos.preparar_datos(_orden('pms'), 'importacion')
         self.assertEqual(len(d['notas_columnas']), 2)
         self.assertIn('WPM', d['pie'][0])

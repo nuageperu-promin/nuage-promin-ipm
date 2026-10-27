@@ -10,4 +10,52 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Columna "Tipo de OC" en la lista de órdenes y en la de solicitudes de cotización -->
+    <record id="nuage_oc_purchase_order_tree" model="ir.ui.view">
+        <field name="name">purchase.order.list.nuage.oc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="nuage_tipo_oc" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="nuage_oc_purchase_order_kpis_tree" model="ir.ui.view">
+        <field name="name">purchase.order.kpis.list.nuage.oc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="nuage_tipo_oc" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Búsqueda: campo, filtros por tipo y agrupación -->
+    <record id="nuage_oc_purchase_order_search" model="ir.ui.view">
+        <field name="name">purchase.order.search.nuage.oc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="nuage_tipo_oc"/>
+            </xpath>
+            <xpath expr="//filter[@name='starred']" position="after">
+                <separator/>
+                <filter string="PMA - Activo" name="nuage_tipo_pma" domain="[('nuage_tipo_oc', '=', 'pma')]"/>
+                <filter string="PMC - Consumibles" name="nuage_tipo_pmc" domain="[('nuage_tipo_oc', '=', 'pmc')]"/>
+                <filter string="PMI - Importación" name="nuage_tipo_pmi" domain="[('nuage_tipo_oc', '=', 'pmi')]"/>
+                <filter string="PML - Local" name="nuage_tipo_pml" domain="[('nuage_tipo_oc', '=', 'pml')]"/>
+                <filter string="PMS - Stock" name="nuage_tipo_pms" domain="[('nuage_tipo_oc', '=', 'pms')]"/>
+                <filter string="PMT - Tableros" name="nuage_tipo_pmt" domain="[('nuage_tipo_oc', '=', 'pmt')]"/>
+                <filter string="SRV - Servicios" name="nuage_tipo_srv" domain="[('nuage_tipo_oc', '=', 'srv')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='representative']" position="after">
+                <filter string="Tipo de OC" name="group_nuage_tipo_oc" context="{'group_by': 'nuage_tipo_oc'}"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
