@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-28 — nuage_pe_retencion (nuevo, 19.0.1.1.3)
+
+- **Motivo:** PROMIN, como agente de retención, retendrá el IGV al pagar a proveedores. Se toma como modelo el comprobante RT08-00002911 (factura en dólares).
+- **Acción:** módulo nuevo. La retención se decide al registrar el pago (suma de facturas del mismo proveedor; umbral de S/ 700 en soles; tasa 3%) y reemplaza, por compañía, la retención que Solse calcula al validar la factura de compra. Soporta facturas en USD: tipo de cambio de la tabla de Odoo a la fecha de pago, retención registrada en soles. Genera el comprobante de retención con serie y correlativo propios (estado borrador/emitido/cancelado) y su PDF con el formato de PROMIN, más el reporte "Retenciones por proveedor". Instalar (depende de `solse_pe_edi` y `solse_pe_accountant`). Después, en Ajustes > Compañías > pestaña "Retenciones": activar "Retener IGV al pagar", tasa, umbral, serie y correlativo inicial (confirmar con PROMIN: RT08 desde 2912 u otra serie) y la cuenta de IGV retenido por pagar (confirmar con el contador). No envía el comprobante a SUNAT: la emisión electrónica por Nubefact/Bizlinks queda para una segunda etapa. Probado en promindemo con facturas en soles y en dólares.
+
+---
+
 ## 2026-10-28 — nuage_pe_guia_pdf (corrección, 19.0.1.0.2)
 
 - **Motivo:** Odoo.sh rechazó el módulo ("manifest has an invalid syntax"): el `__manifest__.py` se subió vacío en el commit anterior.

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_payment_register_form_retencion" model="ir.ui.view">
+        <field name="name">account.payment.register.form.nuage.retencion</field>
+        <field name="model">account.payment.register</field>
+        <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_date']" position="after">
+                <field name="nuage_aplica_retencion" invisible="1"/>
+                <field name="nuage_aviso_retencion" readonly="1" nolabel="1" colspan="2"
+                       invisible="not nuage_aplica_retencion" class="text-danger fw-bold"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
