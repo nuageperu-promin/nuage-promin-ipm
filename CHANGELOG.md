@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-28 — solse_pe_* (mantenimiento: warnings del build)
+
+- **Motivo:** el build del staging salía en naranja por warnings del log: falta de `author` en los manifests y el import obsoleto `odoo.osv`.
+- **Acción:** se agrega `'author': 'Nuage Peru SAC'` en los 23 manifests de `solse_pe_*` y se elimina el import sin uso `from odoo.osv import expression` en `solse_pe_cpe/models/account_tax.py` y `solse_pe_edi/models/res_partner.py`. Sin cambios de lógica ni de versión: no requiere actualizar módulos. Quedan pendientes los warnings de `origin_doc_*` (compute_sudo/store) y `nombre_producto`, que requieren pruebas de notas de crédito/débito.
+
+---
+
 ## 2026-10-28 — nuage_pe_retencion (nuevo, 19.0.1.1.3)
 
 - **Motivo:** PROMIN, como agente de retención, retendrá el IGV al pagar a proveedores. Se toma como modelo el comprobante RT08-00002911 (factura en dólares).

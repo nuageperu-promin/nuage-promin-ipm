@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'name': 'SOLSE CPE Guias - Laboratorio QA',
 	'summary': 'Casos de prueba para la Guía de Remisión Remitente (09) y la Guía de Transportista (31)',
 	'description': """

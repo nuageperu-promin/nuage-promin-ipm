@@ -3,6 +3,7 @@
 # Módulo propietario. Todos los derechos reservados.
 
 {
+	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'PLE 07 - Registro de Activos Fijos Sunat Perú TXT XLS (Enterprise)',
 	'version': '19.0.1.4.1',
