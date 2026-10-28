@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-28 — nuage_pe_guia_pdf (corrección, 19.0.1.0.2)
+
+- **Motivo:** Odoo.sh rechazó el módulo ("manifest has an invalid syntax"): el `__manifest__.py` se subió vacío en el commit anterior.
+- **Acción:** manifest restaurado. Actualizar el submódulo y luego instalar `nuage_pe_guia_pdf`. `nuage_pe_oc` no cambia.
+
+---
+
 ## 2026-10-27 — nuage_pe_oc (19.0.1.1.1) y nuage_pe_guia_pdf (nuevo, 19.0.1.0.2)
 
 - **Motivo:** observaciones de PROMIN tras la demostración. (1) El "Tipo de OC" pasa a 7 tipos con numeración propia: PMA Activo, PMC Consumibles, PMI Importación, PML Local, PMS Stock, PMT Tableros, SRV Servicios. (2) El PDF se separa en dos formatos independientes del tipo: "Orden de Compra Local (PROMIN)" y "Orden de Compra Importación (PROMIN)". (3) Columna, filtros y agrupación por Tipo de OC en la lista y búsqueda. (4) Nuevo módulo con el formato PDF de la guía de remisión remitente (transporte privado y público).
