@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'name': "SOLSE CPE Guias Transportista",
 
 	'summary': """

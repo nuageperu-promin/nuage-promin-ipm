@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, tools, _
-from odoo.osv import expression
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_round as round
 from collections import defaultdict
