@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Comprobante de retención -->
+    <record id="nuage_retencion_view_list" model="ir.ui.view">
+        <field name="name">nuage.retencion.list</field>
+        <field name="model">nuage.retencion</field>
+        <field name="arch" type="xml">
+            <list string="Comprobantes de retención"
+                  decoration-muted="state == 'cancelado'"
+                  decoration-info="state == 'borrador'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="partner_vat" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="importe_pago" sum="Total"/>
+                <field name="importe_retenido" sum="Total"/>
+                <field name="importe_neto" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'emitido'"
+                       decoration-info="state == 'borrador'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_view_form" model="ir.ui.view">
+        <field name="name">nuage.retencion.form</field>
+        <field name="model">nuage.retencion</field>
+        <field name="arch" type="xml">
+            <form string="Comprobante de retención">
+                <header>
+                    <button name="action_emitir" string="Emitir" type="object" class="btn-primary"
+                            invisible="state != 'borrador'"/>
+                    <button name="action_cancelar" string="Cancelar" type="object"
+                            invisible="state == 'cancelado'"
+                            confirm="¿Cancelar este comprobante de retención?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="borrador,emitido"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'borrador'"/>
+                            <field name="partner_vat"/>
+                            <field name="date" readonly="state != 'borrador'"/>
+                            <field name="payment_id"/>
+                            <field name="payment_state" invisible="not payment_id"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'borrador'"/>
+                            <field name="serie"/>
+                            <field name="correlativo"/>
+                            <field name="tasa" readonly="state != 'borrador'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comprobantes de pago" name="lineas">
+                            <field name="line_ids" readonly="state != 'borrador'">
+                                <list editable="bottom">
+                                    <field name="move_id"/>
+                                    <field name="numero_doc" optional="show"/>
+                                    <field name="fecha_emision"/>
+                                    <field name="fecha_pago"/>
+                                    <field name="nro_pago"/>
+                                    <field name="moneda_origen_id"/>
+                                    <field name="importe_operacion"/>
+                                    <field name="importe_pago"/>
+                                    <field name="tipo_cambio"/>
+                                    <field name="importe_retenido" sum="Total"/>
+                                    <field name="importe_neto" sum="Total"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="importe_pago"/>
+                                <field name="importe_retenido"/>
+                                <field name="importe_neto"/>
+                            </group>
+                        </page>
+                        <page string="Observaciones" name="observaciones">
+                            <field name="observaciones" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_view_search" model="ir.ui.view">
+        <field name="name">nuage.retencion.search</field>
+        <field name="model">nuage.retencion</field>
+        <field name="arch" type="xml">
+            <search string="Comprobantes de retención">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="partner_vat"/>
+                <filter name="borrador" string="Borrador" domain="[('state', '=', 'borrador')]"/>
+                <filter name="emitido" string="Emitidos" domain="[('state', '=', 'emitido')]"/>
+                <filter name="cancelado" string="Cancelados" domain="[('state', '=', 'cancelado')]"/>
+                <group>
+                    <filter name="g_partner" string="Proveedor" context="{'group_by': 'partner_id'}"/>
+                    <filter name="g_mes" string="Mes" context="{'group_by': 'date:month'}"/>
+                    <filter name="g_estado" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_action" model="ir.actions.act_window">
+        <field name="name">Comprobantes de retención</field>
+        <field name="res_model">nuage.retencion</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="nuage_retencion_view_search"/>
+    </record>
+
+    <!-- Reporte por proveedor y mes -->
+    <record id="nuage_retencion_line_view_pivot" model="ir.ui.view">
+        <field name="name">nuage.retencion.line.pivot</field>
+        <field name="model">nuage.retencion.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Retenciones por proveedor">
+                <field name="partner_id" type="row"/>
+                <field name="fecha_pago" interval="month" type="col"/>
+                <field name="importe_retenido" type="measure"/>
+                <field name="importe_pago_pen" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_line_view_list" model="ir.ui.view">
+        <field name="name">nuage.retencion.line.list</field>
+        <field name="model">nuage.retencion.line</field>
+        <field name="arch" type="xml">
+            <list string="Retenciones por factura" create="0" delete="0">
+                <field name="retencion_id"/>
+                <field name="partner_id"/>
+                <field name="numero_doc"/>
+                <field name="fecha_emision"/>
+                <field name="fecha_pago"/>
+                <field name="moneda_origen_id"/>
+                <field name="importe_operacion"/>
+                <field name="importe_pago"/>
+                <field name="tipo_cambio"/>
+                <field name="importe_retenido" sum="Total"/>
+                <field name="importe_neto" sum="Total"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_line_view_search" model="ir.ui.view">
+        <field name="name">nuage.retencion.line.search</field>
+        <field name="model">nuage.retencion.line</field>
+        <field name="arch" type="xml">
+            <search string="Retenciones por factura">
+                <field name="partner_id"/>
+                <field name="numero_doc"/>
+                <field name="retencion_id"/>
+                <filter name="vigentes" string="Sin cancelados" domain="[('state', '!=', 'cancelado')]"/>
+                <filter name="emitidos" string="Emitidos" domain="[('state', '=', 'emitido')]"/>
+                <group>
+                    <filter name="g_partner" string="Proveedor" context="{'group_by': 'partner_id'}"/>
+                    <filter name="g_mes" string="Mes de pago" context="{'group_by': 'fecha_pago:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="nuage_retencion_line_action" model="ir.actions.act_window">
+        <field name="name">Retenciones por proveedor</field>
+        <field name="res_model">nuage.retencion.line</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="search_view_id" ref="nuage_retencion_line_view_search"/>
+        <field name="context">{'search_default_vigentes': 1}</field>
+    </record>
+
+    <menuitem id="nuage_retencion_menu"
+              name="Comprobantes de retención"
+              parent="account.menu_finance_payables"
+              action="nuage_retencion_action"
+              groups="account.group_account_manager,account.group_account_invoice"
+              sequence="45"/>
+
+    <menuitem id="nuage_retencion_report_menu"
+              name="Retenciones por proveedor"
+              parent="account.menu_finance_reports"
+              action="nuage_retencion_line_action"
+              groups="account.group_account_manager"
+              sequence="91"/>
+</odoo>
