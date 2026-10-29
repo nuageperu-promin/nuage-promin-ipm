@@ -3,7 +3,7 @@
 {
     'name': 'Facturas PDF (PROMIN)',
     'summary': 'Formato PDF de factura y notas de crédito/débito con el diseño de PROMIN',
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.1.2',
     'author': 'NUAGE PERU SAC',
     'license': 'LGPL-3',
     'category': 'Accounting/Localizations',
