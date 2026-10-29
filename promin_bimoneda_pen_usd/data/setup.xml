@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <function model="account.report" name="_nuage_bimoneda_setup"/>
+</odoo>
