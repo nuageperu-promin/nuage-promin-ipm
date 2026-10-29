@@ -10,10 +10,8 @@ class NuageCierre(models.Model):
     _name = 'nuage.cierre'
     _description = 'Cierre y apertura del ejercicio'
     _order = 'anio desc, id desc'
-    _sql_constraints = [
-        ('anio_company_uniq', 'unique(company_id, anio)',
-         'Ya existe un cierre para esa compañía y ese año.'),
-    ]
+    _anio_company_uniq = models.Constraint(
+        'unique(company_id, anio)', 'Ya existe un cierre para esa compañía y ese año.')
 
     name = fields.Char(compute='_compute_name', store=True)
     company_id = fields.Many2one('res.company', 'Compañía', required=True, default=lambda s: s.env.company)
