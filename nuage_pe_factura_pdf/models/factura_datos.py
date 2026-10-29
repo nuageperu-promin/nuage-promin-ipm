@@ -145,7 +145,8 @@ def preparar_datos(move, cuotas=None, guia='', observacion_sunat='', tipo_nota='
         'moneda': nombre_mon,
         'simbolo': simbolo,
         'forma_pago': 'Crédito' if credito else 'Contado',
-        'orden_compra': getattr(move, 'orden_compra', '') or '',
+        # «Referencia del cliente» de la factura (en notas ese campo es el motivo).
+        'orden_compra': '' if es_nota else (getattr(move, 'ref', '') or ''),
         'guia': guia or '',
         'items': items,
         'son': getattr(move, 'amount_text', '') or '',

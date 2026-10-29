@@ -38,6 +38,12 @@ class ReportFactura(models.AbstractModel):
             return origen.l10n_latam_document_number or origen.name or ''
         return ''
 
+    def _guia(self, move):
+        """Solo el número de la guía de remisión; si no hay, vacío (no el número de entrega)."""
+        if 'guide_number' not in move._fields:
+            return ''
+        return move.guide_number or ''
+
     @api.model
     def _get_report_values(self, docids, data=None):
         docs = self.env['account.move'].browse(docids)
@@ -48,7 +54,7 @@ class ReportFactura(models.AbstractModel):
                 cuotas = move.obtener_cuotas_pago() or []
             tipo = tipo_comprobante(move)
             valores = preparar_datos(
-                move, cuotas=cuotas, guia=move.obtener_guia(),
+                move, cuotas=cuotas, guia=self._guia(move),
                 observacion_sunat=self._observacion_sunat(move),
                 tipo_nota=self._tipo_nota(move, tipo) if tipo != 'factura' else '',
                 doc_origen=self._doc_origen(move) if tipo != 'factura' else '')
