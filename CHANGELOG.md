@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-28 — promin_bimoneda_pen_usd (nuevo, 19.0.1.1.1, prototipo)
+
+- **Motivo:** desarrollo "Bimoneda (PEN/USD)": estados financieros valorizados en soles y dólares.
+- **Acción:** módulo nuevo. Agrega el campo almacenado `nuage_balance_usd` en los apuntes (conversión con el tipo de cambio de la tabla de Odoo) y habilita las columnas PEN y USD en el Balance General (PE) y el Estado de Resultados (PE), en pantalla, PDF y XLSX. Al instalar, Odoo calcula el campo para todos los apuntes existentes: instalar fuera de horario. Requiere cotizaciones PEN/USD cargadas en `res.currency`. Alcance actual: solo conversión; pendientes la moneda de transacción original con diferencia de cambio, la valuación de Inventario, balanza de comprobación, estado de cambios en el patrimonio y flujo de efectivo.
+
+---
+
 ## 2026-10-28 — solse_pe_* (mantenimiento: warnings del build)
 
 - **Motivo:** el build del staging salía en naranja por warnings del log: falta de `author` en los manifests y el import obsoleto `odoo.osv`.

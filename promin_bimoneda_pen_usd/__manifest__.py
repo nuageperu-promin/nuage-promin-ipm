@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Bimoneda PEN/USD - Proveedores Mineros / IPM',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.1',
     'summary': 'Estados financieros, moneda de transacción y valuación de Inventario en bimoneda (PEN/USD).',
     'description': """
 Desarrollo a medida para Proveedores Mineros S.A.C. / Industria Proveedores Mineros S.C.R.L.
@@ -22,10 +22,12 @@ aprobada la especificación.
     'license': 'OPL-1',
     'depends': [
         'account',
+        'account_reports',
         'l10n_pe',
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/setup.xml',
     ],
     'installable': True,
     'application': False,
