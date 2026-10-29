@@ -9,7 +9,7 @@ class AccountMoveLine(models.Model):
     nuage_balance_usd = fields.Float(
         string='Saldo USD (T.C. del movimiento)',
         compute='_compute_nuage_balance_usd', store=True,
-        digits='Account',
+        digits=(16, 6),
         help='Importe de la línea en dólares, fijado con el tipo de cambio de la '
              'fecha del movimiento. Si la operación es en USD se toma el importe '
              'original sin convertir. Base de la columna USD de los estados financieros.')
@@ -28,4 +28,4 @@ class AccountMoveLine(models.Model):
                 # Operación en soles u otra moneda: se pasa a USD con la tasa de la fecha.
                 line.nuage_balance_usd = moneda_cia._convert(
                     line.balance, usd, line.company_id,
-                    line.date or fields.Date.context_today(line))
+                    line.date or fields.Date.context_today(line), round=False)

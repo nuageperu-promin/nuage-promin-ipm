@@ -10,7 +10,7 @@
 * Dos formatos PDF independientes del tipo: Local e Importación.
 * Notas y leyendas fijas editables por compañía.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.1.2',
     'author': 'NUAGE PERU SAC',
     'license': 'LGPL-3',
     'category': 'Inventory/Purchase',

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_cierre_view_list" model="ir.ui.view">
+        <field name="name">nuage.cierre.list</field>
+        <field name="model">nuage.cierre</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="fecha_cierre"/>
+                <field name="fecha_apertura"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="nuage_cierre_view_form" model="ir.ui.view">
+        <field name="name">nuage.cierre.form</field>
+        <field name="model">nuage.cierre</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generar" type="object" string="Generar cierre y apertura"
+                            class="btn-primary" invisible="state != 'draft'"
+                            confirm="Se crearán y publicarán 3 asientos. ¿Continuar?"/>
+                    <button name="action_revertir" type="object" string="Revertir"
+                            invisible="state != 'done'"
+                            confirm="Se eliminarán los 3 asientos generados. ¿Continuar?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="company_id" readonly="state == 'done'"/>
+                            <field name="anio" readonly="state == 'done'" options="{'format': false}"/>
+                            <field name="fecha_cierre"/>
+                            <field name="fecha_apertura"/>
+                        </group>
+                        <group>
+                            <field name="journal_id" readonly="state == 'done'"/>
+                            <field name="cuenta_utilidad_id" readonly="state == 'done'"/>
+                            <field name="cuenta_perdida_id" readonly="state == 'done'"/>
+                            <field name="prefijos_gestion" readonly="state == 'done'"/>
+                        </group>
+                    </group>
+                    <group string="Asientos generados">
+                        <field name="move_resultados_id"/>
+                        <field name="move_cierre_id"/>
+                        <field name="move_apertura_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="nuage_cierre_action" model="ir.actions.act_window">
+        <field name="name">Cierre y apertura contable</field>
+        <field name="res_model">nuage.cierre</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="nuage_cierre_menu" name="Cierre y apertura contable"
+              parent="account.menu_finance_entries" action="nuage_cierre_action"
+              groups="account.group_account_manager" sequence="90"/>
+</odoo>

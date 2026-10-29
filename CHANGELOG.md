@@ -17,6 +17,17 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-10-28 — Paquete: estados financieros en bimoneda + cierre y apertura contable
+
+- **promin_bimoneda_pen_usd 19.0.1.2.2** (actualización): agrega el Balance de Comprobación en dos variantes, «(SOL)» y «(USD)». El saldo USD de cada apunte se guarda con 6 decimales y sin redondeo por línea, para que la balanza en dólares cuadre en 0.00. Al actualizar, un script de migración recalcula el USD de los apuntes existentes (puede tardar en bases grandes: actualizar fuera de horario).
+- **promin_bimoneda_flujo 19.0.1.0.1** (nuevo): Estado de Flujos de Efectivo en dos variantes «(SOL)» y «(USD)». En USD, la línea de diferencia se rotula «Diferencia por tipo de cambio» (efecto de convertir con el tipo de cambio de la factura y del pago). Instalar después de la bimoneda.
+- **promin_estado_patrimonio 19.0.1.0.1** (nuevo): Estado de Cambios en el Patrimonio en soles y dólares (columnas del PCGE: capital, acciones de inversión, capital adicional, resultados no realizados, excedente de revaluación, reservas, resultados acumulados). Excluye los asientos generados por el cierre y apertura. Depende de la bimoneda y del cierre y apertura.
+- **promin_asiento_cierre_contable 19.0.1.0.1** (nuevo, prototipo): genera, por compañía y año, el cierre de resultados, el cierre de balance y la apertura del ejercicio siguiente (detalle por tercero y moneda en cuentas por cobrar/pagar). Menú: Contabilidad > Asientos > Cierre y apertura contable. Pendiente de validación del contador de PROMIN: traslado del resultado a la cuenta 59, diario y numeración.
+- **nuage_pe_oc 19.0.1.1.2 y nuage_pe_factura_pdf 19.0.1.1.1**: solo cambian los títulos de la pestaña en la compañía («Órdenes Compra» y «Facturas»).
+- **Acción:** actualizar el submódulo al commit indicado en el correo, y en este orden: actualizar `nuage_pe_oc` y `nuage_pe_factura_pdf`; actualizar `promin_bimoneda_pen_usd`; instalar `promin_asiento_cierre_contable`, `promin_bimoneda_flujo` y por último `promin_estado_patrimonio`. Requiere tipos de cambio PEN/USD cargados.
+
+---
+
 ## 2026-10-28 — promin_bimoneda_pen_usd (nuevo, 19.0.1.1.1, prototipo)
 
 - **Motivo:** desarrollo "Bimoneda (PEN/USD)": estados financieros valorizados en soles y dólares.

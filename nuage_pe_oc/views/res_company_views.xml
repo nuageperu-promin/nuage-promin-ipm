@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Órdenes de compra (PROMIN)" name="nuage_oc">
+                <page string="Órdenes Compra" name="nuage_oc">
                     <group>
                         <field name="nuage_oc_usar_formato"/>
                     </group>

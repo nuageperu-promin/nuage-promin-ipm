@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Facturas PDF (PROMIN)" name="nuage_fac">
+                <page string="Facturas" name="nuage_fac">
                     <group>
                         <field name="nuage_fac_mensaje_retencion"/>
                         <field name="nuage_fac_autorizacion"/>

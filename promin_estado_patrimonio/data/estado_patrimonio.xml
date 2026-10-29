@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_patrimonio_sol" model="account.report">
+        <field name="name">Estado de Cambios en el Patrimonio (SOL)</field>
+        <field name="filter_analytic" eval="False"/>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="column_ids">
+            <record id="nuage_patrimonio_sol_col_capital" model="account.report.column">
+                <field name="name">Capital</field>
+                <field name="expression_label">capital</field>
+                <field name="sequence">1</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_acc_inv" model="account.report.column">
+                <field name="name">Acciones de inversión</field>
+                <field name="expression_label">acc_inv</field>
+                <field name="sequence">2</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_cap_adic" model="account.report.column">
+                <field name="name">Capital adicional</field>
+                <field name="expression_label">cap_adic</field>
+                <field name="sequence">3</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_res_no_real" model="account.report.column">
+                <field name="name">Resultados no realizados</field>
+                <field name="expression_label">res_no_real</field>
+                <field name="sequence">4</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_exc_reval" model="account.report.column">
+                <field name="name">Excedente de revaluación</field>
+                <field name="expression_label">exc_reval</field>
+                <field name="sequence">5</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_reservas" model="account.report.column">
+                <field name="name">Reservas</field>
+                <field name="expression_label">reservas</field>
+                <field name="sequence">6</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_res_acum" model="account.report.column">
+                <field name="name">Resultados acumulados</field>
+                <field name="expression_label">res_acum</field>
+                <field name="sequence">7</field>
+            </record>
+            <record id="nuage_patrimonio_sol_col_total" model="account.report.column">
+                <field name="name">Total</field>
+                <field name="expression_label">total</field>
+                <field name="sequence">8</field>
+            </record>
+        </field>
+        <field name="line_ids">
+            <record id="nuage_patrimonio_sol_l_ini" model="account.report.line">
+                <field name="name">Saldos al inicio del período</field>
+                <field name="code">NPSOL_INI</field>
+                <field name="sequence">1</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_sol_ini_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '50%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '51%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '52%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '56%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '57%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '58%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), '|', '|', ('account_id.code', '=like', '59%'), ('account_id.code', '=like', '6%'), ('account_id.code', '=like', '7%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_ini_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.capital + NPSOL_INI.acc_inv + NPSOL_INI.cap_adic + NPSOL_INI.res_no_real + NPSOL_INI.exc_reval + NPSOL_INI.reservas + NPSOL_INI.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_sol_l_res" model="account.report.line">
+                <field name="name">Resultado del ejercicio</field>
+                <field name="code">NPSOL_RES</field>
+                <field name="sequence">2</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_sol_res_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), '|', ('account_id.code', '=like', '6%'), ('account_id.code', '=like', '7%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_res_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_RES.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_sol_l_mov" model="account.report.line">
+                <field name="name">Aportes, distribuciones y otros movimientos</field>
+                <field name="code">NPSOL_MOV</field>
+                <field name="sequence">3</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_sol_mov_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '50%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '51%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '52%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '56%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '57%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '58%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '59%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_mov_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_MOV.capital + NPSOL_MOV.acc_inv + NPSOL_MOV.cap_adic + NPSOL_MOV.res_no_real + NPSOL_MOV.exc_reval + NPSOL_MOV.reservas + NPSOL_MOV.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_sol_l_fin" model="account.report.line">
+                <field name="name">Saldos al final del período</field>
+                <field name="code">NPSOL_FIN</field>
+                <field name="sequence">4</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_sol_fin_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.capital + NPSOL_MOV.capital</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.acc_inv + NPSOL_MOV.acc_inv</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.cap_adic + NPSOL_MOV.cap_adic</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.res_no_real + NPSOL_MOV.res_no_real</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.exc_reval + NPSOL_MOV.exc_reval</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.reservas + NPSOL_MOV.reservas</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_INI.res_acum + NPSOL_MOV.res_acum + NPSOL_RES.res_acum</field>
+                    </record>
+                    <record id="nuage_patrimonio_sol_fin_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPSOL_FIN.capital + NPSOL_FIN.acc_inv + NPSOL_FIN.cap_adic + NPSOL_FIN.res_no_real + NPSOL_FIN.exc_reval + NPSOL_FIN.reservas + NPSOL_FIN.res_acum</field>
+                    </record>
+                </field>
+            </record>
+        </field>
+    </record>
+
+    <record id="nuage_patrimonio_usd" model="account.report">
+        <field name="name">Estado de Cambios en el Patrimonio (USD)</field>
+        <field name="filter_analytic" eval="False"/>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="root_report_id" ref="nuage_patrimonio_sol"/>
+        <field name="nuage_moneda_fija">USD</field>
+        <field name="column_ids">
+            <record id="nuage_patrimonio_usd_col_capital" model="account.report.column">
+                <field name="name">Capital</field>
+                <field name="expression_label">capital</field>
+                <field name="sequence">1</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_acc_inv" model="account.report.column">
+                <field name="name">Acciones de inversión</field>
+                <field name="expression_label">acc_inv</field>
+                <field name="sequence">2</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_cap_adic" model="account.report.column">
+                <field name="name">Capital adicional</field>
+                <field name="expression_label">cap_adic</field>
+                <field name="sequence">3</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_res_no_real" model="account.report.column">
+                <field name="name">Resultados no realizados</field>
+                <field name="expression_label">res_no_real</field>
+                <field name="sequence">4</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_exc_reval" model="account.report.column">
+                <field name="name">Excedente de revaluación</field>
+                <field name="expression_label">exc_reval</field>
+                <field name="sequence">5</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_reservas" model="account.report.column">
+                <field name="name">Reservas</field>
+                <field name="expression_label">reservas</field>
+                <field name="sequence">6</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_res_acum" model="account.report.column">
+                <field name="name">Resultados acumulados</field>
+                <field name="expression_label">res_acum</field>
+                <field name="sequence">7</field>
+            </record>
+            <record id="nuage_patrimonio_usd_col_total" model="account.report.column">
+                <field name="name">Total</field>
+                <field name="expression_label">total</field>
+                <field name="sequence">8</field>
+            </record>
+        </field>
+        <field name="line_ids">
+            <record id="nuage_patrimonio_usd_l_ini" model="account.report.line">
+                <field name="name">Saldos al inicio del período</field>
+                <field name="code">NPUSD_INI</field>
+                <field name="sequence">1</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_usd_ini_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '50%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '51%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '52%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '56%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '57%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '58%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), '|', '|', ('account_id.code', '=like', '59%'), ('account_id.code', '=like', '6%'), ('account_id.code', '=like', '7%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">to_beginning_of_period</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_ini_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.capital + NPUSD_INI.acc_inv + NPUSD_INI.cap_adic + NPUSD_INI.res_no_real + NPUSD_INI.exc_reval + NPUSD_INI.reservas + NPUSD_INI.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_usd_l_res" model="account.report.line">
+                <field name="name">Resultado del ejercicio</field>
+                <field name="code">NPUSD_RES</field>
+                <field name="sequence">2</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_usd_res_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), '|', ('account_id.code', '=like', '6%'), ('account_id.code', '=like', '7%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_res_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_RES.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_usd_l_mov" model="account.report.line">
+                <field name="name">Aportes, distribuciones y otros movimientos</field>
+                <field name="code">NPUSD_MOV</field>
+                <field name="sequence">3</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_usd_mov_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '50%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '51%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '52%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '56%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '57%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '58%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">domain</field>
+                        <field name="formula">[('move_id.nuage_cierre_id', '=', False), ('account_id.code', '=like', '59%')]</field>
+                        <field name="subformula">-sum</field>
+                        <field name="date_scope">strict_range</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_mov_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_MOV.capital + NPUSD_MOV.acc_inv + NPUSD_MOV.cap_adic + NPUSD_MOV.res_no_real + NPUSD_MOV.exc_reval + NPUSD_MOV.reservas + NPUSD_MOV.res_acum</field>
+                    </record>
+                </field>
+            </record>
+            <record id="nuage_patrimonio_usd_l_fin" model="account.report.line">
+                <field name="name">Saldos al final del período</field>
+                <field name="code">NPUSD_FIN</field>
+                <field name="sequence">4</field>
+                <field name="expression_ids">
+                    <record id="nuage_patrimonio_usd_fin_capital" model="account.report.expression">
+                        <field name="label">capital</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.capital + NPUSD_MOV.capital</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_acc_inv" model="account.report.expression">
+                        <field name="label">acc_inv</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.acc_inv + NPUSD_MOV.acc_inv</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_cap_adic" model="account.report.expression">
+                        <field name="label">cap_adic</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.cap_adic + NPUSD_MOV.cap_adic</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_res_no_real" model="account.report.expression">
+                        <field name="label">res_no_real</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.res_no_real + NPUSD_MOV.res_no_real</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_exc_reval" model="account.report.expression">
+                        <field name="label">exc_reval</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.exc_reval + NPUSD_MOV.exc_reval</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_reservas" model="account.report.expression">
+                        <field name="label">reservas</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.reservas + NPUSD_MOV.reservas</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_res_acum" model="account.report.expression">
+                        <field name="label">res_acum</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_INI.res_acum + NPUSD_MOV.res_acum + NPUSD_RES.res_acum</field>
+                    </record>
+                    <record id="nuage_patrimonio_usd_fin_total" model="account.report.expression">
+                        <field name="label">total</field>
+                        <field name="engine">aggregation</field>
+                        <field name="formula">NPUSD_FIN.capital + NPUSD_FIN.acc_inv + NPUSD_FIN.cap_adic + NPUSD_FIN.res_no_real + NPUSD_FIN.exc_reval + NPUSD_FIN.reservas + NPUSD_FIN.res_acum</field>
+                    </record>
+                </field>
+            </record>
+        </field>
+    </record>
+
+    <record id="nuage_patrimonio_action" model="ir.actions.client">
+        <field name="name">Estado de Cambios en el Patrimonio</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('nuage_patrimonio_sol')}"/>
+    </record>
+    <menuitem id="nuage_patrimonio_menu" name="Estado de Cambios en el Patrimonio"
+              parent="account.menu_finance_reports" action="nuage_patrimonio_action" sequence="45"/>
+</odoo>
