@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-02 — requirements.txt (pysimplesoap)
+
+- **Motivo:** en Staging, el envío de comprobantes a la OSE fallaba en todos los casos con `unsupported operand type(s) for +: 'NoneType' and 'str'`. El traceback apuntaba a `pysimplesoap/client.py:243` (`soap_action = self.action + method`), que es la versión del fork `nuageperu-promin/pysimplesoap@master` que pedía este archivo. Solse (`solse_pe_cpe`) espera el comportamiento de la versión pública 1.16.2 (cabecera SOAPAction solo si `action` no es None), que es la que corre en los servidores de pruebas donde el envío funciona.
+- **Acción:** se reemplaza el fork por `PySimpleSOAP==1.16.2`. No se modifica código de Solse ni el fork. Requiere reconstruir/reinstalar dependencias en Staging.
+
+---
+
 ## 2026-10-28 — Paquete: estados financieros en bimoneda + cierre y apertura contable
 
 - **promin_bimoneda_pen_usd 19.0.1.2.2** (actualización): agrega el Balance de Comprobación en dos variantes, «(SOL)» y «(USD)». El saldo USD de cada apunte se guarda con 6 decimales y sin redondeo por línea, para que la balanza en dólares cuadre en 0.00. Al actualizar, un script de migración recalcula el USD de los apuntes existentes (puede tardar en bases grandes: actualizar fuera de horario).

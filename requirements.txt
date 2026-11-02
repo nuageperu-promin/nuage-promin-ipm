@@ -4,7 +4,10 @@
 
 Pillow
 lxml
-pysimplesoap @ git+https://github.com/nuageperu-promin/pysimplesoap.git@master
+# Versión pública fijada (la misma que corre en los servidores de pruebas). El fork
+# nuageperu-promin/pysimplesoap@master tiene `self.action + method` sin proteger y
+# rompe el envío de CPE a la OSE (TypeError NoneType + str en client.py:243).
+PySimpleSOAP==1.16.2
 future
 tornado
 xmlsec
