@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-03 — requirements.txt (pysimplesoap, corrección)
+
+- **Motivo:** el cambio del 2026-11-02 (`PySimpleSOAP==1.16.2` de PyPI) no se pudo instalar en Staging (Odoo.sh, Python 3.12): "Could not install dependencies (see pip.log)". El `setup.py` de esa versión importa el paquete y este usa `inspect.getargspec`, eliminado en Python 3.11.
+- **Acción:** se incluye en `vendor/pysimplesoap/` una copia de PySimpleSOAP 1.16.2 con dos cambios mínimos (`transport.py`: `getargspec` -> `getfullargspec`; `setup.py` sin importar el paquete) y `requirements.txt` la instala desde este mismo repositorio. Comportamiento idéntico a 1.16.2. No se modifica código de Solse. Requiere reconstruir/reinstalar dependencias en Staging.
+
+---
+
 ## 2026-11-02 — requirements.txt (pysimplesoap)
 
 - **Motivo:** en Staging, el envío de comprobantes a la OSE fallaba en todos los casos con `unsupported operand type(s) for +: 'NoneType' and 'str'`. El traceback apuntaba a `pysimplesoap/client.py:243` (`soap_action = self.action + method`), que es la versión del fork `nuageperu-promin/pysimplesoap@master` que pedía este archivo. Solse (`solse_pe_cpe`) espera el comportamiento de la versión pública 1.16.2 (cabecera SOAPAction solo si `action` no es None), que es la que corre en los servidores de pruebas donde el envío funciona.

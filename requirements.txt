@@ -4,10 +4,11 @@
 
 Pillow
 lxml
-# Versión pública fijada (la misma que corre en los servidores de pruebas). El fork
-# nuageperu-promin/pysimplesoap@master tiene `self.action + method` sin proteger y
-# rompe el envío de CPE a la OSE (TypeError NoneType + str en client.py:243).
-PySimpleSOAP==1.16.2
+# PySimpleSOAP 1.16.2 (la versión que esperan los solse_pe_*), con un ajuste mínimo para
+# Python 3.12 (ver vendor/pysimplesoap/README.md). La de PyPI no se instala en Odoo.sh
+# (inspect.getargspec) y el fork nuageperu-promin/pysimplesoap@master es la línea 1.08 y
+# rompe el envío a la OSE (TypeError NoneType + str en client.py:243).
+pysimplesoap @ git+https://github.com/nuageperu-promin/nuage-promin-ipm.git@main#subdirectory=vendor/pysimplesoap
 future
 tornado
 xmlsec
