@@ -7,4 +7,4 @@ cambios mínimos, necesarios porque Odoo.sh usa Python 3.12 y la versión de PyP
 2. `setup.py`: ya no importa el paquete para leer la versión.
 
 El comportamiento es idéntico a 1.16.2; es la versión que esperan los módulos `solse_pe_*`.
-Se instala desde `requirements.txt` con `#subdirectory=vendor/pysimplesoap`.
+Se instala desde `requirements.txt` con `#subdirectory=python_deps/pysimplesoap`.

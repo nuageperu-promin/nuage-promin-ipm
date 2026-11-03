@@ -17,10 +17,17 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-03 — python_deps (renombre de carpeta)
+
+- **Motivo:** la carpeta `vendor/` en la raíz del repo hacía fallar la compilación de estilos de Odoo (`@import "vendor/rfs"` de Bootstrap se resolvía contra ella: "File to import not found or unreadable: .../nuage-promin-ipm/vendor/rfs", bundle `web.assets_web`), dejando la interfaz sin estilos.
+- **Acción:** se renombra a `python_deps/` (sin otro cambio de contenido) y se ajusta `requirements.txt`. Requiere actualizar el submódulo y reconstruir dependencias en Staging.
+
+---
+
 ## 2026-11-03 — requirements.txt (pysimplesoap, corrección)
 
 - **Motivo:** el cambio del 2026-11-02 (`PySimpleSOAP==1.16.2` de PyPI) no se pudo instalar en Staging (Odoo.sh, Python 3.12): "Could not install dependencies (see pip.log)". El `setup.py` de esa versión importa el paquete y este usa `inspect.getargspec`, eliminado en Python 3.11.
-- **Acción:** se incluye en `vendor/pysimplesoap/` una copia de PySimpleSOAP 1.16.2 con dos cambios mínimos (`transport.py`: `getargspec` -> `getfullargspec`; `setup.py` sin importar el paquete) y `requirements.txt` la instala desde este mismo repositorio. Comportamiento idéntico a 1.16.2. No se modifica código de Solse. Requiere reconstruir/reinstalar dependencias en Staging.
+- **Acción:** se incluye en `python_deps/pysimplesoap/` una copia de PySimpleSOAP 1.16.2 con dos cambios mínimos (`transport.py`: `getargspec` -> `getfullargspec`; `setup.py` sin importar el paquete) y `requirements.txt` la instala desde este mismo repositorio. Comportamiento idéntico a 1.16.2. No se modifica código de Solse. Requiere reconstruir/reinstalar dependencias en Staging.
 
 ---
 
