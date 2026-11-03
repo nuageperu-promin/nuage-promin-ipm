@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='PySimpleSOAP',
-    version='1.16.2',
+    version='1.16.2.post1',
     description='Python simple and lightweight SOAP Library',
     author='Mariano Reingart',
     author_email='reingart@gmail.com',
