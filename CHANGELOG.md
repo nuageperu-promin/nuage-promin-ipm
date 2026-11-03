@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-03 — python_deps/pysimplesoap (versión 1.16.2.post1)
+
+- **Motivo:** tras el cambio de HTTPS, Staging seguía mostrando el mismo error (`fixer() missing 3 required positional arguments`). Como la copia corregida declaraba la misma versión (1.16.2) que la ya instalada, `pip` la daba por satisfecha y no la reinstalaba.
+- **Acción:** la copia pasa a declarar la versión `1.16.2.post1`, de modo que `pip` la reinstale al actualizar. Sin otros cambios de código.
+
+---
+
 ## 2026-11-03 — python_deps/pysimplesoap (conexión HTTPS)
 
 - **Motivo:** en Staging, el envío a la OSE llegaba a abrir la conexión pero fallaba con `fixer() missing 3 required positional arguments: 'key_file', 'cert_file', and 'check_hostname'`. PySimpleSOAP 1.16.2 compara versiones de httplib2 como texto (`"0.20.4" <= "0.7.7"` es verdadero) y aplica un parche de httplib2 de 2012 que reemplaza `http.client.HTTPSConnection.__init__` y rompe todo HTTPS.
