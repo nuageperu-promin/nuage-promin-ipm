@@ -62,7 +62,16 @@ class TransportBase:
 #
 try:
     import httplib2
-    if sys.version > '3' and httplib2.__version__ <= "0.7.7":
+    # NUAGE: las versiones se comparaban como texto ("0.20.4" <= "0.7.7" daba True) y se
+    # aplicaba un parche de httplib2 antiguo que rompía toda conexión HTTPS.
+    def _ver(v):
+        out = []
+        for x in str(v).split('.'):
+            digits = ''.join(c for c in x if c.isdigit())
+            out.append(int(digits) if digits else 0)
+        return tuple(out)
+    _httplib2_ver = _ver(httplib2.__version__)
+    if sys.version > '3' and _httplib2_ver <= _ver("0.7.7"):
         import http.client
         # httplib2 workaround: check_hostname needs a SSL context with either 
         #                      CERT_OPTIONAL or CERT_REQUIRED
@@ -92,11 +101,13 @@ else:
                 log.info("using proxy %s" % proxy)
 
             # set optional parameters according to supported httplib2 version
-            if httplib2.__version__ >= '0.3.0':
+            if _httplib2_ver >= _ver('0.3.0'):
                 kwargs['timeout'] = timeout
-            if httplib2.__version__ >= '0.7.0':
-                kwargs['disable_ssl_certificate_validation'] = cacert is None
-                kwargs['ca_certs'] = cacert
+            if _httplib2_ver >= _ver('0.7.0'):
+                # NUAGE: se mantiene la validación del certificado (comportamiento real con
+                # httplib2 modernas, donde la comparación de texto nunca llegaba aquí).
+                if cacert:
+                    kwargs['ca_certs'] = cacert
             httplib2.Http.__init__(self, **kwargs)
 
     _http_connectors['httplib2'] = Httplib2Transport

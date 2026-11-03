@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-03 — python_deps/pysimplesoap (conexión HTTPS)
+
+- **Motivo:** en Staging, el envío a la OSE llegaba a abrir la conexión pero fallaba con `fixer() missing 3 required positional arguments: 'key_file', 'cert_file', and 'check_hostname'`. PySimpleSOAP 1.16.2 compara versiones de httplib2 como texto (`"0.20.4" <= "0.7.7"` es verdadero) y aplica un parche de httplib2 de 2012 que reemplaza `http.client.HTTPSConnection.__init__` y rompe todo HTTPS.
+- **Acción:** en `python_deps/pysimplesoap/pysimplesoap/transport.py` las versiones se comparan numéricamente (tercer cambio mínimo sobre 1.16.2). Sin cambios en Solse. Probado con una llamada HTTPS real a un servidor TLS local. Requiere actualizar el submódulo y reconstruir en Staging.
+
+---
+
 ## 2026-11-03 — python_deps (renombre de carpeta)
 
 - **Motivo:** la carpeta `vendor/` en la raíz del repo hacía fallar la compilación de estilos de Odoo (`@import "vendor/rfs"` de Bootstrap se resolvía contra ella: "File to import not found or unreadable: .../nuage-promin-ipm/vendor/rfs", bundle `web.assets_web`), dejando la interfaz sin estilos.
