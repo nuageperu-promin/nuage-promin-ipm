@@ -2,6 +2,7 @@
 # Distributed under the MIT software license.
 
 {
+	'author': 'Nuage Peru SAC',
 	'name': "Perú - PLAME Recibos por Honorarios",
 	'summary': "Genera los archivos .ps4 y .4ta para importar al PDT PLAME",
 	'description': """

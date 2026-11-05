@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.osv import expression
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import ustr
 import stdnum

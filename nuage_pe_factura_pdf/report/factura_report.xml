@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_paperformat_factura" model="report.paperformat">
+        <field name="name">Factura PROMIN (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="nuage_action_report_factura" model="ir.actions.report">
+        <field name="name">Factura y notas (PROMIN)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nuage_pe_factura_pdf.report_factura_document</field>
+        <field name="report_file">nuage_pe_factura_pdf.report_factura_document</field>
+        <field name="print_report_name">(object.l10n_latam_document_number or object.name or 'borrador').replace('/', '-')</field>
+        <field name="paperformat_id" ref="nuage_paperformat_factura"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_factura_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="d" t-value="datos[o.id]"/>
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color:#000;">
+                    <meta charset="utf-8"/>
+                    <style>
+                        .fac td, .fac th { padding: 2px 4px; vertical-align: top; }
+                        .fac table { border-collapse: collapse; }
+                        .fac .caja { border: 1px solid #000; }
+                        .fac table.det { width: 100%; }
+                        .fac table.det th { border: 1px solid #000; text-align: center; font-size: 7.5pt; padding: 4px 3px; }
+                        .fac table.det td { border-left: 1px solid #000; border-right: 1px solid #000; font-size: 7.5pt; }
+                        .fac table.det tr.fin td { border-bottom: 1px solid #000; }
+                        .fac .der { text-align: right; }
+                        .fac .cen { text-align: center; }
+                    </style>
+                    <div class="fac">
+                        <!-- Cabecera -->
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="width:58%; padding-top:10px;">
+                                    <img t-if="d['logo']" t-att-src="d['logo']" style="max-height:110px; max-width:90%;"/>
+                                    <div t-else="" style="font-size:20pt; font-weight:bold;" t-out="d['emisor']"/>
+                                </td>
+                                <td style="width:42%;">
+                                    <div style="border:2px solid #000; text-align:center; font-weight:bold; font-size:15pt; padding:22px 8px; line-height:1.35;">
+                                        <div>R.U.C. <t t-out="d['ruc_emisor']"/></div>
+                                        <div t-out="d['titulo']"/>
+                                        <div t-out="d['numero']"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:10px; font-weight:bold;" t-out="d['emisor']"/>
+                        <div style="margin-top:8px;">
+                            <div t-out="d['emisor']"/>
+                            <div t-out="d['emisor_dir']"/>
+                        </div>
+
+                        <!-- Cliente -->
+                        <table style="width:100%; margin-top:8px;">
+                            <tr>
+                                <td style="width:15%;">Nombre/Razón Social:</td>
+                                <td style="width:45%;" t-out="d['cliente']"/>
+                                <td style="width:12%;"><t t-out="d['doc_label']"/>:</td>
+                                <td t-out="d['doc_num']"/>
+                            </tr>
+                            <tr>
+                                <td>Dirección:</td>
+                                <td t-out="d['cliente_dir']"/>
+                                <td>Fecha Emisión:</td>
+                                <td t-out="d['fecha']"/>
+                            </tr>
+                            <tr>
+                                <td>Moneda:</td>
+                                <td t-out="d['moneda']"/>
+                                <t t-if="d['es_nota']">
+                                    <td>Factura/Boleta:</td>
+                                    <td t-out="d['doc_origen']"/>
+                                </t>
+                                <t t-else="">
+                                    <td>Forma de Pago:</td>
+                                    <td t-out="d['forma_pago']"/>
+                                </t>
+                            </tr>
+                            <tr t-if="not d['es_nota']">
+                                <td>Orden de Compra:</td>
+                                <td t-out="d['orden_compra']"/>
+                                <td>Guía de Remisión - Remitente:</td>
+                                <td t-out="d['guia']"/>
+                            </tr>
+                        </table>
+
+                        <!-- Detalle -->
+                        <table class="det" style="margin-top:10px;">
+                            <thead>
+                                <tr>
+                                    <th style="width:4%;">Ítem</th>
+                                    <th style="width:8%;">Código</th>
+                                    <th>Descripción</th>
+                                    <th style="width:5%;">Und.</th>
+                                    <th style="width:8%;">Cantidad</th>
+                                    <th style="width:9%;">V. Unitario</th>
+                                    <th style="width:9%;">P. Unitario</th>
+                                    <th style="width:9%;">Descuento<br/><span style="font-size:6pt; font-weight:normal;">(afecto al IGV)</span></th>
+                                    <th style="width:10%;">Valor Venta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="d['items']" t-as="it">
+                                    <td class="cen" t-out="it['n']"/>
+                                    <td class="cen" t-out="it['codigo']"/>
+                                    <td t-out="it['desc']"/>
+                                    <td class="cen" t-out="it['um']"/>
+                                    <td class="der" t-out="it['cant']"/>
+                                    <td class="der" t-out="it['v_unit']"/>
+                                    <td class="der" t-out="it['p_unit']"/>
+                                    <td class="der" t-out="it['dscto']"/>
+                                    <td class="der" t-out="it['valor']"/>
+                                </tr>
+                                <tr class="fin"><td colspan="9" style="height:6px;"></td></tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Importe en letras y totales -->
+                        <table style="width:100%; margin-top:2px;">
+                            <tr>
+                                <td style="width:50%;">SON: <t t-out="d['son']"/></td>
+                                <td style="width:50%;">
+                                    <table style="width:100%;">
+                                        <tr><td><strong>Op. Gravada</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" t-out="d['gravada']"/></tr>
+                                        <tr><td><strong>I.G.V. (<t t-out="d['tasa']"/>.00%)</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" t-out="d['igv']"/></tr>
+                                        <tr><td><strong>Op. Inafecta</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" t-out="d['inafecta']"/></tr>
+                                        <tr><td><strong>Op. Exonerada</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" t-out="d['exonerada']"/></tr>
+                                        <tr><td><strong>Op. Exportacion</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" t-out="d['exportacion']"/></tr>
+                                        <tr><td colspan="3" style="height:12px;"></td></tr>
+                                        <tr><td><strong>Importe Total</strong></td><td class="der"><t t-out="d['simbolo']"/></td><td class="der" style="border-top:1px solid #000;" t-out="d['total']"/></tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Motivo (notas) -->
+                        <table class="caja" t-if="d['es_nota']" style="width:100%; margin-top:14px;">
+                            <tr><td style="padding:4px 6px;"><strong>Motivo o Sustento:</strong> &#160;&#160;&#160; <t t-out="d['motivo']"/></td></tr>
+                            <tr><td style="padding:2px 6px 6px 6px;">Tipo Nota: <t t-out="d['tipo_nota']"/></td></tr>
+                        </table>
+
+                        <!-- Cuotas -->
+                        <table class="caja" t-if="d['cuotas']" style="width:100%; margin-top:14px;">
+                            <tr><td style="font-weight:bold; padding:4px 6px;">CUOTAS</td></tr>
+                            <tr><td class="cen">
+                                <table style="margin:8px auto; border:1px solid #000;">
+                                    <tr>
+                                        <th class="caja cen" style="padding:3px 8px;">Nro. de cuota</th>
+                                        <th class="caja cen" style="padding:3px 8px;">Fecha de<br/>Vencimiento</th>
+                                        <th class="caja cen" style="padding:3px 8px;">Tipo de<br/>Moneda</th>
+                                        <th class="caja cen" style="padding:3px 8px;">Monto de Cuota</th>
+                                    </tr>
+                                    <tr t-foreach="d['cuotas']" t-as="c">
+                                        <td class="caja cen" t-out="c['n']"/>
+                                        <td class="caja cen" t-out="c['fecha']"/>
+                                        <td class="caja cen" t-out="c['moneda']"/>
+                                        <td class="caja cen" t-out="c['monto']"/>
+                                    </tr>
+                                </table>
+                            </td></tr>
+                        </table>
+
+                        <!-- Observaciones de SUNAT -->
+                        <table class="caja" style="width:100%; margin-top:10px;">
+                            <tr><td style="font-weight:bold; padding:4px 6px;">Observaciones de SUNAT:</td></tr>
+                            <tr><td style="padding:2px 6px 6px 6px;" t-out="d['observacion_sunat']"/></tr>
+                        </table>
+
+                        <!-- Información adicional -->
+                        <div style="margin-top:12px; font-weight:bold;" t-if="d['info']">Información Adicional</div>
+                        <table class="caja" t-if="d['info']" style="width:100%; margin-top:4px;">
+                            <tr t-foreach="d['info']" t-as="fila" style="border-bottom:1px solid #000;">
+                                <td style="width:3%; border-right:1px solid #000;" t-out="fila_index + 1"/>
+                                <td style="width:30%; border-right:1px solid #000; padding-left:12px;" t-out="fila[0]"/>
+                                <td t-out="fila[1]"/>
+                            </tr>
+                        </table>
+
+                        <!-- Pie -->
+                        <table style="width:100%; margin-top:14px;">
+                            <tr>
+                                <td style="font-style:italic; vertical-align:bottom;" t-out="d['autorizacion']"/>
+                                <td class="der" style="width:110px;">
+                                    <img t-if="d['qr']" t-att-src="d['qr']" style="width:100px; height:100px;"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table style="width:100%; margin-top:30px; font-style:italic; font-size:7pt;" t-if="d['es_nota']">
+                            <tr>
+                                <td t-out="d['pie_consulta']"/>
+                                <td class="der" t-out="d['pie_powered']"/>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

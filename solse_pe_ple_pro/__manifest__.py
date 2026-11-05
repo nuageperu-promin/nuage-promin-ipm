@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'PLE SUNAT - PRO',
 	'version': '19.0.1.6',

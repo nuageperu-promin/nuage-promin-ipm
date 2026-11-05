@@ -295,4 +295,4 @@ class AccountMoveSunat(models.Model):
 class AccountMoveLineSunat(models.Model):
 	_inherit = 'account.move.line'
 
-	parent_move_type = fields.Selection(related='move_id.move_type', store=True, readonly=True)
+	parent_move_type = fields.Selection(related='move_id.move_type', string='Tipo de movimiento (cabecera)', store=True, readonly=True)

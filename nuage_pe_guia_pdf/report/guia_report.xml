@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_paperformat_guia" model="report.paperformat">
+        <field name="name">Guía PROMIN (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="nuage_action_report_guia" model="ir.actions.report">
+        <field name="name">Guía de Remisión (PROMIN)</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nuage_pe_guia_pdf.report_guia_document</field>
+        <field name="report_file">nuage_pe_guia_pdf.report_guia_document</field>
+        <field name="print_report_name">'Guia-%s' % (object.pe_guide_number or object.name or 'borrador').replace('/', '-')</field>
+        <field name="paperformat_id" ref="nuage_paperformat_guia"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_guia_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="d" t-value="datos[o.id]"/>
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color:#000;">
+                    <meta charset="utf-8"/>
+                    <style>
+                        .gr td, .gr th { padding: 2px 4px; vertical-align: top; }
+                        .gr table { border-collapse: collapse; }
+                        .gr .tit { font-weight: bold; margin-top: 8px; }
+                        .gr .caja { border: 1px solid #000; }
+                        .gr table.sb, .gr table.sb td, .gr table.sb th, .gr table.sb tr { border: none !important; }
+                        .gr table.det { width: 100%; }
+                        .gr table.det th { border: 1px solid #000; text-align: center; font-size: 7.5pt; padding: 5px 3px; }
+                        .gr table.det td { border: 1px solid #000; font-size: 7.5pt; }
+                        .gr .der { text-align: right; }
+                        .gr .cen { text-align: center; }
+                    </style>
+                    <div class="gr">
+                        <table class="sb" style="width:100%;">
+                            <tr>
+                                <td style="width:58%; padding-top:10px;">
+                                    <img t-if="d['logo']" t-att-src="d['logo']" style="max-height:110px; max-width:90%;"/>
+                                    <div t-else="" style="font-size:20pt; font-weight:bold;" t-out="d['emisor']"/>
+                                </td>
+                                <td style="width:42%;">
+                                    <div style="border:2px solid #000; text-align:center; font-weight:bold; font-size:15pt; padding:18px 8px; line-height:1.35;">
+                                        <div>RUC N° <t t-out="d['ruc_emisor']"/></div>
+                                        <div>GUÍA DE REMISIÓN</div>
+                                        <div>ELECTRÓNICA</div>
+                                        <div>REMITENTE</div>
+                                        <div t-out="d['numero']" style="margin-top:6px;"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:8px; font-weight:bold;" t-out="d['emisor']"/>
+
+                        <table class="sb" style="width:100%; margin-top:26px;">
+                            <tr>
+                                <td style="width:17%; font-weight:bold;">Nombre/Razón Social:</td>
+                                <td style="width:36%;" t-out="d['destinatario']"/>
+                                <td style="width:17%; font-weight:bold;">RUC:</td>
+                                <td t-out="d['destinatario_ruc']"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Fecha Emisión:</td>
+                                <td t-out="d['fecha_emision']"/>
+                                <td style="font-weight:bold;">Fecha Traslado:</td>
+                                <td t-out="d['fecha_traslado']"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Punto de Partida:</td>
+                                <td t-out="d['partida']"/>
+                                <td style="font-weight:bold;">Punto de Llegada:</td>
+                                <td t-out="d['llegada']"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Motivo de Traslado:</td>
+                                <td t-out="d['motivo']"/>
+                                <td style="font-weight:bold;">Modalidad de Traslado:</td>
+                                <td t-out="d['modalidad']"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Peso:</td>
+                                <td t-out="d['peso']"/>
+                                <td t-if="d['publico']" style="font-weight:bold;">Fecha Entrega de Bienes:</td>
+                                <td t-if="d['publico']" t-out="d['fecha_entrega']"/>
+                            </tr>
+                        </table>
+                        <table class="sb" style="width:100%; margin-top:2px;">
+                            <tr>
+                                <td style="width:50%;"><b>Ind. Traslado en Vehículos de categoría M1 o L:</b> <t t-out="d['ind_m1l']"/></td>
+                                <td><b>Ind. Retorno de Vehículo con Envases o Embalajes vacíos:</b> <t t-out="d['ind_envases']"/></td>
+                            </tr>
+                            <tr>
+                                <td><b>Indicador Transbordo Programado:</b> <t t-out="d['ind_transbordo']"/></td>
+                                <td><b>Indicador Retorno Vehículo Vacío:</b> <t t-out="d['ind_retorno']"/></td>
+                            </tr>
+                        </table>
+
+                        <table class="det" style="margin-top:12px;">
+                            <tr>
+                                <th style="width:6%;">Ítem</th>
+                                <th style="width:16%;">Código</th>
+                                <th>Descripción</th>
+                                <th style="width:14%;">Unidad</th>
+                                <th style="width:14%;">Cantidad</th>
+                            </tr>
+                            <tr t-foreach="d['items']" t-as="it">
+                                <td class="cen" t-out="it['n']"/>
+                                <td class="cen" t-out="it['codigo']"/>
+                                <td t-out="it['desc']"/>
+                                <td class="cen" t-out="it['um']"/>
+                                <td class="der" t-out="it['cant']"/>
+                            </tr>
+                        </table>
+
+                        <t t-if="d['conductores']">
+                            <div class="tit">Datos del Vehículo y Conductor</div>
+                            <t t-foreach="d['conductores']" t-as="c">
+                                <div class="caja" style="padding:3px 4px; margin-top:2px;">
+                                    <div style="font-weight:bold;" t-out="'PRINCIPAL' if c['principal'] else 'SECUNDARIO'"/>
+                                    <table class="sb" style="width:100%;">
+                                        <tr>
+                                            <td style="width:20%;"><b>Placa:</b></td>
+                                            <td style="width:40%;" t-out="c['placa']"/>
+                                            <td style="width:10%;"><b>DNI:</b></td>
+                                            <td t-out="c['dni']"/>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Nombres y Apellidos:</b></td>
+                                            <td t-out="c['nombre']"/>
+                                            <td colspan="2"><b>Número de la Tarjeta Única de Circulación:</b> <t t-out="c['tuce'] or '-'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4"><b>Número de Licencia de Conducir:</b> <t t-out="c['licencia']"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </t>
+                        </t>
+
+                        <t t-if="d['facturas']">
+                            <div class="tit">Datos del Documento Relacionado</div>
+                            <t t-foreach="d['facturas']" t-as="f">
+                                <div class="caja" style="padding:3px 4px; margin-top:2px;">
+                                    <table class="sb" style="width:100%;">
+                                        <tr>
+                                            <td style="width:40%;"><b><t t-out="f['tipo']"/>:</b> <t t-out="f['numero']"/></td>
+                                            <td><b>RUC:</b> <t t-out="f['ruc']"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </t>
+                        </t>
+
+                        <t t-if="d['observaciones']">
+                            <div class="tit">Observaciones</div>
+                            <div class="caja" style="padding:3px 4px;">
+                                <div t-foreach="d['observaciones']" t-as="ob" t-out="ob"/>
+                            </div>
+                        </t>
+
+                        <t t-if="d['orden_compra']">
+                            <div class="tit">Información Adicional</div>
+                            <div class="caja" style="padding:3px 4px;">
+                                <table class="sb" style="width:100%;">
+                                    <tr>
+                                        <td style="width:6%;">1</td>
+                                        <td style="width:30%;">Orden Compra</td>
+                                        <td t-out="d['orden_compra']"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </t>
+
+                        <table class="sb" style="width:100%; margin-top:6px;">
+                            <tr>
+                                <td/>
+                                <td class="der" style="width:110px;" rowspan="2">
+                                    <img t-if="d['qr']" t-att-src="d['qr']" style="width:100px; height:100px;"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height:70px;"/>
+                            </tr>
+                        </table>
+                        <table class="sb" style="width:100%; margin-top:12px; font-size:9pt;">
+                            <tr>
+                                <td>Código Hash: <t t-out="d['hash']"/></td>
+                                <td class="cen">Página 1/1</td>
+                                <td class="der">RUC N° <t t-out="d['ruc_emisor']"/>-<t t-out="d['numero']"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

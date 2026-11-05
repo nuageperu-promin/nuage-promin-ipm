@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_paperformat_retencion" model="report.paperformat">
+        <field name="name">Retención PROMIN (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="nuage_retencion_report_action" model="ir.actions.report">
+        <field name="name">Comprobante de retención</field>
+        <field name="model">nuage.retencion</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">nuage_pe_retencion.report_retencion_document</field>
+        <field name="report_file">nuage_pe_retencion.report_retencion_document</field>
+        <field name="print_report_name">'Retencion-%s' % (object.name if object.state != 'borrador' else 'borrador')</field>
+        <field name="paperformat_id" ref="nuage_paperformat_retencion"/>
+        <field name="binding_model_id" ref="model_nuage_retencion"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_retencion_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color:#000;">
+                    <meta charset="utf-8"/>
+                    <style>
+                        .rt table { border-collapse: collapse; }
+                        .rt table.sb, .rt table.sb tbody, .rt table.sb td, .rt table.sb th, .rt table.sb tr { border: 0 !important; border-style: none !important; box-shadow: none !important; }
+                        .rt table.det { width: 100%; }
+                        .rt table.det th { border: 1px solid #000; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 4px 3px; }
+                        .rt table.det td { border: 1px solid #000; font-size: 7.5pt; padding: 3px; }
+                        .rt table.det td.sin { border: none; }
+                        .rt .der { text-align: right; }
+                        .rt .cen { text-align: center; }
+                    </style>
+                    <div class="rt">
+                        <table class="sb" style="width:100%; border:0 !important;">
+                            <tr>
+                                <td style="width:58%; padding-top:10px;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height:110px; max-width:90%;"/>
+                                    <div t-else="" style="font-size:20pt; font-weight:bold;" t-out="o.company_id.name"/>
+                                </td>
+                                <td style="width:42%;">
+                                    <div style="border:2px solid #000; text-align:center; font-weight:bold; font-size:15pt; padding:18px 8px; line-height:1.35;">
+                                        <div>RUC N° <t t-out="o.company_id.vat"/></div>
+                                        <div>COMPROBANTE DE RETENCIÓN</div>
+                                        <div>ELECTRÓNICO</div>
+                                        <div style="margin-top:6px;" t-out="o.name if o.state != 'borrador' else 'BORRADOR'"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:8px; font-weight:bold;" t-out="o.company_id.name"/>
+                        <t t-set="cp" t-value="o.company_id.partner_id"/>
+                        <div style="margin-top:6px;"><t t-out="', '.join(x for x in [cp.street, cp.street2] if x)"/> <t t-out="' - '.join(x for x in [cp.state_id.name, cp.city, cp.l10n_pe_district.name] if x)"/></div>
+
+                        <table class="sb" style="width:100%; margin-top:16px; border:0 !important;">
+                            <tr>
+                                <td style="width:15%; font-weight:bold;">Nombre/Razón Social:</td>
+                                <td style="width:45%;" t-out="o.partner_id.name"/>
+                                <td style="width:12%; font-weight:bold;">RUC:</td>
+                                <td t-out="o.partner_id.vat"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Dirección:</td>
+                                <td><t t-out="', '.join(x for x in [o.partner_id.street, o.partner_id.street2] if x)"/> <t t-out="' - '.join(x for x in [o.partner_id.state_id.name, o.partner_id.city, o.partner_id.l10n_pe_district.name] if x)"/></td>
+                                <td style="font-weight:bold;">Fecha Emisión:</td>
+                                <td t-out="o.date and o.date.strftime('%d/%m/%Y') or ''"/>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">Tasa:</td>
+                                <td colspan="3"><t t-out="'%.2f' % o.tasa"/>%</td>
+                            </tr>
+                        </table>
+
+                        <div style="margin-top:14px; font-weight:bold;">Comprobantes de pago que dan origen a la retención</div>
+                        <table class="det" style="margin-top:4px;">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Documento</th>
+                                    <th>Fecha de Emisión</th>
+                                    <th>Fecha de Pago</th>
+                                    <th>Nro. de Pago</th>
+                                    <th>Moneda Origen</th>
+                                    <th>Importe Operación/Origen</th>
+                                    <th>Importe de Pago sin Retención</th>
+                                    <th>Tipo de Cambio</th>
+                                    <th>Importe Retenido S/</th>
+                                    <th>Importe Total a Pagar S/</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td class="cen">Factura</td>
+                                        <td class="cen" style="white-space:nowrap;" t-out="line.numero_doc"/>
+                                        <td class="cen" t-out="line.fecha_emision and line.fecha_emision.strftime('%d/%m/%Y') or ''"/>
+                                        <td class="cen" t-out="line.fecha_pago and line.fecha_pago.strftime('%d/%m/%Y') or ''"/>
+                                        <td class="cen" t-out="line.nro_pago"/>
+                                        <td class="cen" t-out="{'PEN': 'Soles', 'USD': 'Dólar', 'EUR': 'Euro'}.get(line.moneda_origen_id.name, line.moneda_origen_id.name)"/>
+                                        <td class="der" t-out="'{:,.2f}'.format(line.importe_operacion)"/>
+                                        <td class="der" t-out="'{:,.2f}'.format(line.importe_pago)"/>
+                                        <td class="der" t-out="'{:,.2f}'.format(line.tipo_cambio)"/>
+                                        <td class="der" t-out="'{:,.2f}'.format(line.importe_retenido)"/>
+                                        <td class="der" t-out="'{:,.2f}'.format(line.importe_neto)"/>
+                                    </tr>
+                                </t>
+                                <tr style="font-weight:bold;">
+                                    <td class="sin der" colspan="9" style="border:0 !important; border-style:none !important; background:transparent;">Importe Total S/</td>
+                                    <td class="der" t-out="'{:,.2f}'.format(o.importe_retenido)"/>
+                                    <td class="der" t-out="'{:,.2f}'.format(o.importe_neto)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="border:1px solid #000; margin-top:18px; padding:4px 6px;">
+                            <div style="font-weight:bold;">Observaciones:</div>
+                            <div style="margin-top:4px;">
+                                <t t-if="o.observaciones"><div t-out="o.observaciones"/></t>
+                                <t t-if="o.state == 'borrador'"><div>Comprobante en borrador, aún no emitido.</div></t>
+                                <t t-if="o.state == 'cancelado'"><div>Comprobante cancelado.</div></t>
+                            </div>
+                        </div>
+
+                        <table class="sb" style="width:100%; margin-top:40px; font-size:9pt; border:0 !important;">
+                            <tr>
+                                <td class="cen">Página 1/1</td>
+                                <td class="der">R.U.C. <t t-out="o.company_id.vat"/>-<t t-out="o.name"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

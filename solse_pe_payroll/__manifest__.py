@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'Nómina Peruana - Núcleo (Enterprise)',
 	'summary': 'Localización peruana de nómina para Odoo 19 Enterprise: '

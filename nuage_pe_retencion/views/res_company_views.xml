@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_res_company_form_retencion" model="ir.ui.view">
+        <field name="name">res.company.form.nuage.retencion</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Retenciones" name="nuage_retenciones">
+                    <group>
+                        <group string="Régimen">
+                            <field name="agente_retencion" readonly="1"/>
+                            <field name="nuage_retener_al_pagar"/>
+                            <field name="nuage_ret_tasa" invisible="not nuage_retener_al_pagar"/>
+                            <field name="nuage_ret_umbral" invisible="not nuage_retener_al_pagar"/>
+                            <field name="nuage_ret_cuenta_id" invisible="not nuage_retener_al_pagar"/>
+                        </group>
+                        <group string="Comprobante" invisible="not nuage_retener_al_pagar">
+                            <field name="nuage_ret_serie"/>
+                            <field name="nuage_ret_correlativo_inicio"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

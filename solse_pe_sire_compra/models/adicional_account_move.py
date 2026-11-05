@@ -91,7 +91,7 @@ class AccountMoveLine(models.Model):
 
 	tipo_afectacion_compra = fields.Many2one(
 		'solse.pe.afectacion.compra',
-		string='Tipo de afectación',
+		string='Tipo de afectación (compra)',
 		help='Tipo de afectación Compra',
 		store=True,
 	)

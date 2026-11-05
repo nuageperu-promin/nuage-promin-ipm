@@ -130,7 +130,7 @@ class AccountMove(models.Model):
 		'Número de documento de origen',
 		compute='_compute_origin_doc', store=True, readonly=False)
 	origin_doc_id = fields.Many2one(
-		'account.move', 'CPE de origen', compute='_compute_origin_doc')
+		'account.move', 'CPE de origen', compute='_compute_origin_doc_id')
 
 	pe_additional_type = fields.Selection(
 		'_get_pe_additional_document',
@@ -792,10 +792,17 @@ class AccountMove(models.Model):
 		return self.env['pe.datas'].get_selection('PE.CPE.CATALOG12')
 
 	@api.depends('pe_related_ids')
-	def _compute_origin_doc(self):
+	def _compute_origin_doc_id(self):
+		# Campo no almacenado: método aparte del de los campos almacenados
+		# (evita el warning de Odoo 19 por store/compute_sudo inconsistentes).
 		for rec in self:
 			inv = rec.pe_related_ids
 			rec.origin_doc_id = inv[0].id if inv else False
+
+	@api.depends('pe_related_ids')
+	def _compute_origin_doc(self):
+		for rec in self:
+			inv = rec.pe_related_ids
 			if inv:
 				# Factura de origen en Odoo: autollenar desde el registro.
 				rec.origin_doc_number = inv[0].name

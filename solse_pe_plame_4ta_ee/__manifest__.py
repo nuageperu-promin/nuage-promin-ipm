@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'Nómina Peruana - PLAME 4ta Categoría (Enterprise)',
 	'version': '19.0.1.0.0',

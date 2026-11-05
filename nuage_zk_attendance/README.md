@@ -69,3 +69,22 @@ conexión directa por IP:4370 (PyZK). No se guardan plantillas biométricas.
 ## Pruebas
 - Lógica pura: `python3 tests/test_protocol.py` (sin Odoo).
 - Odoo: `odoo-bin -d <db> -u nuage_zk_attendance --test-enable --test-tags /nuage_zk_attendance`
+
+
+## Traer el historial guardado en el reloj (v19.0.1.1.0)
+
+El reloj conserva en su memoria las marcaciones. Además del tiempo real, desde el
+formulario del reloj (**Traer historial**) se pueden recuperar las de un periodo
+**desde – hasta** (máximo 92 días por vez):
+
+- **Pedirlo al reloj (por red):** Odoo le envía `DATA QUERY ATTLOG StartTime=… EndTime=…`
+  en su próxima consulta (≈30–60 s) y el reloj reenvía las marcaciones del rango. Depende del
+  firmware (Push 3.x); si no lo admite, responde un código negativo y queda anotado en el
+  chatter y en la pestaña "Historial pedido".
+- **Importar archivo attlog.dat:** descargado del reloj con una memoria USB
+  (Menú → Gestión de datos → Descargar → Datos de asistencia). Sirve en cualquier modelo.
+
+Ambas opciones: adelantan la fecha "Procesar marcaciones desde" para no ignorar el periodo,
+no duplican las marcaciones que Odoo ya tiene y procesan en orden cronológico. Las tandas
+grandes procesan las 300 más antiguas al recibirlas; el resto queda **pendiente** y se
+procesa con el botón **Procesar pendientes** (o con la tarea programada cada 5 min).

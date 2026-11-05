@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
+	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'Nómina Peruana - Integración con Catálogo SUNAT (Enterprise)',
 	'summary': 'Puente de menús: reubica la Nómina PE bajo la raíz SOLSE '

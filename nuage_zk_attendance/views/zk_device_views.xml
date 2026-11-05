@@ -29,6 +29,10 @@
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state != 'confirmed'"/>
+                    <button name="action_open_history_wizard" type="object"
+                            string="Traer historial" invisible="state != 'confirmed'"/>
+                    <button name="action_process_pending" type="object"
+                            string="Procesar pendientes" invisible="state != 'confirmed'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
                 </header>
                 <sheet>
@@ -75,6 +79,20 @@
                                 <field name="server_port"/>
                                 <field name="server_https"/>
                             </group>
+                        </page>
+                        <page string="Historial pedido" name="commands">
+                            <field name="command_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Pedido"/>
+                                    <field name="name"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'done'"
+                                           decoration-danger="state == 'error'"
+                                           decoration-info="state in ('pending', 'sent')"/>
+                                    <field name="sent_at"/>
+                                    <field name="return_code"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Reglas de marcación" name="rules">
                             <group>

@@ -208,6 +208,14 @@ class ZkAttendanceLog(models.Model):
         logs._process()
 
     @api.model
+    def _process_pending(self, device, limit=1000):
+        """Procesa las pendientes de un reloj, las más antiguas primero."""
+        logs = self.search([('device_id', '=', device.id), ('state', '=', 'pending')],
+                           order='punch_datetime asc, id asc', limit=limit)
+        logs._process()
+        return len(logs)
+
+    @api.model
     def _cron_process(self, limit=1000):
         self.search([('state', '=', 'pending')],
                     order='punch_datetime asc', limit=limit)._process()

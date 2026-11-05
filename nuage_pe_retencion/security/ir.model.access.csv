@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nuage_retencion_manager,nuage.retencion manager,model_nuage_retencion,account.group_account_manager,1,1,1,1
+access_nuage_retencion_invoice,nuage.retencion invoice,model_nuage_retencion,account.group_account_invoice,1,1,1,0
+access_nuage_retencion_line_manager,nuage.retencion.line manager,model_nuage_retencion_line,account.group_account_manager,1,1,1,1
+access_nuage_retencion_line_invoice,nuage.retencion.line invoice,model_nuage_retencion_line,account.group_account_invoice,1,1,1,0
