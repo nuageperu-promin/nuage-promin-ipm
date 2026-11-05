@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Asistencias - Relojes ZKTeco (ADMS)',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Attendances',
     'summary': 'Recibe las marcaciones de relojes ZKTeco por ADMS (push) y '
                'las convierte en asistencias de Odoo',
@@ -15,7 +15,9 @@ duplicados.
 
 Alcance versión 1: recepción de marcaciones, dispositivos por número de
 serie, ID del reloj por empleado, bitácora con reproceso, aviso de reloj sin
-conexión y modo diagnóstico. No envía usuarios ni huellas al reloj.
+conexión y modo diagnóstico. Historial: trae las marcaciones guardadas en el
+reloj por rango de fechas (por red o con el archivo attlog.dat). No envía
+usuarios ni huellas al reloj.
     """,
     'author': 'Nuage Peru S.A.C.',
     'maintainer': 'Nuage Peru S.A.C.',
@@ -28,6 +30,7 @@ conexión y modo diagnóstico. No envía usuarios ni huellas al reloj.
         'views/zk_device_views.xml',
         'views/zk_attendance_log_views.xml',
         'views/zk_request_log_views.xml',
+        'views/zk_history_wizard_views.xml',
         'views/hr_employee_views.xml',
         'views/menus.xml',
     ],

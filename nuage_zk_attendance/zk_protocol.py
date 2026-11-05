@@ -183,3 +183,39 @@ def decide_punch(punch, last_in, last_out, later_check_in, status='',
     if device_mode and says_out:
         return 'review', 'El reloj indica salida pero no hay una entrada abierta.'
     return 'check_in', ''
+
+
+# ---- Comandos del servidor hacia el reloj ----------------------------------
+
+_CMD_RESULT_RE = re.compile(r'ID=(\d+)\s*&\s*Return=(-?\d+)(?:\s*&\s*CMD=([^\r\n&]*))?')
+
+
+def history_command(start, end):
+    """Comando para que el reloj reenvíe sus marcaciones guardadas.
+
+    start/end: datetime naive en hora LOCAL del reloj (inclusive).
+    Formato Push 3.x ("DATA QUERY ATTLOG"); según el firmware puede no estar
+    soportado: en ese caso el reloj contesta Return negativo y se usa la
+    importación del archivo attlog.dat.
+    """
+    return 'DATA QUERY ATTLOG StartTime=%s\tEndTime=%s' % (
+        start.strftime('%Y-%m-%d %H:%M:%S'), end.strftime('%Y-%m-%d %H:%M:%S'))
+
+
+def getrequest_response(commands):
+    """Respuesta a /iclock/getrequest: el primer comando pendiente, o 'OK'.
+
+    commands: lista de (id, texto) en orden de envío.
+    """
+    if not commands:
+        return 'OK'
+    cmd_id, text = commands[0]
+    return 'C:%s:%s' % (cmd_id, text)
+
+
+def parse_command_results(body):
+    """Lee el POST de /iclock/devicecmd: [(id, return_code, cmd), ...]."""
+    results = []
+    for m in _CMD_RESULT_RE.finditer(body or ''):
+        results.append((int(m.group(1)), int(m.group(2)), (m.group(3) or '').strip()))
+    return results

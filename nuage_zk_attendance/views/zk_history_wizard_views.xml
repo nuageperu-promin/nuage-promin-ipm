@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="zk_history_wizard_form" model="ir.ui.view">
+        <field name="name">zk.history.wizard.form</field>
+        <field name="model">zk.history.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Traer historial del reloj">
+                <div class="alert alert-info" role="alert">
+                    El reloj guarda en su memoria las marcaciones. Aquí puede traer las de
+                    un periodo (por ejemplo, las últimas dos semanas). Las marcaciones nuevas
+                    siguen llegando en tiempo real; esto solo recupera las anteriores.
+                    No se duplican las que Odoo ya tenga.
+                </div>
+                <group>
+                    <field name="device_id"/>
+                    <field name="source" widget="radio"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="file" filename="filename" invisible="source != 'file'"
+                           required="source == 'file'"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <div class="text-muted" invisible="source != 'device'">
+                    Las horas se piden en la hora del propio reloj. Funciona si el modelo admite la
+                    consulta por fechas (Push 3.x). Si no, use el archivo del USB.
+                </div>
+                <div class="text-muted" invisible="source != 'file'">
+                    En el reloj: Menú → Gestión de datos (o Memoria USB) → Descargar → Datos de
+                    asistencia. Genera un archivo attlog.dat (o *_attlog.dat).
+                </div>
+                <footer>
+                    <button name="action_request_device" type="object" class="btn-primary"
+                            string="Pedir al reloj" invisible="source != 'device'"/>
+                    <button name="action_import_file" type="object" class="btn-primary"
+                            string="Importar archivo" invisible="source != 'file'"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

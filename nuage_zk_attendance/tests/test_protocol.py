@@ -132,5 +132,21 @@ class TestDecide(unittest.TestCase):
             self.d(mode='device', status='2', last_in=T0 - timedelta(hours=3))[0], 'check_out')
 
 
+class TestCommands(unittest.TestCase):
+    def test_history_command(self):
+        cmd = zkp.history_command(datetime(2026, 10, 20, 0, 0, 0), datetime(2026, 11, 3, 23, 59, 59))
+        self.assertEqual(
+            cmd, 'DATA QUERY ATTLOG StartTime=2026-10-20 00:00:00\tEndTime=2026-11-03 23:59:59')
+
+    def test_getrequest_response(self):
+        self.assertEqual(zkp.getrequest_response([]), 'OK')
+        self.assertEqual(zkp.getrequest_response([(7, 'X Y'), (8, 'Z')]), 'C:7:X Y')
+
+    def test_parse_command_results(self):
+        body = 'ID=7&Return=0&CMD=DATA\r\nID=8&Return=-1002&CMD=DATA\n'
+        self.assertEqual(zkp.parse_command_results(body), [(7, 0, 'DATA'), (8, -1002, 'DATA')])
+        self.assertEqual(zkp.parse_command_results(''), [])
+
+
 if __name__ == '__main__':
     unittest.main()

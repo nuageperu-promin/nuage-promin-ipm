@@ -17,6 +17,7 @@ from .. import zk_protocol as zkp
 _logger = logging.getLogger(__name__)
 
 MAX_DEBUG_CHARS = 20000
+MAX_INLINE_PROCESS = 300
 
 
 class ZKAdmsController(http.Controller):
@@ -105,7 +106,12 @@ class ZKAdmsController(http.Controller):
             return zkp.registry_response(), 200
         if kind == 'push':
             return zkp.push_config_response(), 200
-        return 'OK', 200  # getrequest, devicecmd, ping
+        if kind == 'getrequest':
+            return zkp.getrequest_response(device._pop_commands()), 200
+        if kind == 'devicecmd':
+            device._register_command_results(zkp.parse_command_results(body))
+            return 'OK', 200
+        return 'OK', 200  # ping
 
     def _receive(self, env, device, args, body):
         table = (args.get('table') or '').upper()
@@ -121,9 +127,12 @@ class ZKAdmsController(http.Controller):
         if stamp and stamp != device.att_stamp:
             device.att_stamp = stamp
         if created:
+            # Tandas grandes (historial): se procesan las más antiguas ahora y el
+            # resto queda pendiente para no hacer esperar al reloj.
+            batch = created.sorted(lambda l: (l.punch_datetime, l.id))[:MAX_INLINE_PROCESS]
             try:
                 with env.cr.savepoint():
-                    created._process()
+                    batch._process()
             except Exception:
                 # Quedan 'pendientes' y las toma el proceso programado.
                 _logger.exception('ZK ADMS %s: error procesando marcaciones',

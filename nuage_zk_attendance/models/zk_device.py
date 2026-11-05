@@ -78,6 +78,7 @@ class ZkDevice(models.Model):
     server_host = fields.Char('Dirección del servidor', compute='_compute_server')
     server_port = fields.Char('Puerto del servidor', compute='_compute_server')
     server_https = fields.Boolean('Usar HTTPS', compute='_compute_server')
+    command_ids = fields.One2many('zk.device.command', 'device_id', 'Comandos')
     log_count = fields.Integer('Marcaciones', compute='_compute_log_count')
 
     def init(self):
@@ -171,6 +172,55 @@ class ZkDevice(models.Model):
             'domain': [('device_id', '=', self.id)],
             'context': {'default_device_id': self.id},
         }
+
+    def action_open_history_wizard(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Traer historial del reloj'),
+            'res_model': 'zk.history.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_device_id': self.id},
+        }
+
+    def action_process_pending(self):
+        """Procesa las marcaciones pendientes de este reloj (por tandas)."""
+        self.ensure_one()
+        done = self.env['zk.attendance.log']._process_pending(self, limit=2000)
+        return {
+            'type': 'ir.actions.client', 'tag': 'display_notification',
+            'params': {
+                'title': _('Marcaciones procesadas'),
+                'message': _('Se procesaron %s marcaciones pendientes.', done),
+                'type': 'success', 'sticky': False,
+            },
+        }
+
+    # ---- comandos hacia el reloj -------------------------------------------
+    def _pop_commands(self):
+        """Comandos en espera: se marcan como enviados y se devuelven."""
+        self.ensure_one()
+        cmds = self.env['zk.device.command'].search(
+            [('device_id', '=', self.id), ('state', '=', 'pending')], order='id', limit=1)
+        cmds.write({'state': 'sent', 'sent_at': fields.Datetime.now()})
+        return [(c.id, c.command) for c in cmds]
+
+    def _register_command_results(self, results):
+        """results: [(id, return_code, cmd)] que el reloj contesta en devicecmd."""
+        self.ensure_one()
+        for cmd_id, code, _cmd in results:
+            cmd = self.env['zk.device.command'].search(
+                [('id', '=', cmd_id), ('device_id', '=', self.id)], limit=1)
+            if not cmd:
+                continue
+            cmd.write({'return_code': str(code),
+                       'state': 'done' if code >= 0 else 'error'})
+            if code < 0:
+                self.message_post(body=_(
+                    'El reloj rechazó el comando "%(cmd)s" (código %(code)s). Este '
+                    'modelo puede no admitir la consulta por fechas: use la '
+                    'importación del archivo attlog.dat.', cmd=cmd.name, code=code))
 
     # ---- uso desde el controlador ------------------------------------------
     @api.model

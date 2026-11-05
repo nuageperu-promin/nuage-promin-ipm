@@ -124,3 +124,89 @@ class TestZkFlow(HttpCase):
         self.assertTrue(self.device.offline_notified)
         self.url_open('/iclock/getrequest?SN=%s' % SERIAL)
         self.assertFalse(self.device.offline_notified)
+
+    # ---- historial -------------------------------------------------------------
+    def _wizard(self, **kw):
+        vals = {'device_id': self.device.id,
+                'date_from': '2026-10-20', 'date_to': '2026-10-22'}
+        vals.update(kw)
+        return self.env['zk.history.wizard'].create(vals)
+
+    def test_13_history_request_and_command_cycle(self):
+        self._wizard().action_request_device()
+        cmd = self.device.command_ids
+        self.assertEqual(len(cmd), 1)
+        self.assertEqual(cmd.state, 'pending')
+        res = self.url_open('/iclock/getrequest?SN=%s' % SERIAL)
+        self.assertEqual(res.text, 'C:%d:%s' % (cmd.id, cmd.command))
+        self.assertIn('DATA QUERY ATTLOG StartTime=2026-10-20 00:00:00', res.text)
+        self.assertEqual(cmd.state, 'sent')
+        # no se reenvía mientras no haya otro pendiente
+        self.assertEqual(self.url_open('/iclock/getrequest?SN=%s' % SERIAL).text, 'OK')
+        self.url_open('/iclock/devicecmd?SN=%s' % SERIAL,
+                      data=('ID=%d&Return=0&CMD=DATA' % cmd.id).encode(),
+                      headers={'Content-Type': 'text/plain'})
+        self.assertEqual(cmd.state, 'done')
+
+    def test_14_history_command_rejected(self):
+        self._wizard().action_request_device()
+        cmd = self.device.command_ids
+        self.url_open('/iclock/getrequest?SN=%s' % SERIAL)
+        self.url_open('/iclock/devicecmd?SN=%s' % SERIAL,
+                      data=('ID=%d&Return=-1002' % cmd.id).encode(),
+                      headers={'Content-Type': 'text/plain'})
+        self.assertEqual(cmd.state, 'error')
+
+    def test_15_history_lowers_cutoff_and_reprocesses_ignored(self):
+        self.device.process_from = '2026-10-21 00:00:00'
+        self._post('12\t2026-10-20 08:00:00\t0\t1\t0\n12\t2026-10-20 17:00:00\t1\t1\t0\n')
+        logs = self.env['zk.attendance.log'].search([('device_id', '=', self.device.id)])
+        self.assertEqual(set(logs.mapped('state')), {'ignored'})
+        self.assertFalse(self._atts())
+        self._wizard().action_request_device()
+        self.assertEqual(self.device.process_from, fields.Datetime.from_string('2026-10-20 05:00:00'))
+        self.assertEqual(set(logs.mapped('state')), {'pending'})
+        self.device.action_process_pending()
+        self.assertEqual(set(logs.mapped('state')), {'processed'})
+        self.assertEqual(len(self._atts()), 1)
+
+    def test_16_history_arriving_by_push_is_processed(self):
+        self.device.process_from = '2026-10-21 00:00:00'
+        self._wizard().action_request_device()
+        res = self._post('12\t2026-10-20 08:00:00\t0\t1\t0\n12\t2026-10-20 17:00:00\t1\t1\t0\n')
+        self.assertEqual(res.text, 'OK:2')
+        self.assertEqual(len(self._atts()), 1)
+
+    def test_17_import_file_filters_range_and_no_duplicates(self):
+        import base64
+        content = (
+            '12\t2026-10-19 08:00:00\t0\t1\t0\t0\n'   # fuera de rango
+            '  12\t2026-10-20 08:00:00\t0\t1\t0\t0\n'
+            '12\t2026-10-20 17:00:00\t1\t1\t0\t0\n')
+        wiz = self._wizard(file=base64.b64encode(content.encode()), filename='1_attlog.dat')
+        wiz.action_import_file()
+        self.assertEqual(len(self._atts()), 1)
+        logs = self.env['zk.attendance.log'].search([('device_id', '=', self.device.id)])
+        self.assertEqual(len(logs), 2)
+        # importar de nuevo no duplica
+        self._wizard(file=base64.b64encode(content.encode()), filename='1_attlog.dat').action_import_file()
+        self.assertEqual(self.env['zk.attendance.log'].search_count(
+            [('device_id', '=', self.device.id)]), 2)
+        self.assertEqual(len(self._atts()), 1)
+
+    def test_18_wizard_validations(self):
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            self._wizard(date_from='2026-10-22', date_to='2026-10-20').action_request_device()
+        with self.assertRaises(UserError):
+            self._wizard(date_from='2026-01-01', date_to='2026-10-20').action_request_device()
+        with self.assertRaises(UserError):
+            self._wizard(source='file').action_import_file()
+
+    def test_19_big_batch_leaves_rest_pending(self):
+        lines = ''.join('12\t2026-10-%02d %02d:00:00\t%d\t1\t0\n' % (d, h, st)
+                        for d in range(1, 21) for h, st in ((8, 0), (17, 1)))
+        # 40 marcaciones; con el tope en 300 se procesan todas
+        res = self._post(lines)
+        self.assertEqual(res.text, 'OK:40')
+        self.assertEqual(len(self._atts()), 20)

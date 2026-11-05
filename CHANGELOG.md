@@ -107,6 +107,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-04 — nuage_zk_attendance (19.0.1.1.0)
+
+- **Motivo:** PROMIN necesita datos de prueba: los relojes guardan marcaciones en su memoria y se pidió poder traerlas por rango de fechas, además del tiempo real.
+- **Acción:** botón "Traer historial" en el reloj (pedido por red con `DATA QUERY ATTLOG` o importación de `attlog.dat`), comandos al reloj (`getrequest`/`devicecmd`), botón "Procesar pendientes", procesamiento por tandas. 20 pruebas automáticas pasan. Pendiente: validar el comando con el SenseFace y el MB20 reales.
+
+---
+
 ## 2026-10-22 — nuage_zk_attendance
 
 - **Motivo:** probado en promindemo (handshake, entrada/salida, duplicado). El formulario mostraba puerto 80 y sin HTTPS porque `web.base.url` queda en http detrás del proxy.
