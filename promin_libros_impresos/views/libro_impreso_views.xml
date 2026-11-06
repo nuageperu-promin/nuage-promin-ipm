@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="nuage_libro_impreso_form" model="ir.ui.view">
+        <field name="name">nuage.libro.impreso.form</field>
+        <field name="model">nuage.libro.impreso</field>
+        <field name="arch" type="xml">
+            <form string="Libros contables impresos">
+                <group>
+                    <group>
+                        <field name="tipo" readonly="1" force_save="1"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="fecha_desde"/>
+                        <field name="fecha_hasta"/>
+                    </group>
+                    <group>
+                        <field name="folio_inicial"/>
+                        <field name="prefijos_cuentas"/>
+                        <field name="solo_con_movimiento" invisible="tipo != 'mayor'"/>
+                        <field name="mayusculas"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_imprimir" type="object" string="Imprimir PDF" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="nuage_libro_diario_action" model="ir.actions.act_window">
+        <field name="name">Libro Diario (Formato 5.1)</field>
+        <field name="res_model">nuage.libro.impreso</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_tipo': 'diario'}</field>
+    </record>
+    <record id="nuage_libro_mayor_action" model="ir.actions.act_window">
+        <field name="name">Libro Mayor (Formato 6.1)</field>
+        <field name="res_model">nuage.libro.impreso</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_tipo': 'mayor'}</field>
+    </record>
+
+    <menuitem id="nuage_libros_impresos_menu" name="Libros contables impresos"
+              parent="account.menu_finance_reports" sequence="46"/>
+    <menuitem id="nuage_libro_diario_menu" name="Libro Diario (5.1)"
+              parent="nuage_libros_impresos_menu" action="nuage_libro_diario_action" sequence="1"/>
+    <menuitem id="nuage_libro_mayor_menu" name="Libro Mayor (6.1)"
+              parent="nuage_libros_impresos_menu" action="nuage_libro_mayor_action" sequence="2"/>
+</odoo>

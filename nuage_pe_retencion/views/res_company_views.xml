@@ -18,6 +18,8 @@
                         <group string="Comprobante" invisible="not nuage_retener_al_pagar">
                             <field name="nuage_ret_serie"/>
                             <field name="nuage_ret_correlativo_inicio"/>
+                            <field name="nuage_ret_enviar_ose"/>
+                            <field name="nuage_ret_ose_url" invisible="not nuage_ret_enviar_ose"/>
                         </group>
                     </group>
                 </page>

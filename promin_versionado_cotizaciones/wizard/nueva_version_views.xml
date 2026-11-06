@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_nueva_version_form" model="ir.ui.view">
+        <field name="name">promin.cotizacion.nueva.version.form</field>
+        <field name="model">promin.cotizacion.nueva.version</field>
+        <field name="arch" type="xml">
+            <form string="Nueva versión de la cotización">
+                <p>La cotización actual quedará como referencia (no continúa el flujo) y se creará una
+                   copia editable como versión vigente.</p>
+                <group>
+                    <field name="order_id"/>
+                    <field name="motivo" placeholder="Ej.: el cliente pidió cambiar cantidades y condiciones de pago"/>
+                </group>
+                <footer>
+                    <button string="Crear versión" name="action_crear" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancelar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="promin_nueva_version_action" model="ir.actions.act_window">
+        <field name="name">Nueva versión</field>
+        <field name="res_model">promin.cotizacion.nueva.version</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="context">{'default_order_id': active_id}</field>
+    </record>
+</odoo>

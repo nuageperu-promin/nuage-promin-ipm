@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="action_reporte_detalle_renta5" model="ir.actions.report">
+		<field name="name">Detalle de Renta de 5ta</field>
+		<field name="model">hr.payslip</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">solse_pe_payroll_renta5.reporte_detalle_renta5</field>
+		<field name="report_file">solse_pe_payroll_renta5.reporte_detalle_renta5</field>
+		<field name="print_report_name">'Detalle 5ta - %s - %s' % (object.employee_id.name, object.date_from.strftime('%m-%Y'))</field>
+		<field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+		<field name="binding_type">report</field>
+	</record>
+
+	<template id="reporte_detalle_renta5">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="web.basic_layout">
+					<div class="page" style="font-size: 11px;">
+
+						<table style="width: 100%; margin-bottom: 8px;">
+							<tr>
+								<td style="width: 20%; vertical-align: middle;">
+									<img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+										 style="max-height: 45px; max-width: 140px;"/>
+								</td>
+								<td class="text-center" style="vertical-align: middle;">
+									<h4 style="margin: 0;">DETALLE DE LA RETENCIÓN DE RENTA DE 5TA CATEGORÍA</h4>
+									<div style="font-size: 9px;">Art. 40 del Reglamento de la Ley del Impuesto a la Renta — retención mensual</div>
+								</td>
+								<td style="width: 20%;"/>
+							</tr>
+						</table>
+
+						<table class="table table-sm table-bordered" style="margin-bottom: 8px;">
+							<tr>
+								<td style="width: 60%;">
+									<strong>Empleador:</strong> <span t-field="o.company_id.name"/><br/>
+									<strong>RUC:</strong> <span t-field="o.company_id.vat"/>
+								</td>
+								<td>
+									<strong>Periodo:</strong> <span t-field="o.date_from"/> — <span t-field="o.date_to"/><br/>
+									<strong>Recibo:</strong> <span t-field="o.name"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<strong>Trabajador:</strong> <span t-field="o.employee_id.name"/><br/>
+									<strong>Documento:</strong> <span t-out="o.employee_id.identification_id or '—'"/>
+								</td>
+								<td>
+									<strong>Régimen laboral:</strong> <span t-field="o.pe_r5_regimen"/><br/>
+									<strong>UIT del ejercicio:</strong> <span t-field="o.pe_r5_uit"/>
+								</td>
+							</tr>
+						</table>
+
+						<div t-if="o.pe_r5_estado not in ('coincide', 'diferencia')" class="alert alert-info">
+							<span t-out="o.pe_r5_mensaje or 'El detalle de este recibo aún no se ha calculado.'"/>
+						</div>
+
+						<t t-if="o.pe_r5_estado in ('coincide', 'diferencia')">
+							<table class="table table-sm table-bordered" style="margin-bottom: 8px;">
+								<thead>
+									<tr style="background-color: #eeeeee;">
+										<th colspan="2">1. Proyección de la renta bruta anual</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Remuneración afecta del mes × <span t-out="o.pe_r5_meses_restantes"/> meses
+											(de <span t-out="o.date_from.strftime('%m')"/> a 12)</td>
+										<td class="text-end"><span t-field="o.pe_r5_proyeccion_remuneraciones"/></td>
+									</tr>
+									<tr>
+										<td style="padding-left: 18px; color: #666;">Remuneración afecta del mes</td>
+										<td class="text-end" style="color: #666;"><span t-field="o.pe_r5_base_mes"/></td>
+									</tr>
+									<tr>
+										<td>Gratificaciones por percibir: <span t-out="o.pe_r5_gratis_pendientes"/> ×
+											sueldo × factor <span t-out="'%.2f' % o.pe_r5_factor_grati"/> ×
+											(1 + bonificación <span t-out="'%.2f' % o.pe_r5_bono_tasa"/> %)</td>
+										<td class="text-end"><span t-field="o.pe_r5_proyeccion_gratificaciones"/></td>
+									</tr>
+									<tr>
+										<td style="padding-left: 18px; color: #666;">Sueldo del contrato</td>
+										<td class="text-end" style="color: #666;"><span t-field="o.pe_r5_sueldo"/></td>
+									</tr>
+									<tr>
+										<td>Percibido de enero al mes anterior (boletas validadas)</td>
+										<td class="text-end"><span t-field="o.pe_r5_percibido"/></td>
+									</tr>
+									<tr>
+										<td><strong>Renta bruta anual proyectada</strong></td>
+										<td class="text-end"><strong><span t-field="o.pe_r5_renta_bruta"/></strong></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<table class="table table-sm table-bordered" style="margin-bottom: 8px;">
+								<thead>
+									<tr style="background-color: #eeeeee;"><th colspan="2">2. Deducción</th></tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Deducción de <span t-out="'%g' % o.pe_r5_deduccion_uit"/> UIT</td>
+										<td class="text-end">− <span t-field="o.pe_r5_deduccion"/></td>
+									</tr>
+									<tr>
+										<td><strong>Renta neta anual</strong></td>
+										<td class="text-end"><strong><span t-field="o.pe_r5_renta_neta"/></strong></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<table class="table table-sm table-bordered" style="margin-bottom: 8px;">
+								<thead>
+									<tr style="background-color: #eeeeee;"><th colspan="5">3. Impuesto anual por tramos</th></tr>
+									<tr>
+										<th>Tramo</th>
+										<th class="text-end">Desde</th>
+										<th class="text-end">Hasta</th>
+										<th class="text-end">Tasa</th>
+										<th class="text-end">Impuesto</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr t-if="not o.pe_r5_tramo_ids">
+										<td colspan="5">La renta neta no es positiva: no hay impuesto.</td>
+									</tr>
+									<tr t-foreach="o.pe_r5_tramo_ids" t-as="tramo">
+										<td><span t-out="tramo.secuencia"/></td>
+										<td class="text-end"><span t-field="tramo.desde"/></td>
+										<td class="text-end">
+											<span t-if="tramo.limite_uit" t-field="tramo.hasta"/>
+											<span t-else="">sin tope</span>
+										</td>
+										<td class="text-end"><span t-out="'%g' % tramo.tasa"/> %
+											de <span t-field="tramo.base_tramo"/></td>
+										<td class="text-end"><span t-field="tramo.impuesto"/></td>
+									</tr>
+									<tr>
+										<td colspan="4"><strong>Impuesto anual proyectado</strong></td>
+										<td class="text-end"><strong><span t-field="o.pe_r5_impuesto_anual"/></strong></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<table class="table table-sm table-bordered" style="margin-bottom: 8px;">
+								<thead>
+									<tr style="background-color: #eeeeee;"><th colspan="2">4. Retención del mes</th></tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td colspan="2"><span t-field="o.pe_r5_regla_mes"/></td>
+									</tr>
+									<tr>
+										<td>Retenciones previas del año</td>
+										<td class="text-end"><span t-field="o.pe_r5_retenciones_previas"/></td>
+									</tr>
+									<tr>
+										<td><strong>Retención de renta de 5ta del mes</strong></td>
+										<td class="text-end"><strong><span t-field="o.pe_r5_retencion_calculada"/></strong></td>
+									</tr>
+									<tr>
+										<td>Retención descontada en la boleta</td>
+										<td class="text-end"><span t-field="o.pe_r5_retencion_boleta"/></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<p t-if="o.pe_r5_estado == 'diferencia'" style="color: #b94a00;">
+								<strong>Atención:</strong> <span t-field="o.pe_r5_mensaje"/>
+							</p>
+							<p style="font-size: 9px; color: #666;">
+								Cálculo realizado el <span t-field="o.pe_r5_fecha_calculo"/>. Los acumulados consideran solo
+								boletas validadas o pagadas del ejercicio. La deducción adicional de hasta 3 UIT por gastos
+								no se aplica en la retención de planilla.
+							</p>
+						</t>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+
+</odoo>

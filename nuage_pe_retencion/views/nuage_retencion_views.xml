@@ -19,6 +19,11 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'emitido'"
                        decoration-info="state == 'borrador'"/>
+                <field name="ose_estado" widget="badge" optional="show"
+                       decoration-success="ose_estado in ('aceptado', 'observado')"
+                       decoration-danger="ose_estado == 'rechazado'"
+                       decoration-warning="ose_estado == 'pendiente'"
+                       decoration-muted="ose_estado == 'omitido'"/>
                 <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
@@ -32,6 +37,12 @@
                 <header>
                     <button name="action_emitir" string="Emitir" type="object" class="btn-primary"
                             invisible="state != 'borrador'"/>
+                    <button name="action_ose_enviar" string="Enviar a la OSE" type="object"
+                            class="btn-primary"
+                            invisible="state != 'emitido' or ose_estado in ('aceptado', 'observado')"
+                            confirm="Se generará el XML, se firmará y se enviará a la OSE. ¿Continuar?"/>
+                    <button name="action_ose_generar" string="Generar XML" type="object"
+                            invisible="state != 'emitido' or ose_estado in ('aceptado', 'observado')"/>
                     <button name="action_cancelar" string="Cancelar" type="object"
                             invisible="state == 'cancelado'"
                             confirm="¿Cancelar este comprobante de retención?"/>
@@ -55,6 +66,10 @@
                             <field name="serie"/>
                             <field name="correlativo"/>
                             <field name="tasa" readonly="state != 'borrador'"/>
+                            <field name="ose_estado" invisible="state == 'borrador'" widget="badge"
+                                   decoration-success="ose_estado in ('aceptado', 'observado')"
+                                   decoration-danger="ose_estado == 'rechazado'"
+                                   decoration-warning="ose_estado == 'pendiente'"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
@@ -82,6 +97,24 @@
                                 <field name="importe_neto"/>
                             </group>
                         </page>
+                        <page string="SUNAT / OSE" name="ose" invisible="state == 'borrador'">
+                            <group>
+                                <group string="Respuesta">
+                                    <field name="ose_codigo"/>
+                                    <field name="ose_respuesta"/>
+                                    <field name="ose_nota"/>
+                                    <field name="ose_fecha_envio"/>
+                                    <field name="ose_intentos"/>
+                                </group>
+                                <group string="Archivos">
+                                    <field name="ose_xml_firmado" filename="ose_xml_fname"/>
+                                    <field name="ose_xml_fname" invisible="1"/>
+                                    <field name="ose_cdr" filename="ose_cdr_fname"/>
+                                    <field name="ose_cdr_fname" invisible="1"/>
+                                    <field name="ose_digest"/>
+                                </group>
+                            </group>
+                        </page>
                         <page string="Observaciones" name="observaciones">
                             <field name="observaciones" nolabel="1"/>
                         </page>
@@ -103,10 +136,16 @@
                 <filter name="borrador" string="Borrador" domain="[('state', '=', 'borrador')]"/>
                 <filter name="emitido" string="Emitidos" domain="[('state', '=', 'emitido')]"/>
                 <filter name="cancelado" string="Cancelados" domain="[('state', '=', 'cancelado')]"/>
+                <separator/>
+                <filter name="ose_pendiente" string="Pendientes de envío a la OSE"
+                        domain="[('state', '=', 'emitido'), ('ose_estado', '=', 'pendiente')]"/>
+                <filter name="ose_rechazado" string="Rechazados por la OSE"
+                        domain="[('ose_estado', '=', 'rechazado')]"/>
                 <group>
                     <filter name="g_partner" string="Proveedor" context="{'group_by': 'partner_id'}"/>
                     <filter name="g_mes" string="Mes" context="{'group_by': 'date:month'}"/>
                     <filter name="g_estado" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="g_ose" string="Estado en la OSE" context="{'group_by': 'ose_estado'}"/>
                 </group>
             </search>
         </field>

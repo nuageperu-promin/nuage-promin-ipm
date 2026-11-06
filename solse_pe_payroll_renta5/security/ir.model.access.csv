@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pe_renta5_tramo_usuario,pe.renta5.tramo usuario nómina,model_pe_renta5_tramo,hr_payroll.group_hr_payroll_user,1,1,1,1
