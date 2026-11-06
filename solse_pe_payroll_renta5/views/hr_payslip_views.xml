@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Pestaña «Renta de 5ta» en el recibo -->
+	<record id="view_hr_payslip_form_renta5" model="ir.ui.view">
+		<field name="name">hr.payslip.form.renta5</field>
+		<field name="model">hr.payslip</field>
+		<field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[@name='salary_computation']" position="after">
+				<page string="Renta de 5ta" name="pe_renta5" invisible="pe_r5_estado == 'no_calculado' and not line_ids">
+					<div class="d-flex gap-2 mb-2">
+						<button name="action_pe_r5_actualizar" type="object" string="Actualizar detalle"
+								class="btn-secondary" icon="fa-refresh" invisible="not line_ids"/>
+						<button name="action_pe_r5_imprimir" type="object" string="Imprimir detalle"
+								class="btn-secondary" icon="fa-print"
+								invisible="pe_r5_estado not in ('coincide', 'diferencia')"/>
+					</div>
+					<div class="alert alert-success" role="status" invisible="pe_r5_estado != 'coincide'">
+						<field name="pe_r5_mensaje" readonly="1"/>
+					</div>
+					<div class="alert alert-warning" role="alert" invisible="pe_r5_estado not in ('diferencia', 'error')">
+						<field name="pe_r5_mensaje" readonly="1"/>
+					</div>
+					<div class="alert alert-info" role="status" invisible="pe_r5_estado != 'no_aplica'">
+						<field name="pe_r5_mensaje" readonly="1"/>
+					</div>
+					<div class="alert alert-info" role="status" invisible="pe_r5_estado != 'no_calculado'">
+						Pulse «Actualizar detalle» o vuelva a calcular la hoja para ver el desglose.
+					</div>
+					<field name="pe_r5_estado" invisible="1"/>
+					<field name="currency_id" invisible="1"/>
+					<div invisible="pe_r5_estado not in ('coincide', 'diferencia')">
+						<group>
+							<group string="Parámetros">
+								<field name="pe_r5_uit"/>
+								<field name="pe_r5_regimen"/>
+								<field name="pe_r5_factor_grati"/>
+								<field name="pe_r5_bono_tasa"/>
+								<field name="pe_r5_fecha_calculo"/>
+							</group>
+							<group string="1. Proyección anual">
+								<field name="pe_r5_base_mes"/>
+								<field name="pe_r5_meses_restantes"/>
+								<field name="pe_r5_proyeccion_remuneraciones"/>
+								<field name="pe_r5_sueldo"/>
+								<field name="pe_r5_gratis_pendientes"/>
+								<field name="pe_r5_proyeccion_gratificaciones"/>
+								<field name="pe_r5_percibido"/>
+								<field name="pe_r5_renta_bruta" class="fw-bold"/>
+							</group>
+							<group string="2. Deducción">
+								<field name="pe_r5_deduccion_uit"/>
+								<field name="pe_r5_deduccion"/>
+								<field name="pe_r5_renta_neta" class="fw-bold"/>
+							</group>
+							<group string="4. Retención del mes">
+								<field name="pe_r5_regla_mes"/>
+								<field name="pe_r5_impuesto_anual"/>
+								<field name="pe_r5_retenciones_previas"/>
+								<field name="pe_r5_retencion_calculada" class="fw-bold"/>
+								<field name="pe_r5_retencion_boleta"/>
+								<field name="pe_r5_diferencia"/>
+							</group>
+						</group>
+						<separator string="3. Impuesto anual por tramos"/>
+						<field name="pe_r5_tramo_ids" nolabel="1">
+							<list>
+								<field name="currency_id" column_invisible="1"/>
+								<field name="secuencia"/>
+								<field name="desde"/>
+								<field name="hasta"/>
+								<field name="tasa"/>
+								<field name="base_tramo" sum="Total"/>
+								<field name="impuesto" sum="Total"/>
+							</list>
+						</field>
+					</div>
+				</page>
+			</xpath>
+		</field>
+	</record>
+
+	<!-- Lista «Detalle de Renta de 5ta» en Nómina PE -->
+	<record id="view_hr_payslip_list_renta5" model="ir.ui.view">
+		<field name="name">hr.payslip.list.renta5</field>
+		<field name="model">hr.payslip</field>
+		<field name="priority">90</field>
+		<field name="arch" type="xml">
+			<list create="0" decoration-warning="pe_r5_estado in ('diferencia', 'error')">
+				<field name="currency_id" column_invisible="1"/>
+				<field name="employee_id"/>
+				<field name="date_from"/>
+				<field name="date_to"/>
+				<field name="state"/>
+				<field name="pe_r5_renta_bruta" optional="show"/>
+				<field name="pe_r5_renta_neta" optional="show"/>
+				<field name="pe_r5_impuesto_anual" optional="show"/>
+				<field name="pe_r5_retenciones_previas" optional="hide"/>
+				<field name="pe_r5_retencion_calculada"/>
+				<field name="pe_r5_retencion_boleta"/>
+				<field name="pe_r5_estado" widget="badge"
+					   decoration-success="pe_r5_estado == 'coincide'"
+					   decoration-warning="pe_r5_estado in ('diferencia', 'error')"/>
+			</list>
+		</field>
+	</record>
+
+	<record id="view_hr_payslip_search_renta5" model="ir.ui.view">
+		<field name="name">hr.payslip.search.renta5</field>
+		<field name="model">hr.payslip</field>
+		<field name="inherit_id" ref="hr_payroll.view_hr_payslip_filter"/>
+		<field name="arch" type="xml">
+			<xpath expr="//search" position="inside">
+				<filter name="pe_r5_con_detalle" string="Con detalle de 5ta"
+						domain="[('pe_r5_estado', 'in', ('coincide', 'diferencia'))]"/>
+				<filter name="pe_r5_revisar" string="5ta por revisar"
+						domain="[('pe_r5_estado', 'in', ('diferencia', 'error'))]"/>
+			</xpath>
+		</field>
+	</record>
+
+	<record id="action_detalle_renta5" model="ir.actions.act_window">
+		<field name="name">Detalle de Renta de 5ta</field>
+		<field name="res_model">hr.payslip</field>
+		<field name="view_mode">list,form</field>
+		<field name="view_ids" eval="[(5, 0, 0),
+			(0, 0, {'view_mode': 'list', 'view_id': ref('view_hr_payslip_list_renta5')})]"/>
+		<field name="context">{'search_default_pe_r5_con_detalle': 1}</field>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_smiling_face">Aún no hay recibos con detalle de 5ta</p>
+			<p>El detalle se genera al calcular la hoja de un recibo mensual, o con el botón
+				«Actualizar detalle» de la pestaña «Renta de 5ta».</p>
+		</field>
+	</record>
+
+	<record id="action_actualizar_detalle_renta5" model="ir.actions.server">
+		<field name="name">Actualizar detalle de 5ta</field>
+		<field name="model_id" ref="hr_payroll.model_hr_payslip"/>
+		<field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+		<field name="binding_view_types">list</field>
+		<field name="state">code</field>
+		<field name="code">records.action_pe_r5_actualizar()</field>
+	</record>
+
+	<menuitem id="menu_pe_detalle_renta5"
+			  name="Detalle de Renta de 5ta"
+			  parent="solse_pe_payroll.menu_solse_pe_payroll_root"
+			  action="action_detalle_renta5"
+			  sequence="45"/>
+
+</odoo>

@@ -17,6 +17,34 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-06 — promin_libros_impresos (19.0.1.0.2)
+
+- **Motivo:** PROMIN pidió el Libro Diario (5.1) y el Libro Mayor (6.1) impresos en PDF, con el formato clásico de sus modelos.
+- **Acción:** módulo nuevo (depende de `account` y `solse_pe_accountant`). Se usa desde Contabilidad → Reportes → «Libros contables impresos»: período, folio inicial y cuentas opcionales. No reemplaza a los libros electrónicos PLE; usa el mismo libro, CUO y correlativo para que ambos coincidan. Instalar desde Aplicaciones.
+
+---
+
+## 2026-11-06 — solse_pe_payroll_renta5 (19.0.1.0.0)
+
+- **Motivo:** mostrar paso a paso cómo se calculó la retención de renta de 5ta categoría de cada recibo (regla R5TA_001 de `solse_pe_payroll`), para revisión del contador y del trabajador.
+- **Acción:** módulo nuevo (depende de `solse_pe_payroll`); no modifica la regla ni el cálculo de la nómina. Agrega la pestaña «Renta de 5ta» en el recibo, la lista «Detalle de Renta de 5ta» y un PDF. Instalar desde Aplicaciones y recalcular las hojas para generar el detalle.
+
+---
+
+## 2026-11-04 — promin_versionado_cotizaciones (19.0.1.0.0)
+
+- **Motivo:** desarrollo del cronograma «Versionado de cotizaciones»: cada revisión conserva el número con sufijo (S00123, S00123-V2…), solo la última versión sigue activa y las anteriores quedan como referencia navegable.
+- **Acción:** módulo nuevo (depende de `sale`). Botón manual «Nueva versión» con motivo opcional; la versión anterior se cancela y queda bloqueada para confirmar o volver a cotización. Instalar desde Aplicaciones.
+
+---
+
+## 2026-11-03 — nuage_pe_retencion (19.0.2.0.0)
+
+- **Motivo:** PROMIN solicita que el Comprobante de Retención viaje a la OSE Nubefact igual que las facturas: generación del XML UBL 2.0 (Retention-1), firma, envío (sendBill), lectura del CDR, estados en el comprobante y envío automático al emitir (más reintento por cron cada 15 min).
+- **Acción:** Desarrollo nuevo; depende de `solse_pe_cpe`. Activar "Enviar retenciones a la OSE" en la empresa. Las retenciones anteriores quedan como "No enviado". Actualizar el módulo desde Aplicaciones.
+
+---
+
 ## 2026-11-03 — python_deps/pysimplesoap (versión 1.16.2.post1)
 
 - **Motivo:** tras el cambio de HTTPS, Staging seguía mostrando el mismo error (`fixer() missing 3 required positional arguments`). Como la copia corregida declaraba la misma versión (1.16.2) que la ya instalada, `pip` la daba por satisfecha y no la reinstalaba.

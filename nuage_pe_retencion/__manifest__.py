@@ -13,15 +13,17 @@ Retención del IGV al momento del pago a proveedores
 * Genera el comprobante de retención (serie y correlativo propios) con su PDF.
 * Facturas en dólares: umbral en soles, tipo de cambio de la fecha de pago y retención en S/.
 * Reporte por proveedor y mes.
+* Envío a la OSE (XML UBL 2.0 tipo 20 firmado), con lectura del CDR y reintentos automáticos.
 """,
-    'version': '19.0.1.1.3',
+    'version': '19.0.2.0.0',
     'author': 'NUAGE PERU SAC',
     'license': 'LGPL-3',
     'category': 'Accounting/Localizations',
-    'depends': ['account', 'solse_pe_edi', 'solse_pe_accountant'],
+    'depends': ['account', 'solse_pe_edi', 'solse_pe_accountant', 'solse_pe_cpe'],
     'data': [
         'security/ir.model.access.csv',
         'security/nuage_retencion_security.xml',
+        'data/ir_cron.xml',
         'views/res_company_views.xml',
         'views/account_payment_register_views.xml',
         'views/nuage_retencion_views.xml',

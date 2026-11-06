@@ -26,3 +26,12 @@ class ResCompany(models.Model):
         domain=[('account_type', 'not in', ['asset_receivable', 'liability_payable'])],
         help='Pasivo donde se acumula el IGV retenido a SUNAT. No puede ser una '
              'cuenta por pagar de proveedores.')
+    nuage_ret_enviar_ose = fields.Boolean(
+        'Enviar retenciones a la OSE', default=False,
+        help='Si está activo, cada comprobante de retención emitido se firma y se envía '
+             'automáticamente a la OSE (igual que las facturas). El envío se reintenta '
+             'cada 15 minutos si la OSE no responde.')
+    nuage_ret_ose_url = fields.Char(
+        'URL del servicio de retenciones (opcional)',
+        help='Dejar vacío para usar la misma URL del servidor OSE de las facturas. '
+             'Solo se llena si la OSE indica una dirección distinta para retenciones.')
