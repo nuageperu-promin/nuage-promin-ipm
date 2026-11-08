@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tablero_pedido_search" model="ir.ui.view">
+        <field name="name">view_tablero_pedido_search</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <field name="vendedor_id"/>
+                <field name="linea_id"/>
+                <field name="product_id"/>
+                <filter name="sin_relacionadas" string="Sin empresas relacionadas" domain="[('es_relacionada', '=', False)]"/>
+                <filter name="solo_relacionadas" string="Solo empresas relacionadas" domain="[('es_relacionada', '=', True)]"/>
+                <separator/>
+                <filter name="pend_entrega" string="Con entrega pendiente" domain="[('pendiente_entrega_usd', '&gt;', 0)]"/>
+                <filter name="pend_facturar" string="Con facturación pendiente" domain="[('pendiente_facturar_usd', '&gt;', 0)]"/>
+                <separator/>
+                <filter name="t50k" string="Pedidos de 50K o más" domain="[('tramo', '=', '50k')]"/>
+                <filter name="t20k" string="Pedidos de 20K a 50K" domain="[('tramo', '=', '20k')]"/>
+                <separator/>
+                <filter name="g_linea" string="Línea" context="{'group_by': 'linea_id'}"/>
+                <filter name="g_sector" string="Sector" context="{'group_by': 'sector'}"/>
+                <filter name="g_vendedor" string="Vendedor" context="{'group_by': 'vendedor_id'}"/>
+                <filter name="g_cliente" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                <filter name="g_integrador" string="Integrador" context="{'group_by': 'integrador'}"/>
+                <filter name="g_tramo" string="Tramo del pedido" context="{'group_by': 'tramo'}"/>
+                <filter name="g_semestre" string="Semestre" context="{'group_by': 'semestre'}"/>
+                <filter name="g_mes" string="Mes del pedido" context="{'group_by': 'fecha:month'}"/>
+                <filter name="g_mes_entrega" string="Mes de entrega" context="{'group_by': 'fecha_entrega:month'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="view_tablero_pedido_list" model="ir.ui.view">
+        <field name="name">view_tablero_pedido_list</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <list string="Pedidos (US$)" create="0" edit="0" delete="0">
+                <field name="fecha"/>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <field name="linea_id"/>
+                <field name="sector"/>
+                <field name="vendedor_id"/>
+                <field name="pedido_usd" sum="Total"/>
+                <field name="facturado_usd" sum="Total"/>
+                <field name="pendiente_facturar_usd" sum="Total" optional="hide"/>
+                <field name="pendiente_entrega_usd" sum="Total" optional="show"/>
+                <field name="fecha_entrega" optional="show"/>
+                <field name="tramo" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_tablero_pedido_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_pedido_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Pedidos por línea (US$)">
+                <field name="linea_id" type="row"/>
+                <field name="fecha" interval="month" type="col"/>
+                <field name="pedido_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_pedido_graph" model="ir.ui.view">
+        <field name="name">view_tablero_pedido_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Pedidos por línea (US$)" type="bar">
+                <field name="linea_id"/>
+                <field name="pedido_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_fact_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_fact_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Pedidos vs facturación (US$)">
+                <field name="linea_id" type="row"/>
+                <field name="pedido_usd" type="measure"/>
+                <field name="facturado_usd" type="measure"/>
+                <field name="pendiente_facturar_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_fact_graph" model="ir.ui.view">
+        <field name="name">view_tablero_fact_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Pedidos vs facturación (US$)" type="bar">
+                <field name="linea_id"/>
+                <field name="pedido_usd" type="measure"/>
+                <field name="facturado_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_pend_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_pend_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Pendientes por atender (US$)">
+                <field name="partner_id" type="row"/>
+                <field name="fecha_entrega" interval="month" type="col"/>
+                <field name="pendiente_entrega_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_pend_graph" model="ir.ui.view">
+        <field name="name">view_tablero_pend_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Pendientes por atender (US$)" type="bar">
+                <field name="tramo"/>
+                <field name="pendiente_entrega_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_topcli_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_topcli_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Top clientes (US$)">
+                <field name="partner_id" type="row"/>
+                <field name="pedido_usd" type="measure"/>
+                <field name="facturado_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_topcli_graph" model="ir.ui.view">
+        <field name="name">view_tablero_topcli_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Top clientes (US$)" type="bar">
+                <field name="partner_id"/>
+                <field name="pedido_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_topprod_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_topprod_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Top productos (US$)">
+                <field name="product_id" type="row"/>
+                <field name="pedido_usd" type="measure"/>
+                <field name="cantidad" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_topprod_graph" model="ir.ui.view">
+        <field name="name">view_tablero_topprod_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Top productos (US$)" type="bar">
+                <field name="product_id"/>
+                <field name="pedido_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_rent_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_rent_pivot</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <pivot string="Rentabilidad (US$)">
+                <field name="linea_id" type="row"/>
+                <field name="semestre" type="col"/>
+                <field name="pedido_usd" type="measure"/>
+                <field name="costo_usd" type="measure"/>
+                <field name="margen_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_rent_graph" model="ir.ui.view">
+        <field name="name">view_tablero_rent_graph</field>
+        <field name="model">promin.tablero.pedido</field>
+        <field name="arch" type="xml">
+            <graph string="Margen por línea (US$)" type="bar">
+                <field name="linea_id"/>
+                <field name="margen_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="action_tablero_pedidos" model="ir.actions.act_window">
+        <field name="name">Pedidos</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_pedidos_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_pedido_pivot"/><field name="act_window_id" ref="action_tablero_pedidos"/>
+    </record>
+    <record id="action_tablero_pedidos_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_pedido_graph"/><field name="act_window_id" ref="action_tablero_pedidos"/>
+    </record>
+    <record id="action_tablero_pedidos_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_pedidos"/>
+    </record>
+    <record id="action_tablero_fact" model="ir.actions.act_window">
+        <field name="name">Pedidos vs facturación</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_fact_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_fact_pivot"/><field name="act_window_id" ref="action_tablero_fact"/>
+    </record>
+    <record id="action_tablero_fact_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_fact_graph"/><field name="act_window_id" ref="action_tablero_fact"/>
+    </record>
+    <record id="action_tablero_fact_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_fact"/>
+    </record>
+    <record id="action_tablero_pend" model="ir.actions.act_window">
+        <field name="name">Pendientes por atender</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1, 'search_default_pend_entrega': 1}</field>
+    </record>
+    <record id="action_tablero_pend_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_pend_pivot"/><field name="act_window_id" ref="action_tablero_pend"/>
+    </record>
+    <record id="action_tablero_pend_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_pend_graph"/><field name="act_window_id" ref="action_tablero_pend"/>
+    </record>
+    <record id="action_tablero_pend_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_pend"/>
+    </record>
+    <record id="action_tablero_topcli" model="ir.actions.act_window">
+        <field name="name">Top clientes</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_topcli_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_topcli_pivot"/><field name="act_window_id" ref="action_tablero_topcli"/>
+    </record>
+    <record id="action_tablero_topcli_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_topcli_graph"/><field name="act_window_id" ref="action_tablero_topcli"/>
+    </record>
+    <record id="action_tablero_topcli_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_topcli"/>
+    </record>
+    <record id="action_tablero_topprod" model="ir.actions.act_window">
+        <field name="name">Top productos</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_topprod_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_topprod_pivot"/><field name="act_window_id" ref="action_tablero_topprod"/>
+    </record>
+    <record id="action_tablero_topprod_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_topprod_graph"/><field name="act_window_id" ref="action_tablero_topprod"/>
+    </record>
+    <record id="action_tablero_topprod_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_topprod"/>
+    </record>
+    <record id="action_tablero_rent" model="ir.actions.act_window">
+        <field name="name">Rentabilidad</field>
+        <field name="res_model">promin.tablero.pedido</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_rent_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_rent_pivot"/><field name="act_window_id" ref="action_tablero_rent"/>
+    </record>
+    <record id="action_tablero_rent_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_rent_graph"/><field name="act_window_id" ref="action_tablero_rent"/>
+    </record>
+    <record id="action_tablero_rent_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_pedido_list"/><field name="act_window_id" ref="action_tablero_rent"/>
+    </record>
+    <record id="view_tablero_factura_search" model="ir.ui.view">
+        <field name="name">view_tablero_factura_search</field>
+        <field name="model">promin.tablero.factura</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <field name="vendedor_id"/>
+                <field name="linea_id"/>
+                <field name="product_id"/>
+                <filter name="sin_relacionadas" string="Sin empresas relacionadas" domain="[('es_relacionada', '=', False)]"/>
+                <filter name="solo_relacionadas" string="Solo empresas relacionadas" domain="[('es_relacionada', '=', True)]"/>
+                <separator/>
+                <filter name="g_linea" string="Línea" context="{'group_by': 'linea_id'}"/>
+                <filter name="g_sector" string="Sector" context="{'group_by': 'sector'}"/>
+                <filter name="g_vendedor" string="Vendedor" context="{'group_by': 'vendedor_id'}"/>
+                <filter name="g_cliente" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                <filter name="g_mes" string="Mes de emisión" context="{'group_by': 'fecha:month'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="view_tablero_factura_list" model="ir.ui.view">
+        <field name="name">view_tablero_factura_list</field>
+        <field name="model">promin.tablero.factura</field>
+        <field name="arch" type="xml">
+            <list string="Facturación (US$)" create="0" edit="0" delete="0">
+                <field name="fecha"/>
+                <field name="move_id"/>
+                <field name="partner_id"/>
+                <field name="linea_id"/>
+                <field name="sector"/>
+                <field name="vendedor_id"/>
+                <field name="tipo"/>
+                <field name="facturado_usd" sum="Total"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_tablero_factura_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_factura_pivot</field>
+        <field name="model">promin.tablero.factura</field>
+        <field name="arch" type="xml">
+            <pivot string="Facturación por cliente (US$)">
+                <field name="partner_id" type="row"/>
+                <field name="fecha" interval="month" type="col"/>
+                <field name="facturado_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_factura_graph" model="ir.ui.view">
+        <field name="name">view_tablero_factura_graph</field>
+        <field name="model">promin.tablero.factura</field>
+        <field name="arch" type="xml">
+            <graph string="Facturación por cliente (US$)" type="bar">
+                <field name="partner_id"/>
+                <field name="facturado_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_tablero_relac_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_relac_pivot</field>
+        <field name="model">promin.tablero.factura</field>
+        <field name="arch" type="xml">
+            <pivot string="Facturas a empresas relacionadas (US$)">
+                <field name="partner_id" type="row"/>
+                <field name="fecha" interval="month" type="col"/>
+                <field name="facturado_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_tablero_factura" model="ir.actions.act_window">
+        <field name="name">Facturación por cliente</field>
+        <field name="res_model">promin.tablero.factura</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_sin_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_factura_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_factura_pivot"/><field name="act_window_id" ref="action_tablero_factura"/>
+    </record>
+    <record id="action_tablero_factura_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_factura_graph"/><field name="act_window_id" ref="action_tablero_factura"/>
+    </record>
+    <record id="action_tablero_factura_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_factura_list"/><field name="act_window_id" ref="action_tablero_factura"/>
+    </record>
+    <record id="action_tablero_relac" model="ir.actions.act_window">
+        <field name="name">Facturas a empresas relacionadas</field>
+        <field name="res_model">promin.tablero.factura</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="context">{'search_default_solo_relacionadas': 1}</field>
+    </record>
+    <record id="action_tablero_relac_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_relac_pivot"/><field name="act_window_id" ref="action_tablero_relac"/>
+    </record>
+    <record id="action_tablero_relac_list" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_factura_list"/><field name="act_window_id" ref="action_tablero_relac"/>
+    </record>
+    <record id="view_tablero_compra_search" model="ir.ui.view">
+        <field name="name">view_tablero_compra_search</field>
+        <field name="model">promin.tablero.compra</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <field name="comprador_id"/>
+                <field name="product_id"/>
+                <filter name="rec_sin_fact" string="Recibido sin factura" domain="[('recibido_sin_factura_usd', '&gt;', 0.005)]"/>
+                <filter name="fact_sin_ing" string="Facturado sin ingreso a almacén" domain="[('facturado_sin_ingreso_usd', '&gt;', 0.005)]"/>
+                <filter name="fact_sin_pago" string="Facturado sin pagar" domain="[('facturado_sin_pago_usd', '&gt;', 0.005)]"/>
+                <separator/>
+                <filter name="g_proveedor" string="Proveedor" context="{'group_by': 'partner_id'}"/>
+                <filter name="g_linea" string="Línea" context="{'group_by': 'linea_id'}"/>
+                <filter name="g_comprador" string="Comprador" context="{'group_by': 'comprador_id'}"/>
+                <filter name="g_mes" string="Mes de la OC" context="{'group_by': 'fecha:month'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="view_tablero_compra_list" model="ir.ui.view">
+        <field name="name">view_tablero_compra_list</field>
+        <field name="model">promin.tablero.compra</field>
+        <field name="arch" type="xml">
+            <list string="Control de compras (US$)" create="0" edit="0" delete="0">
+                <field name="fecha"/>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="compra_usd" sum="Total"/>
+                <field name="recibido_usd" sum="Total"/>
+                <field name="facturado_usd" sum="Total"/>
+                <field name="pagado_usd" sum="Total"/>
+                <field name="recibido_sin_factura_usd" sum="Total"/>
+                <field name="facturado_sin_ingreso_usd" sum="Total"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_tablero_compra_pivot" model="ir.ui.view">
+        <field name="name">view_tablero_compra_pivot</field>
+        <field name="model">promin.tablero.compra</field>
+        <field name="arch" type="xml">
+            <pivot string="Ingreso vs factura vs pago (US$)">
+                <field name="partner_id" type="row"/>
+                <field name="compra_usd" type="measure"/>
+                <field name="recibido_usd" type="measure"/>
+                <field name="facturado_usd" type="measure"/>
+                <field name="pagado_usd" type="measure"/>
+                <field name="recibido_sin_factura_usd" type="measure"/>
+                <field name="facturado_sin_ingreso_usd" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_tablero_compra_graph" model="ir.ui.view">
+        <field name="name">view_tablero_compra_graph</field>
+        <field name="model">promin.tablero.compra</field>
+        <field name="arch" type="xml">
+            <graph string="Ingreso vs factura vs pago (US$)" type="bar">
+                <field name="partner_id"/>
+                <field name="recibido_usd" type="measure"/>
+                <field name="facturado_usd" type="measure"/>
+                <field name="pagado_usd" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="action_tablero_compra" model="ir.actions.act_window">
+        <field name="name">Control de compras</field>
+        <field name="res_model">promin.tablero.compra</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{}</field>
+    </record>
+    <record id="action_tablero_compra_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field><field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_tablero_compra_pivot"/><field name="act_window_id" ref="action_tablero_compra"/>
+    </record>
+    <record id="action_tablero_compra_graph" model="ir.actions.act_window.view">
+        <field name="sequence">2</field><field name="view_mode">graph</field>
+        <field name="view_id" ref="view_tablero_compra_graph"/><field name="act_window_id" ref="action_tablero_compra"/>
+    </record>
+    <record id="action_tablero_compra_list" model="ir.actions.act_window.view">
+        <field name="sequence">3</field><field name="view_mode">list</field>
+        <field name="view_id" ref="view_tablero_compra_list"/><field name="act_window_id" ref="action_tablero_compra"/>
+    </record>
+</odoo>

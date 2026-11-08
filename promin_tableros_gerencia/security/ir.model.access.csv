@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_promin_tablero_pedido_ventas,promin.tablero.pedido ventas,model_promin_tablero_pedido,sales_team.group_sale_manager,1,0,0,0
+access_promin_tablero_pedido_contable,promin.tablero.pedido contable,model_promin_tablero_pedido,account.group_account_user,1,0,0,0
+access_promin_tablero_factura_ventas,promin.tablero.factura ventas,model_promin_tablero_factura,sales_team.group_sale_manager,1,0,0,0
+access_promin_tablero_factura_contable,promin.tablero.factura contable,model_promin_tablero_factura,account.group_account_user,1,0,0,0
+access_promin_tablero_compra_ventas,promin.tablero.compra ventas,model_promin_tablero_compra,sales_team.group_sale_manager,1,0,0,0
+access_promin_tablero_compra_contable,promin.tablero.compra contable,model_promin_tablero_compra,account.group_account_user,1,0,0,0

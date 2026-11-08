@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_promin_tableros" model="ir.ui.view">
+        <field name="name">res.partner.form.promin.tableros</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="promin_empresa_relacionada"/>
+                <field name="promin_sector"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_order_form_promin_tableros" model="ir.ui.view">
+        <field name="name">sale.order.form.promin.tableros</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="promin_integrador"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

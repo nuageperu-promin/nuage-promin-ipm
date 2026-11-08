@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-08 — promin_tableros_gerencia (19.0.0.2.0, prototipo)
+
+- **Motivo:** PROMIN pidió tableros gerenciales en dólares (Anexo B, 14.4): pedidos, pedidos vs facturación, pendientes por atender, rentabilidad y control de compras.
+- **Acción:** módulo nuevo (depende de `sale`, `sales_team`, `account`, `purchase` y `sale_margin`), con menú «Tableros PROMIN» y 9 tableros sobre tres vistas SQL (pedidos, facturación y compras) convertidas a USD al tipo de cambio de la fecha. Agrega al cliente los campos «Empresa relacionada» y «Sector (tableros)», y al pedido de venta el «Integrador» (interno o externo). Prototipo para validar criterios en la reunión con PROMIN; faltan mercado, marca, foto mensual de pendientes y rentabilidad por lote. Instalar desde Aplicaciones.
+
+---
+
 ## 2026-11-06 — promin_libros_impresos (19.0.1.0.2)
 
 - **Motivo:** PROMIN pidió el Libro Diario (5.1) y el Libro Mayor (6.1) impresos en PDF, con el formato clásico de sus modelos.
