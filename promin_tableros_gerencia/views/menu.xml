@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_promin_tableros_root" name="Tableros PROMIN" sequence="45"
+              web_icon="promin_tableros_gerencia,static/description/icon.png"
+              groups="sales_team.group_sale_manager,account.group_account_user"/>
+
+    <!-- Ventas -->
+    <menuitem id="menu_promin_tablero_ventas" name="Ventas" parent="menu_promin_tableros_root" sequence="10"/>
+    <menuitem id="menu_promin_tablero_pedidos" name="Pedidos" parent="menu_promin_tablero_ventas" action="action_tablero_pedidos" sequence="10"/>
+    <menuitem id="menu_promin_tablero_fact" name="Pedidos vs facturación" parent="menu_promin_tablero_ventas" action="action_tablero_fact" sequence="20"/>
+    <menuitem id="menu_promin_tablero_pend" name="Pendientes por atender" parent="menu_promin_tablero_ventas" action="action_tablero_pend" sequence="30"/>
+    <menuitem id="menu_promin_tablero_topcli" name="Top clientes" parent="menu_promin_tablero_ventas" action="action_tablero_topcli" sequence="40"/>
+    <menuitem id="menu_promin_tablero_topprod" name="Top productos" parent="menu_promin_tablero_ventas" action="action_tablero_topprod" sequence="50"/>
+
+    <!-- Rentabilidad -->
+    <menuitem id="menu_promin_tablero_rent" name="Rentabilidad" parent="menu_promin_tableros_root" action="action_tablero_rent" sequence="20"/>
+
+    <!-- Facturación -->
+    <menuitem id="menu_promin_tablero_facturacion" name="Facturación" parent="menu_promin_tableros_root" sequence="30"/>
+    <menuitem id="menu_promin_tablero_factura" name="Facturación por cliente" parent="menu_promin_tablero_facturacion" action="action_tablero_factura" sequence="10"/>
+    <menuitem id="menu_promin_tablero_relac" name="Facturas a empresas relacionadas" parent="menu_promin_tablero_facturacion" action="action_tablero_relac" sequence="20"/>
+
+    <!-- Compras -->
+    <menuitem id="menu_promin_tablero_compra" name="Control de compras" parent="menu_promin_tableros_root" action="action_tablero_compra" sequence="40"/>
+</odoo>
