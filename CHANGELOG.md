@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-11 — promin_bimoneda_antiguedad (19.0.1.0.1) y promin_tableros_gerencia (19.0.0.3.0)
+
+- **Motivo:** PROMIN pidió que «Cuenta por cobrar vencida» y «Cuenta por pagar vencida» se puedan ver en soles o en dólares, igual que los demás reportes bimoneda. También pidió llegar al nivel de documento en los tableros.
+- **Acción:** `promin_bimoneda_antiguedad` (módulo nuevo; depende de `account_reports` y `promin_bimoneda_pen_usd`) crea las variantes «(USD)» y «(SOL)» de ambos reportes; el saldo vencido en dólares se calcula al tipo de cambio del movimiento y el símbolo es US$. `promin_tableros_gerencia` 0.3.0 agrega agrupación por pedido, comprobante u orden de compra, por producto, y un botón para abrir el documento desde la lista. Instalar el primero desde Aplicaciones y actualizar el segundo.
+
+---
+
 ## 2026-11-08 — promin_tableros_gerencia (19.0.0.2.0, prototipo)
 
 - **Motivo:** PROMIN pidió tableros gerenciales en dólares (Anexo B, 14.4): pedidos, pedidos vs facturación, pendientes por atender, rentabilidad y control de compras.

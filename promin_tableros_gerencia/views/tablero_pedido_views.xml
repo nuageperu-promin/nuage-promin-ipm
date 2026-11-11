@@ -24,6 +24,8 @@
                 <filter name="g_vendedor" string="Vendedor" context="{'group_by': 'vendedor_id'}"/>
                 <filter name="g_cliente" string="Cliente" context="{'group_by': 'partner_id'}"/>
                 <filter name="g_integrador" string="Integrador" context="{'group_by': 'integrador'}"/>
+                <filter name="g_documento" string="Pedido" context="{'group_by': 'order_id'}"/>
+                <filter name="g_producto" string="Producto" context="{'group_by': 'product_id'}"/>
                 <filter name="g_tramo" string="Tramo del pedido" context="{'group_by': 'tramo'}"/>
                 <filter name="g_semestre" string="Semestre" context="{'group_by': 'semestre'}"/>
                 <filter name="g_mes" string="Mes del pedido" context="{'group_by': 'fecha:month'}"/>
@@ -48,6 +50,7 @@
                 <field name="pendiente_entrega_usd" sum="Total" optional="show"/>
                 <field name="fecha_entrega" optional="show"/>
                 <field name="tramo" optional="hide"/>
+                <button name="action_abrir_documento" type="object" icon="fa-external-link" title="Abrir documento"/>
             </list>
         </field>
     </record>
@@ -306,6 +309,8 @@
                 <filter name="g_sector" string="Sector" context="{'group_by': 'sector'}"/>
                 <filter name="g_vendedor" string="Vendedor" context="{'group_by': 'vendedor_id'}"/>
                 <filter name="g_cliente" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                <filter name="g_documento" string="Comprobante" context="{'group_by': 'move_id'}"/>
+                <filter name="g_producto" string="Producto" context="{'group_by': 'product_id'}"/>
                 <filter name="g_mes" string="Mes de emisión" context="{'group_by': 'fecha:month'}"/>
             </search>
         </field>
@@ -323,6 +328,7 @@
                 <field name="vendedor_id"/>
                 <field name="tipo"/>
                 <field name="facturado_usd" sum="Total"/>
+                <button name="action_abrir_documento" type="object" icon="fa-external-link" title="Abrir documento"/>
             </list>
         </field>
     </record>
@@ -406,6 +412,8 @@
                 <filter name="g_proveedor" string="Proveedor" context="{'group_by': 'partner_id'}"/>
                 <filter name="g_linea" string="Línea" context="{'group_by': 'linea_id'}"/>
                 <filter name="g_comprador" string="Comprador" context="{'group_by': 'comprador_id'}"/>
+                <filter name="g_documento" string="Orden de compra" context="{'group_by': 'order_id'}"/>
+                <filter name="g_producto" string="Producto" context="{'group_by': 'product_id'}"/>
                 <filter name="g_mes" string="Mes de la OC" context="{'group_by': 'fecha:month'}"/>
             </search>
         </field>
@@ -425,6 +433,7 @@
                 <field name="pagado_usd" sum="Total"/>
                 <field name="recibido_sin_factura_usd" sum="Total"/>
                 <field name="facturado_sin_ingreso_usd" sum="Total"/>
+                <button name="action_abrir_documento" type="object" icon="fa-external-link" title="Abrir documento"/>
             </list>
         </field>
     </record>
