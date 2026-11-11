@@ -80,3 +80,14 @@ class ProminTableroCompra(models.Model):
         cr = self.env.cr
         cr.execute("DROP VIEW IF EXISTS %s CASCADE" % self._table)
         cr.execute("CREATE VIEW %s AS (%s)" % (self._table, QUERY))
+
+    def action_abrir_documento(self):
+        """Abre el documento de origen (pedido, comprobante u orden de compra)."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': self.order_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

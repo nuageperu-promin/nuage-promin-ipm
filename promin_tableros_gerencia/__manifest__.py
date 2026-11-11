@@ -1,6 +1,6 @@
 {
     'name': 'PROMIN - Tableros Gerenciales',
-    'version': '19.0.0.2.0',
+    'version': '19.0.0.3.0',
     'category': 'Sales',
     'summary': 'Reportes gerenciales en USD: pedidos, pedidos vs facturación y pendientes por atender',
     'description': """
