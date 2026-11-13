@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-13 — solse_pe_vat (19.0.1.4), solse_pe_edi (19.0.1.5), solse_pe_cpe_guias_transp (19.0.1.0.5), solse_pe_sire_ventas (19.0.0.14) y solse_pe_sire_compra (19.0.2.7)
+
+- **Motivo:** al actualizar el submódulo en Staging, Odoo 19 mostraba avisos (WARNING) en el log: dos campos de `res.partner` con la misma etiqueta «Estado», un campo traducible y almacenado (`account.move.line.nombre_producto`) que no se calcula bien en todos los idiomas, y dos campos «Transbordo programado» repetidos entre módulos de guías, y campos con etiqueta repetida en SIRE («Periodo» y «Nombre de archivo zip»).
+- **Acción:** `solse_pe_vat`: la etiqueta de `state_sunat` pasa a «Estado SUNAT». `solse_pe_edi`: `nombre_producto` deja de almacenarse (solo se usa en una línea comentada de un reporte; la columna existente no se borra). `solse_pe_cpe_guias_transp`: la etiqueta de `pe_grt_transbordo_programado` pasa a «Transbordo programado (GRT)». `solse_pe_sire_ventas` y `solse_pe_sire_compra`: `periodo_id` pasa a «Reporte de periodo» y `datas_zip_fname_02` a «Nombre de archivo zip (8.5)». No cambia datos ni funcionalidad. Actualizar los cinco módulos desde Aplicaciones.
+
+---
+
 ## 2026-11-13 — promin_control_obligaciones_financieras (19.0.1.0.1)
 
 - **Motivo:** PROMIN pidió el control de obligaciones financieras (pagarés y otros) con alertas de vencimiento, vinculado al registro contable (Anexo B, 14.1). Alicia Quispe entregó el listado de pagarés, los cronogramas del BBVA y del BCP, el tratamiento contable y los ejemplos de asientos.

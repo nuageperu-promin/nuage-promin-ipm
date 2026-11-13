@@ -16,7 +16,7 @@
 
 
 	'category': 'Uncategorized',
-	'version': '19.0.1.3',
+	'version': '19.0.1.4',
 	#'license': 'Other proprietary',
 	'depends': ['base', 'l10n_pe'],
 

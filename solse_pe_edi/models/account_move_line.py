@@ -8,4 +8,5 @@ _logging = logging.getLogger(__name__)
 class AccountMoveLine(models.Model):
 	_inherit = "account.move.line"
 
-	nombre_producto = fields.Char('Prod.', related="product_id.product_tmpl_id.name", store=True, translate=True)
+	# Sin store: un related traducible y almacenado no se calcula bien en todos los idiomas (aviso de Odoo 19).
+	nombre_producto = fields.Char('Prod.', related="product_id.product_tmpl_id.name")

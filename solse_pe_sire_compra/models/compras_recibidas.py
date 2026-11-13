@@ -14,7 +14,7 @@ class ComprasRecibidas(models.Model):
 	ruc = fields.Char("RUC")
 	name = fields.Char("Razon Social")
 	periodo = fields.Char("Periodo")
-	periodo_id = fields.Many2one("sire.report.08", ondelete="cascade")
+	periodo_id = fields.Many2one("sire.report.08", string="Reporte de periodo", ondelete="cascade")
 	car_sunat = fields.Char("Car Sunat")
 	fecha_emision = fields.Date("Fecha de emision")
 	fecha_vencimiento = fields.Date("Fecha de vencimiento")

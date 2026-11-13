@@ -68,7 +68,7 @@ class SireReport08(models.Model):
 	sire_xls_02_binary = fields.Binary(string="Excel 8.5", readonly=True)
 	sire_xls_02_filename = fields.Char(string="Nombre del Excel 8.5")
 	datas_zip_02 = fields.Binary("Zip 8.5", readonly=True)
-	datas_zip_fname_02 = fields.Char("Nombre de archivo zip", readonly=True)
+	datas_zip_fname_02 = fields.Char("Nombre de archivo zip (8.5)", readonly=True)
 
 	documento_compra_ids = fields.Many2many(
 		"l10n_latam.document.type",

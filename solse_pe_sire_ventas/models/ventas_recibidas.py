@@ -13,7 +13,7 @@ class VentasRecibidas(models.Model):
 	ruc = fields.Char(string="RUC")
 	name = fields.Char(string="Razón Social")
 	periodo = fields.Char(string="Periodo")
-	periodo_id = fields.Many2one("sire.report.14")
+	periodo_id = fields.Many2one("sire.report.14", string="Reporte de periodo")
 	car_sunat = fields.Char(string="CAR SUNAT")
 	fecha_de_emision = fields.Date(string="Fecha de Emisión")
 	fecha_vctopago = fields.Date(string="Fecha Vcto/Pago")
