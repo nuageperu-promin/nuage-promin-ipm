@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_obligacion_company" model="ir.rule">
+        <field name="name">Obligación financiera: multi-compañía</field>
+        <field name="model_id" ref="model_promin_obligacion"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_obligacion_cuota_company" model="ir.rule">
+        <field name="name">Cuota de obligación: multi-compañía</field>
+        <field name="model_id" ref="model_promin_obligacion_cuota"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_obligacion_linea_company" model="ir.rule">
+        <field name="name">Línea de crédito: multi-compañía</field>
+        <field name="model_id" ref="model_promin_obligacion_linea"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

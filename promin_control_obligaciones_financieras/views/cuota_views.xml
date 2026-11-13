@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cuota_list" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.list</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0"
+                  decoration-success="estado == 'pagada'"
+                  decoration-danger="estado == 'pendiente' and dias_para_vencer &lt; 0"
+                  decoration-warning="estado == 'pendiente' and dias_para_vencer &gt;= 0 and dias_para_vencer &lt;= 7">
+                <field name="currency_id" column_invisible="True"/>
+                <field name="fecha"/>
+                <field name="banco_id"/>
+                <field name="obligacion_id"/>
+                <field name="tipo" optional="show"/>
+                <field name="numero"/>
+                <field name="capital" sum="Capital"/>
+                <field name="interes" sum="Interés"/>
+                <field name="comision" sum="Comisión"/>
+                <field name="itf" sum="ITF / otros" optional="hide"/>
+                <field name="total" sum="Total"/>
+                <field name="dias_para_vencer"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'pagada'"
+                       decoration-warning="estado == 'pendiente'"/>
+                <button name="action_pagar" type="object" string="Registrar pago" icon="fa-money"
+                        invisible="estado == 'pagada' or obligacion_state != 'vigente'"
+                        groups="promin_control_obligaciones_financieras.group_obl_contabilidad"/>
+                <field name="obligacion_state" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cuota_calendar" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.calendar</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <calendar string="Vencimientos" date_start="fecha" color="banco_id" mode="month" quick_create="0">
+                <field name="obligacion_id"/>
+                <field name="total"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_cuota_pivot" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.pivot</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <pivot string="Vencimientos por mes">
+                <field name="banco_id" type="row"/>
+                <field name="fecha" interval="month" type="col"/>
+                <field name="total" type="measure"/>
+                <field name="capital" type="measure"/>
+                <field name="interes" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_cuota_pivot_intereses" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.pivot.intereses</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <pivot string="Intereses y comisiones por mes">
+                <field name="fecha" interval="month" type="row"/>
+                <field name="currency_id" type="col"/>
+                <field name="interes" type="measure"/>
+                <field name="comision" type="measure"/>
+                <field name="itf" type="measure"/>
+                <field name="interes_pagado" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_cuota_graph" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.graph</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <graph string="Vencimientos" type="bar">
+                <field name="fecha" interval="month"/>
+                <field name="total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_cuota_search" model="ir.ui.view">
+        <field name="name">promin.obligacion.cuota.search</field>
+        <field name="model">promin.obligacion.cuota</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="obligacion_id"/>
+                <field name="banco_id"/>
+                <filter name="pendientes" string="Pendientes" domain="[('estado', '=', 'pendiente'), ('obligacion_state', '=', 'vigente')]"/>
+                <filter name="pagadas" string="Pagadas" domain="[('estado', '=', 'pagada')]"/>
+                <filter name="vencidas" string="Vencidas"
+                        domain="[('estado', '=', 'pendiente'), ('obligacion_state', '=', 'vigente'), ('fecha', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="proximos7" string="Próximos 7 días"
+                        domain="[('estado', '=', 'pendiente'), ('obligacion_state', '=', 'vigente'), ('fecha', '&gt;=', context_today().strftime('%Y-%m-%d')), ('fecha', '&lt;=', (context_today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="proximos30" string="Próximos 30 días"
+                        domain="[('estado', '=', 'pendiente'), ('obligacion_state', '=', 'vigente'), ('fecha', '&gt;=', context_today().strftime('%Y-%m-%d')), ('fecha', '&lt;=', (context_today() + datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter name="g_banco" string="Banco" context="{'group_by': 'banco_id'}"/>
+                <filter name="g_obligacion" string="Obligación" context="{'group_by': 'obligacion_id'}"/>
+                <filter name="g_tipo" string="Tipo" context="{'group_by': 'tipo'}"/>
+                <filter name="g_moneda" string="Moneda" context="{'group_by': 'currency_id'}"/>
+                <filter name="g_mes" string="Mes de vencimiento" context="{'group_by': 'fecha:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cuota_vencimientos" model="ir.actions.act_window">
+        <field name="name">Calendario de vencimientos</field>
+        <field name="res_model">promin.obligacion.cuota</field>
+        <field name="view_mode">list,calendar,pivot,graph</field>
+        <field name="context">{'search_default_pendientes': 1}</field>
+    </record>
+
+    <record id="action_cuota_intereses" model="ir.actions.act_window">
+        <field name="name">Intereses y comisiones por mes</field>
+        <field name="res_model">promin.obligacion.cuota</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('obligacion_state', 'in', ('vigente', 'cancelado'))]</field>
+    </record>
+    <record id="action_cuota_intereses_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_cuota_pivot_intereses"/>
+        <field name="act_window_id" ref="action_cuota_intereses"/>
+    </record>
+    <record id="action_cuota_intereses_list" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_cuota_list"/>
+        <field name="act_window_id" ref="action_cuota_intereses"/>
+    </record>
+</odoo>

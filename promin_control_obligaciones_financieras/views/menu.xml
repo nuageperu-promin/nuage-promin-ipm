@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_obligaciones_root" name="Obligaciones financieras"
+              web_icon="promin_control_obligaciones_financieras,static/description/icon.png"
+              groups="group_obl_consulta" sequence="48"/>
+
+    <menuitem id="menu_obligaciones_operacion" name="Operaciones" parent="menu_obligaciones_root" sequence="10"/>
+    <menuitem id="menu_obligaciones" name="Obligaciones" parent="menu_obligaciones_operacion"
+              action="action_obligacion" sequence="10"/>
+    <menuitem id="menu_obligaciones_vencimientos" name="Calendario de vencimientos"
+              parent="menu_obligaciones_operacion" action="action_cuota_vencimientos" sequence="20"/>
+    <menuitem id="menu_obligaciones_lineas" name="Líneas de crédito" parent="menu_obligaciones_operacion"
+              action="action_obligacion_linea" sequence="30"/>
+    <menuitem id="menu_obligaciones_ajuste_dc" name="Ajuste por diferencia de cambio"
+              parent="menu_obligaciones_operacion" action="action_ajuste_dc" sequence="40"
+              groups="group_obl_contabilidad"/>
+
+    <menuitem id="menu_obligaciones_reportes" name="Reportes" parent="menu_obligaciones_root" sequence="20"/>
+    <menuitem id="menu_obligaciones_rep_saldo" name="Saldo por banco" parent="menu_obligaciones_reportes"
+              action="action_obligacion_saldo_banco" sequence="10"/>
+    <menuitem id="menu_obligaciones_rep_vencimientos" name="Vencimientos por mes"
+              parent="menu_obligaciones_reportes" action="action_cuota_vencimientos" sequence="20"/>
+    <menuitem id="menu_obligaciones_rep_intereses" name="Intereses y comisiones"
+              parent="menu_obligaciones_reportes" action="action_cuota_intereses" sequence="30"/>
+
+    <menuitem id="menu_obligaciones_config" name="Configuración" parent="menu_obligaciones_root" sequence="90"
+              groups="group_obl_finanzas,group_obl_contabilidad"/>
+    <menuitem id="menu_obligaciones_config_company" name="Parámetros de la compañía"
+              parent="menu_obligaciones_config" action="base.action_res_company_form" sequence="10"/>
+</odoo>

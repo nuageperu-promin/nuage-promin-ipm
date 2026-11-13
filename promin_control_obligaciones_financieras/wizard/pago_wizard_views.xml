@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pago_wizard_form" model="ir.ui.view">
+        <field name="name">promin.obligacion.pago.wizard.form</field>
+        <field name="model">promin.obligacion.pago.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="cuota_id"/>
+                        <field name="obligacion_id"/>
+                        <field name="currency_id" invisible="True"/>
+                        <field name="fecha_pago"/>
+                    </group>
+                    <group>
+                        <field name="capital"/>
+                        <field name="interes"/>
+                        <field name="comision"/>
+                        <field name="itf"/>
+                        <field name="total"/>
+                    </group>
+                </group>
+                <p class="text-muted">
+                    Los importes vienen del cronograma. Corríjalos si la liquidación del banco es distinta.
+                    Se genera el asiento: Debe pasivo, intereses, comisión e ITF / Haber banco.
+                </p>
+                <footer>
+                    <button name="action_confirmar" string="Registrar pago" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

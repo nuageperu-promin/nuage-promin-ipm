@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_obligacion_list" model="ir.ui.view">
+        <field name="name">promin.obligacion.list</field>
+        <field name="model">promin.obligacion</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('cancelado', 'anulado')" decoration-info="state == 'borrador'">
+                <field name="name"/>
+                <field name="banco_id"/>
+                <field name="tipo"/>
+                <field name="nro_operacion"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="monto" sum="Total"/>
+                <field name="saldo_capital" sum="Saldo"/>
+                <field name="tea" optional="show"/>
+                <field name="fecha_desembolso"/>
+                <field name="fecha_vencimiento"/>
+                <field name="proximo_vencimiento"/>
+                <field name="linea_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'vigente'"
+                       decoration-info="state in ('borrador', 'aprobado')"
+                       decoration-muted="state in ('cancelado', 'anulado')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_obligacion_form" model="ir.ui.view">
+        <field name="name">promin.obligacion.form</field>
+        <field name="model">promin.obligacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_aprobar" string="Aprobar" type="object" class="btn-primary"
+                            invisible="state != 'borrador'"
+                            groups="promin_control_obligaciones_financieras.group_obl_finanzas"/>
+                    <button name="action_desembolsar" string="Registrar desembolso" type="object" class="btn-primary"
+                            invisible="state != 'aprobado'"
+                            groups="promin_control_obligaciones_financieras.group_obl_contabilidad"/>
+                    <button name="action_importar" string="Cargar cronograma" type="object"
+                            invisible="state in ('cancelado', 'anulado')"
+                            groups="promin_control_obligaciones_financieras.group_obl_tesoreria"/>
+                    <button name="action_calcular_intereses" string="Calcular intereses (TEA)" type="object"
+                            invisible="state in ('cancelado', 'anulado') or tipo == 'carta_fianza'"
+                            groups="promin_control_obligaciones_financieras.group_obl_tesoreria"/>
+                    <button name="action_cancelar" string="Cancelar / liberar" type="object"
+                            invisible="state != 'vigente'"
+                            confirm="¿Marcar la obligación como cancelada?"
+                            groups="promin_control_obligaciones_financieras.group_obl_finanzas"/>
+                    <button name="action_borrador" string="Volver a borrador" type="object"
+                            invisible="state != 'aprobado'"
+                            groups="promin_control_obligaciones_financieras.group_obl_finanzas"/>
+                    <button name="action_anular" string="Anular" type="object"
+                            invisible="state not in ('borrador', 'aprobado')"
+                            groups="promin_control_obligaciones_financieras.group_obl_finanzas"/>
+                    <field name="state" widget="statusbar" statusbar_visible="borrador,aprobado,vigente,cancelado"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_ver_asientos" type="object" class="oe_stat_button" icon="fa-book"
+                                invisible="move_count == 0">
+                            <field name="move_count" widget="statinfo" string="Asientos"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Operación">
+                            <field name="tipo" readonly="state != 'borrador'"/>
+                            <field name="banco_id" readonly="state != 'borrador'"/>
+                            <field name="nro_operacion" readonly="state not in ('borrador', 'aprobado')"/>
+                            <field name="finalidad"/>
+                            <field name="garantia"/>
+                            <field name="linea_id" domain="[('banco_id', '=', banco_id)]"/>
+                        </group>
+                        <group string="Importes y plazos">
+                            <field name="currency_id" readonly="state != 'borrador'"/>
+                            <field name="monto" readonly="state != 'borrador'"/>
+                            <field name="tea"/>
+                            <field name="fecha_desembolso" readonly="state not in ('borrador', 'aprobado')"/>
+                            <field name="fecha_vencimiento" readonly="state not in ('borrador', 'aprobado')"/>
+                            <field name="plazo_dias"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Contabilidad y control">
+                            <field name="diario_banco_id"/>
+                            <field name="cuenta_pasivo_id"/>
+                            <field name="responsable_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'borrador'"/>
+                            <field name="move_desembolso_id" invisible="not move_desembolso_id"/>
+                        </group>
+                        <group string="Saldos">
+                            <field name="saldo_capital"/>
+                            <field name="saldo_corriente"/>
+                            <field name="saldo_no_corriente"/>
+                            <field name="interes_pendiente"/>
+                            <field name="interes_pagado"/>
+                            <field name="proximo_vencimiento"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Cronograma de cuotas" name="cuotas">
+                            <field name="cuota_ids" readonly="state in ('cancelado', 'anulado')">
+                                <list editable="bottom"
+                                      decoration-success="estado == 'pagada'"
+                                      decoration-danger="estado == 'pendiente' and dias_para_vencer &lt; 0"
+                                      decoration-warning="estado == 'pendiente' and dias_para_vencer &gt;= 0 and dias_para_vencer &lt;= 7">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="dias_para_vencer" column_invisible="True"/>
+                                    <field name="numero"/>
+                                    <field name="fecha" readonly="estado == 'pagada'"/>
+                                    <field name="capital" readonly="estado == 'pagada'" sum="Capital"/>
+                                    <field name="interes" readonly="estado == 'pagada'" sum="Interés"/>
+                                    <field name="comision" readonly="estado == 'pagada'" sum="Comisión"/>
+                                    <field name="itf" readonly="estado == 'pagada'" sum="ITF / otros"/>
+                                    <field name="total" sum="Total"/>
+                                    <field name="estado" widget="badge" decoration-success="estado == 'pagada'"
+                                           decoration-warning="estado == 'pendiente'"/>
+                                    <field name="fecha_pago" optional="show"/>
+                                    <field name="interes_pagado" optional="hide"/>
+                                    <button name="action_pagar" type="object" string="Registrar pago"
+                                            icon="fa-money" invisible="estado == 'pagada' or parent.state != 'vigente'"
+                                            groups="promin_control_obligaciones_financieras.group_obl_contabilidad"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Facturas financiadas" name="facturas">
+                            <field name="factura_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount_total"/>
+                                    <field name="payment_state" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notas">
+                            <field name="notas"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_obligacion_search" model="ir.ui.view">
+        <field name="name">promin.obligacion.search</field>
+        <field name="model">promin.obligacion</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="nro_operacion"/>
+                <field name="banco_id"/>
+                <field name="finalidad"/>
+                <filter name="vigentes" string="Vigentes" domain="[('state', '=', 'vigente')]"/>
+                <filter name="borrador" string="Borrador / aprobadas" domain="[('state', 'in', ('borrador', 'aprobado'))]"/>
+                <filter name="cancelados" string="Canceladas" domain="[('state', '=', 'cancelado')]"/>
+                <separator/>
+                <filter name="f_pagare" string="Pagarés" domain="[('tipo', '=', 'pagare')]"/>
+                <filter name="f_fianza" string="Cartas fianza" domain="[('tipo', '=', 'carta_fianza')]"/>
+                <filter name="f_usd" string="En moneda extranjera" domain="[('currency_id.name', '!=', 'PEN')]"/>
+                <filter name="g_banco" string="Banco" context="{'group_by': 'banco_id'}"/>
+                <filter name="g_tipo" string="Tipo" context="{'group_by': 'tipo'}"/>
+                <filter name="g_estado" string="Estado" context="{'group_by': 'state'}"/>
+                <filter name="g_moneda" string="Moneda" context="{'group_by': 'currency_id'}"/>
+                <filter name="g_linea" string="Línea de crédito" context="{'group_by': 'linea_id'}"/>
+                <filter name="g_venc" string="Mes de vencimiento" context="{'group_by': 'fecha_vencimiento:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_obligacion_pivot" model="ir.ui.view">
+        <field name="name">promin.obligacion.pivot</field>
+        <field name="model">promin.obligacion</field>
+        <field name="arch" type="xml">
+            <pivot string="Saldo por banco">
+                <field name="banco_id" type="row"/>
+                <field name="currency_id" type="col"/>
+                <field name="saldo_capital" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_obligacion_graph" model="ir.ui.view">
+        <field name="name">promin.obligacion.graph</field>
+        <field name="model">promin.obligacion</field>
+        <field name="arch" type="xml">
+            <graph string="Saldo por banco" type="bar">
+                <field name="banco_id"/>
+                <field name="saldo_capital" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_obligacion" model="ir.actions.act_window">
+        <field name="name">Obligaciones</field>
+        <field name="res_model">promin.obligacion</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_vigentes': 1}</field>
+    </record>
+
+    <record id="action_obligacion_saldo_banco" model="ir.actions.act_window">
+        <field name="name">Saldo por banco</field>
+        <field name="res_model">promin.obligacion</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('state', '=', 'vigente')]</field>
+    </record>
+</odoo>

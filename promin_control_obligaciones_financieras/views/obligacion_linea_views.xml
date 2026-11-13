@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_obligacion_linea_list" model="ir.ui.view">
+        <field name="name">promin.obligacion.linea.list</field>
+        <field name="model">promin.obligacion.linea</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="banco_id"/>
+                <field name="name"/>
+                <field name="grupo_multiple"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="monto_aprobado"/>
+                <field name="utilizado"/>
+                <field name="disponible"/>
+                <field name="utilizacion_maxima" optional="hide"/>
+                <field name="disponible_grupo" optional="hide"/>
+                <field name="plazo_dias" optional="hide"/>
+                <field name="fecha_vencimiento"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_obligacion_linea_form" model="ir.ui.view">
+        <field name="name">promin.obligacion.linea.form</field>
+        <field name="model">promin.obligacion.linea</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="banco_id"/>
+                            <field name="currency_id"/>
+                            <field name="plazo_dias"/>
+                            <field name="fecha_vencimiento"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="True"/>
+                        </group>
+                        <group>
+                            <field name="monto_aprobado"/>
+                            <field name="utilizado"/>
+                            <field name="disponible"/>
+                            <field name="grupo_multiple"/>
+                            <field name="utilizacion_maxima"/>
+                            <field name="utilizado_grupo"/>
+                            <field name="disponible_grupo"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Obligaciones">
+                            <field name="obligacion_ids" readonly="True">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="nro_operacion"/>
+                                    <field name="tipo"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="monto"/>
+                                    <field name="saldo_capital"/>
+                                    <field name="fecha_vencimiento"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_obligacion_linea_search" model="ir.ui.view">
+        <field name="name">promin.obligacion.linea.search</field>
+        <field name="model">promin.obligacion.linea</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="banco_id"/>
+                <field name="grupo_multiple"/>
+                <filter name="g_banco" string="Banco" context="{'group_by': 'banco_id'}"/>
+                <filter name="g_grupo" string="Línea múltiple" context="{'group_by': 'grupo_multiple'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_obligacion_linea" model="ir.actions.act_window">
+        <field name="name">Líneas de crédito</field>
+        <field name="res_model">promin.obligacion.linea</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_g_banco': 1}</field>
+    </record>
+</odoo>

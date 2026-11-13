@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ajuste_dc_wizard_form" model="ir.ui.view">
+        <field name="name">promin.obligacion.ajuste.dc.wizard.form</field>
+        <field name="model">promin.obligacion.ajuste.dc.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="fecha"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="obligacion_ids" widget="many2many_tags"
+                           domain="[('state', 'in', ('vigente', 'cancelado'))]"/>
+                </group>
+                <p class="text-muted">
+                    Reexpresa cada obligación en moneda extranjera al tipo de cambio de la fecha de cierre y
+                    registra la diferencia contra las cuentas de ganancia o pérdida. Cuando el saldo llega a cero,
+                    el ajuste lleva el pasivo a cero y la obligación deja de generar diferencia de cambio.
+                </p>
+                <footer>
+                    <button name="action_ajustar" string="Generar ajuste" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ajuste_dc" model="ir.actions.act_window">
+        <field name="name">Ajuste por diferencia de cambio</field>
+        <field name="res_model">promin.obligacion.ajuste.dc.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
