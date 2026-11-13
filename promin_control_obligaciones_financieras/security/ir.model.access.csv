@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_obl_consulta,promin.obligacion consulta,model_promin_obligacion,group_obl_consulta,1,0,0,0
+access_obl_tesoreria,promin.obligacion tesoreria,model_promin_obligacion,group_obl_tesoreria,1,1,1,0
+access_obl_finanzas,promin.obligacion finanzas,model_promin_obligacion,group_obl_finanzas,1,1,1,1
+access_obl_contabilidad,promin.obligacion contabilidad,model_promin_obligacion,group_obl_contabilidad,1,1,0,0
+access_cuota_consulta,promin.obligacion.cuota consulta,model_promin_obligacion_cuota,group_obl_consulta,1,0,0,0
+access_cuota_tesoreria,promin.obligacion.cuota tesoreria,model_promin_obligacion_cuota,group_obl_tesoreria,1,1,1,1
+access_cuota_contabilidad,promin.obligacion.cuota contabilidad,model_promin_obligacion_cuota,group_obl_contabilidad,1,1,0,0
+access_linea_consulta,promin.obligacion.linea consulta,model_promin_obligacion_linea,group_obl_consulta,1,0,0,0
+access_linea_tesoreria,promin.obligacion.linea tesoreria,model_promin_obligacion_linea,group_obl_tesoreria,1,1,1,0
+access_linea_finanzas,promin.obligacion.linea finanzas,model_promin_obligacion_linea,group_obl_finanzas,1,1,1,1
+access_obl_pago_wizard,promin.obligacion.pago.wizard,model_promin_obligacion_pago_wizard,base.group_user,1,1,1,1
+access_obl_importar_wizard,promin.obligacion.importar.wizard,model_promin_obligacion_importar_wizard,base.group_user,1,1,1,1
+access_obl_ajuste_dc_wizard,promin.obligacion.ajuste.dc.wizard,model_promin_obligacion_ajuste_dc_wizard,base.group_user,1,1,1,1

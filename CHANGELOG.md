@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-13 — promin_control_obligaciones_financieras (19.0.1.0.1)
+
+- **Motivo:** PROMIN pidió el control de obligaciones financieras (pagarés y otros) con alertas de vencimiento, vinculado al registro contable (Anexo B, 14.1). Alicia Quispe entregó el listado de pagarés, los cronogramas del BBVA y del BCP, el tratamiento contable y los ejemplos de asientos.
+- **Acción:** módulo nuevo (depende de `account` y `mail`). Registra pagarés, cartas fianza, leasing, descuento de facturas y otras obligaciones, con cronograma de cuotas que se carga pegando el texto del banco (formatos simple, BBVA y BCP), líneas de crédito con utilizado y disponible, y alertas diarias por actividad. Reportes: calendario de vencimientos, saldo por banco, intereses y comisiones por mes y parte corriente / no corriente. Genera los asientos de desembolso, pago de cuota (pasivo, interés, comisión e ITF contra banco) y ajuste mensual por diferencia de cambio por documento, sin devengo de intereses. Roles: Tesorería, Jefe de Finanzas (aprueba), Contabilidad y Consulta. Validado en NUAGETEST con el pagaré BCP en soles y el BBVA en dólares: los asientos coinciden con los ejemplos de PROMIN. Tras instalar desde Aplicaciones, configurar en la compañía (pestaña «Obligaciones financieras») el diario y las cuentas de intereses, comisiones, ITF y diferencia de cambio.
+
+---
+
 ## 2026-11-11 — promin_bimoneda_antiguedad (19.0.1.0.1) y promin_tableros_gerencia (19.0.0.3.0)
 
 - **Motivo:** PROMIN pidió que «Cuenta por cobrar vencida» y «Cuenta por pagar vencida» se puedan ver en soles o en dólares, igual que los demás reportes bimoneda. También pidió llegar al nivel de documento en los tableros.
