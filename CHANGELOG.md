@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-13 — promin_cotizacion_lista_materiales (19.0.1.0.0)
+
+- **Motivo:** el equipo de Ventas de PROMIN necesita, en algunas cotizaciones de tableros, imprimir debajo de cada producto su lista de materiales (BoM).
+- **Acción:** módulo nuevo (depende de `sale` y `mrp`). Agrega en la cotización el check «Se imprime Lista de Materiales». Si está activo, el PDF estándar imprime bajo cada producto con BoM sus componentes de primer nivel (código, descripción, cantidad multiplicada por lo cotizado y unidad), sin precios. Con el check apagado el PDF no cambia. Instalar desde Aplicaciones.
+
+---
+
 ## 2026-11-13 — solse_pe_vat (19.0.1.4), solse_pe_edi (19.0.1.5), solse_pe_cpe_guias_transp (19.0.1.0.5), solse_pe_sire_ventas (19.0.0.14), solse_pe_sire_compra (19.0.2.7), solse_pe_accountant (19.0.1.5) y solse_pe_cpe_pos (19.0.1.13)
 
 - **Motivo:** al actualizar el submódulo en Staging, Odoo 19 mostraba avisos (WARNING) en el log: dos campos de `res.partner` con la misma etiqueta «Estado», un campo traducible y almacenado (`account.move.line.nombre_producto`) que no se calcula bien en todos los idiomas, y dos campos «Transbordo programado» repetidos entre módulos de guías, campos con etiqueta repetida en SIRE («Periodo» y «Nombre de archivo zip»), alertas de accesibilidad en el asistente de diagnóstico de la Tabla 34 y cuatro asistentes de POS sin reglas de acceso.

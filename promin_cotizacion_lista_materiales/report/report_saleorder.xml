@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="promin_report_saleorder_bom" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//tr[@name='tr_product']" position="after">
+            <t t-if="doc.promin_imprime_bom and not line.display_type and line.product_id and not is_combo">
+                <t t-set="promin_componentes" t-value="line._promin_bom_componentes()"/>
+                <tr t-if="promin_componentes" name="tr_promin_bom">
+                    <td colspan="99" t-att-class="padding_class">
+                        <table class="table table-sm table-borderless mb-2" style="font-size:0.85em;">
+                            <thead>
+                                <tr class="text-muted">
+                                    <th class="text-start" style="width:20%;">Código</th>
+                                    <th class="text-start">Lista de materiales</th>
+                                    <th class="text-end text-nowrap" style="width:12%;">Cantidad</th>
+                                    <th class="text-start" style="width:12%;">Unidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="promin_componentes" t-as="comp">
+                                    <td class="text-start"><span t-out="comp['codigo']"/></td>
+                                    <td class="text-start"><span t-out="comp['nombre']"/></td>
+                                    <td class="text-end text-nowrap">
+                                        <span t-out="comp['cantidad']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
+                                    </td>
+                                    <td class="text-start"><span t-out="comp['unidad']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </t>
+        </xpath>
+    </template>
+</odoo>
