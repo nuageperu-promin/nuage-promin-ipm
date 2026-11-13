@@ -10,7 +10,7 @@
 		Facturación electronica desde POS
 	""",
 	'category': 'Operations',
-	'version': '19.0.1.12',
+	'version': '19.0.1.13',
 	'license': 'Other proprietary',
 	'depends': [
 		'base_setup',
