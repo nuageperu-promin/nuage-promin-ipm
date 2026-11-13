@@ -238,7 +238,7 @@ class Picking(models.Model):
 		string='Retorno de vehículo vacío', copy=False
 	)
 	pe_grt_transbordo_programado = fields.Boolean(
-		string='Transbordo programado', copy=False
+		string='Transbordo programado (GRT)', copy=False
 	)
 	pe_grt_subcontratado = fields.Boolean(
 		string='Transporte subcontratado', copy=False

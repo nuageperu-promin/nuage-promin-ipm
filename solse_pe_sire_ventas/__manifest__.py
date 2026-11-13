@@ -4,7 +4,7 @@
 	'author': 'Nuage Peru SAC',
 	'maintainer': 'Nuage Peru S.A.C.',
 	'name': 'SIRE SUNAT - Ventas',
-	'version': '19.0.0.13',
+	'version': '19.0.0.14',
 	'license': 'Other proprietary',
 	'summary': 'Ventas para la declaración de SIRE a SUNAT',
 	'category': 'Financial',

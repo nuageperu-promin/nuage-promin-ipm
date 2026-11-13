@@ -87,7 +87,7 @@
 
 	'maintainer': 'Nuage Peru S.A.C.',
 	'category': 'Financial',
-	'version': '19.0.1.0.4',
+	'version': '19.0.1.0.5',
 	'license': 'Other proprietary',
 	'depends': [
 		'solse_pe_cpe_guias',

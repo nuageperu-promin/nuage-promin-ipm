@@ -111,7 +111,7 @@ class Partner(models.Model):
 	commercial_name = fields.Char("Nombre commercial", default="-")
 	legal_name = fields.Char("Nombre legal", default="-")
 	state = fields.Selection(servicio_busqueda.STATE, string='Estado', default="ACTIVO")
-	state_sunat = fields.Selection(servicio_busqueda.STATE, string='Estado', default="ACTIVO")
+	state_sunat = fields.Selection(servicio_busqueda.STATE, string='Estado SUNAT', default="ACTIVO")
 	condition = fields.Selection(servicio_busqueda.CONDITION, string='Condicion', default='HABIDO')
 	is_validate = fields.Boolean("Está validado")
 	last_update = fields.Datetime("Última actualización")

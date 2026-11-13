@@ -50,7 +50,7 @@
                         <field name="diagnostico_calculado" invisible="1"/>
 
                         <!-- Total -->
-                        <div class="alert alert-secondary text-center"
+                        <div role="status" class="alert alert-secondary text-center"
                              style="font-size:1.1em;">
                             Total de cuentas analizadas:
                             <b><field name="total_cuentas" readonly="1" nolabel="1" class="oe_inline"/></b>
@@ -160,7 +160,7 @@
                             necesita el contador. Ademas acceso rapido al
                             wizard de asignacion masiva.
                         -->
-                        <div class="alert alert-light mt-3"
+                        <div role="status" class="alert alert-light mt-3"
                              invisible="sin_config_hojas == 0">
                             <p>
                                 <b>Hay <field name="sin_config_hojas"
@@ -184,7 +184,7 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-success mt-3"
+                        <div role="status" class="alert alert-success mt-3"
                              invisible="sin_config_hojas != 0 or cuentas_parcial != 0">
                             <p class="mb-0">
                                 <b>Configuracion al dia.</b>

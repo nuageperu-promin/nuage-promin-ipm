@@ -13,7 +13,7 @@
 		* Registro de glosa para los asientos contables
 	""",
 	'category': 'Financial',
-	'version': '19.0.1.4',
+	'version': '19.0.1.5',
 	'license': 'Other proprietary',
 	'depends': [
 		'account',
