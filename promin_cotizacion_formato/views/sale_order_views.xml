@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_sale_order_form_formato" model="ir.ui.view">
+        <field name="name">sale.order.form.promin.formato</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <group name="promin_cotizacion" string="Cotización PROMIN (se imprime en el reporte)">
+                    <field name="promin_lugar_entrega"/>
+                    <field name="promin_tolerancia"/>
+                    <field name="promin_terminos_url"/>
+                    <field name="promin_importante" placeholder="Una viñeta por línea"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

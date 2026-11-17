@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_sale_order_form_bloqueo" model="ir.ui.view">
+        <field name="name">sale.order.form.promin.bloqueo.credito</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <field name="promin_credito_bloqueado" invisible="1"/>
+                <div class="alert alert-danger mb-0" role="alert" invisible="not promin_credito_bloqueado">
+                    <strong>Venta bloqueada:</strong> el cliente llegó a su límite de crédito y no se puede
+                    grabar ni continuar esta cotización/orden de venta.
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

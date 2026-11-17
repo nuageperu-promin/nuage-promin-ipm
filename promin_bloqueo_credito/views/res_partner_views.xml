@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_res_partner_form_bloqueo" model="ir.ui.view">
+        <field name="name">res.partner.form.promin.bloqueo.credito</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='credit_limit']/ancestor::group[1]" position="inside">
+                <field name="promin_bloquear_venta"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

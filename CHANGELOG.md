@@ -17,6 +17,20 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-17 — promin_bloqueo_credito (19.0.1.0.0)
+
+- **Motivo:** PROMIN pidió que, cuando un cliente llegó a su límite de crédito, no se pueda grabar ni continuar su cotización/orden de venta (hoy Odoo solo muestra un aviso).
+- **Acción:** módulo nuevo (depende de `sale` y `account`). Agrega en el contacto, bajo «Límites de crédito», el check «Bloquear generación de Cotización/Orden de Venta». Con el check activo y el límite alcanzado, la cotización no se puede grabar, se ocultan Enviar y Confirmar y se rechaza confirmar o enviar por otra vía; cancelar sigue permitido. Instalar desde Aplicaciones.
+
+---
+
+## 2026-11-17 — promin_cotizacion_formato (19.0.1.0.1) y promin_cotizacion_lista_materiales (19.0.1.1.0)
+
+- **Motivo:** Proveedores Mineros entregó su modelo de cotización y Alex Moreno pidió que la lista de materiales impresa use la versión elegida en la línea del ítem.
+- **Acción:** `promin_cotizacion_formato` (nuevo) agrega el reporte «Cotización PROMIN» en el menú Imprimir de la cotización, con el formato del modelo: encabezado con logo e ISO, datos del cliente y del vendedor, tabla de ítems, plazos de entrega por ítem, totales, condiciones de venta, bloque IMPORTANTE y datos bancarios (BCP, BBVA, Scotiabank) tomados de las cuentas de la compañía. Agrega en la cotización los textos editables Lugar de entrega, Tolerancia, Términos de venta e IMPORTANTE. `promin_cotizacion_lista_materiales` 1.1.0: la lista de materiales impresa usa la versión elegida en la línea (`bom_id`) y muestra su referencia; si no hay una elegida, usa la BoM por defecto. Instalar `promin_cotizacion_formato` y actualizar `promin_cotizacion_lista_materiales` desde Aplicaciones; registrar las cuentas bancarias de la compañía.
+
+---
+
 ## 2026-11-13 — promin_cotizacion_lista_materiales (19.0.1.0.0)
 
 - **Motivo:** el equipo de Ventas de PROMIN necesita, en algunas cotizaciones de tableros, imprimir debajo de cada producto su lista de materiales (BoM).
