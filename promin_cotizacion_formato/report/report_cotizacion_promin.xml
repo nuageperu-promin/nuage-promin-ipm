@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+    <record id="paperformat_cotizacion_promin" model="report.paperformat">
+        <field name="name">Cotización PROMIN (A4)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_cotizacion_promin" model="ir.actions.report">
+        <field name="name">Cotización PROMIN</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">promin_cotizacion_formato.report_cotizacion_promin</field>
+        <field name="report_file">promin_cotizacion_formato.report_cotizacion_promin</field>
+        <field name="print_report_name">'Cotización PROMIN - %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_cotizacion_promin"/>
+    </record>
+
+    <template id="report_cotizacion_promin">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="promin_cotizacion_formato.report_cotizacion_promin_document" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_cotizacion_promin_document">
+        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+        <t t-set="filas" t-value="doc._promin_filas()"/>
+        <t t-set="plazos" t-value="doc._promin_plazos()"/>
+        <t t-set="bancos" t-value="doc._promin_cuentas_bancos()"/>
+        <t t-set="atencion" t-value="doc._promin_atencion()"/>
+        <t t-set="moneda" t-value="doc.currency_id.name or ''"/>
+        <div class="article" t-att-data-oe-model="doc._name" t-att-data-oe-id="doc.id">
+        <div class="page promin-cot">
+            <style>
+                .promin-cot { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #545454; }
+                .promin-cot table, .promin-cot thead, .promin-cot tbody, .promin-cot tfoot, .promin-cot tr, .promin-cot th, .promin-cot td { border: 0 !important; outline: 0 !important; box-shadow: none !important; }
+                .promin-cot table { border-collapse: collapse; }
+                .promin-cot .pc-navy { color: #14213d; }
+                .promin-cot .pc-h1 { font-size: 20px; font-weight: bold; color: #14213d; }
+                .promin-cot .pc-h2 { font-size: 14px; font-weight: bold; color: #14213d; }
+                .promin-cot .pc-main { width: 100%; border-collapse: separate; border-spacing: 0; }
+                .promin-cot .pc-main th { background-color: #14213d; color: #ffffff; font-size: 11px; font-weight: bold;
+                    text-align: left; padding: 8px 8px; border: 1px solid #ffffff !important; }
+                .promin-cot .pc-main td { background-color: #e5e5e5; color: #545454; font-size: 12px;
+                    padding: 9px 8px; border: 1px solid #ffffff !important; vertical-align: middle; }
+                .promin-cot .pc-main td.pc-sec { background-color: #14213d; color: #ffffff; font-weight: bold; padding: 8px; }
+                .promin-cot .pc-main td.pc-nota { background-color: #ffffff; font-style: italic; padding: 6px 8px; }
+                .promin-cot .pc-main td.pc-bom { background-color: #ffffff; padding: 2px 8px 8px 24px; }
+                .promin-cot .pc-bom-tabla { width: 100%; font-size: 10.5px; }
+                .promin-cot .pc-bom-tabla th { background-color: #ffffff; color: #545454; border: 0 !important; border-bottom: 1px solid #cccccc !important;
+                    padding: 3px 6px; font-size: 10.5px; }
+                .promin-cot .pc-bom-tabla td { background-color: #ffffff; border: 0 !important; border-bottom: 1px solid #eeeeee !important;
+                    padding: 3px 6px; font-size: 10.5px; }
+                .promin-cot .pc-r { text-align: right; }
+                .promin-cot .pc-total { background-color: #14213d; color: #ffffff; font-weight: bold; font-size: 14px;
+                    padding: 8px 12px; border-radius: 6px; }
+                .promin-cot .pc-cond-t { color: #fca311; font-size: 15px; font-weight: bold; }
+                .promin-cot ul { margin: 2px 0 0 0; padding-left: 16px; font-size: 11.5px; }
+                .promin-cot .pc-banco { width: 100%; border: 2px solid #f4a0a8 !important; }
+                .promin-cot .pc-banco td { border: 2px solid #f4a0a8 !important; text-align: center; vertical-align: middle; padding: 6px 4px; }
+                .promin-cot tr { page-break-inside: avoid; }
+                .promin-cot .pc-keep { page-break-inside: avoid; }
+            </style>
+
+            <!-- Encabezado -->
+            <table style="width:100%; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="width:70%; vertical-align:top; padding-left:6px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <img t-att-src="doc._promin_img('logo')" style="width:230px; border:0 none;"/>
+                        <div style="font-style:italic; font-size:10.5px; margin-top:0;">
+                            Calle Salaverry 352, Urb. El Pino, San Luis-Lima, Perú<br/>
+                            Luxury Tower, edificio sur, Dpto 101, Cerro Colorado-Arequipa
+                        </div>
+                    </td>
+                    <td style="width:30%; text-align:right; vertical-align:top; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <img t-att-src="doc._promin_img('iso9001')" style="width:92px; border:0 none;"/>
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <!-- Cliente y datos de la cotización -->
+            <table style="width:100%; margin-top:10px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="width:52%; vertical-align:top; padding-left:6px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <div class="pc-h2">Cliente: <span t-out="doc.partner_id.name"/></div>
+                        <div class="pc-h2" t-if="atencion">Atención: <span t-out="atencion"/></div>
+                        <div style="margin-top:4px;" t-if="doc.partner_id.email" t-out="doc.partner_id.email"/>
+                        <div t-if="doc._promin_telefono(doc.partner_id)" t-out="doc._promin_telefono(doc.partner_id)"/>
+                    </td>
+                    <td style="width:48%; vertical-align:top; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <div class="pc-h1" style="font-size:18px;">
+                            <t t-if="doc.state in ('draft', 'sent')">Cotización No.</t><t t-else="">Pedido No.</t><span t-out="doc.name"/>
+                        </div>
+                        <div style="margin:6px 0 0 4px;">Fecha: <span t-out="doc._promin_fecha_larga()"/></div>
+                        <div style="margin-left:4px;" t-if="doc.client_order_ref">Referencia: <span t-out="doc.client_order_ref"/></div>
+                        <div class="pc-h2" style="margin-top:14px;">Elaborado por:</div>
+                        <div style="margin-top:4px;" t-out="doc.user_id.name"/>
+                        <div t-if="doc.user_id.email" t-out="doc.user_id.email"/>
+                        <div t-if="doc._promin_telefono(doc.user_id.partner_id)" t-out="doc._promin_telefono(doc.user_id.partner_id)"/>
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <div style="margin:10px 0 10px 6px; width:60%;">
+                De acuerdo a su solicitud de la referencia, tenemos a bien cotizar lo siguiente:
+            </div>
+
+            <!-- Tabla de ítems -->
+            <table class="pc-main">
+                <thead>
+                    <tr>
+                        <th style="width:4%;">IT</th>
+                        <th style="width:7%;">Cant.</th>
+                        <th style="width:8%;">UM</th>
+                        <th style="width:24%;">Producto Solicitado</th>
+                        <th style="width:24%;">Producto Ofertado</th>
+                        <th style="width:11%;">Modelo</th>
+                        <th style="width:11%;">Precio Unit.</th>
+                        <th style="width:11%;">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="filas" t-as="fila">
+                        <t t-set="line" t-value="fila['line']"/>
+                        <tr t-if="fila['tipo'] == 'seccion'">
+                            <td colspan="8" class="pc-sec"><span t-field="line.name"/></td>
+                        </tr>
+                        <tr t-elif="fila['tipo'] == 'nota'">
+                            <td colspan="8" class="pc-nota"><span t-field="line.name"/></td>
+                        </tr>
+                        <t t-else="">
+                            <tr>
+                                <td><span t-out="fila['n']"/></td>
+                                <td><span t-out="doc._promin_num(line.product_uom_qty)"/></td>
+                                <td><span t-out="line.product_uom_id.name"/></td>
+                                <td style="white-space:pre-line;"><span t-out="line.name"/></td>
+                                <td><span t-out="line.product_id.name or line.name"/></td>
+                                <td><span t-out="line.product_id.default_code or ''"/></td>
+                                <td class="pc-r">
+                                    <span t-out="doc._promin_precio_neto(line)" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                                <td class="pc-r">
+                                    <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                            <t t-if="doc.promin_imprime_bom and line.product_id">
+                                <t t-set="promin_bom" t-value="line._promin_bom_elegida()"/>
+                                <t t-set="promin_componentes" t-value="line._promin_bom_componentes(promin_bom)"/>
+                                <tr t-if="promin_componentes">
+                                    <td colspan="8" class="pc-bom">
+                                        <table class="pc-bom-tabla">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:20%; text-align:left;">Código</th>
+                                                    <th style="text-align:left;">
+                                                        Lista de materiales
+                                                        <t t-if="promin_bom.code"> - Versión <span t-out="promin_bom.code"/></t>
+                                                    </th>
+                                                    <th style="width:12%; text-align:right;">Cantidad</th>
+                                                    <th style="width:12%; text-align:left;">Unidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="promin_componentes" t-as="comp">
+                                                    <td><span t-out="comp['codigo']"/></td>
+                                                    <td><span t-out="comp['nombre']"/></td>
+                                                    <td style="text-align:right;"><span t-out="comp['cantidad']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/></td>
+                                                    <td><span t-out="comp['unidad']"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </t>
+                </tbody>
+            </table>
+
+            <!-- Plazos y totales -->
+            <table style="width:100%; margin-top:10px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="width:58%; vertical-align:top; font-size:12px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <t t-if="plazos">
+                            <table border="0" cellspacing="0" cellpadding="0" style="border:0 none !important; outline:0 none !important; box-shadow:none !important;"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                    <td style="vertical-align:top; padding-right:4px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">Plazo de entrega:</td>
+                                    <td style="vertical-align:top; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                        <div t-foreach="plazos" t-as="plazo"><span t-out="plazo"/></div>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </t>
+                    </td>
+                    <td style="width:42%; vertical-align:top; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <table style="width:100%; font-size:12px; color:#14213d; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                            <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                <td style="padding:2px 8px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">Subtotal</td>
+                                <td class="pc-r" style="padding:2px 8px; border:0 none !important; outline:0 none !important; box-shadow:none !important;"><t t-out="moneda"/> <t t-out="'{:,.2f}'.format(doc.amount_untaxed)"/></td>
+                            </tr>
+                            <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                <td style="padding:2px 8px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" t-out="doc._promin_igv_etiqueta()"/>
+                                <td class="pc-r" style="padding:2px 8px; border:0 none !important; outline:0 none !important; box-shadow:none !important;"><t t-out="moneda"/> <t t-out="'{:,.2f}'.format(doc.amount_tax)"/></td>
+                            </tr>
+                            <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                <td colspan="2" class="pc-total" style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                    <table style="width:100%; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                        <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                                            <td style="color:#ffffff; font-weight:bold; font-size:14px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">TOTAL</td>
+                                            <td class="pc-r" style="color:#ffffff; font-weight:bold; font-size:14px; border:0 none !important; outline:0 none !important; box-shadow:none !important;"><t t-out="moneda"/> <t t-out="'{:,.2f}'.format(doc.amount_total)"/></td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <!-- Condiciones de venta e importante -->
+            <table style="width:100%; margin-top:14px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="width:56%; vertical-align:top; padding-left:6px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <div class="pc-cond-t">Condiciones de venta</div>
+                        <ul>
+                            <li>Moneda: <span t-out="doc._promin_moneda_nombre()"/></li>
+                            <li t-if="doc.payment_term_id">Forma de pago: <span t-out="doc.payment_term_id.name"/></li>
+                            <li t-if="doc.promin_lugar_entrega">Lugar de entrega: <span t-out="doc.promin_lugar_entrega"/></li>
+                            <li t-if="doc.validity_date">Validez de oferta: <span t-out="doc._promin_validez_dias()"/> días</li>
+                            <li t-if="doc.promin_tolerancia"><span t-out="doc.promin_tolerancia"/></li>
+                            <li t-if="doc.promin_terminos_url">Términos de Venta: <span t-out="doc.promin_terminos_url"/></li>
+                        </ul>
+                    </td>
+                    <td style="width:44%; vertical-align:top; color:#14213d; font-weight:bold; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <t t-if="doc.promin_importante">
+                            <div>IMPORTANTE:</div>
+                            <ul>
+                                <li t-foreach="(doc.promin_importante or '').splitlines()" t-as="item"><span t-out="item"/></li>
+                            </ul>
+                        </t>
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <!-- Datos para emisión de OC -->
+            <div class="pc-keep">
+            <table style="width:100%; margin-top:12px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="width:40%; vertical-align:top; padding-left:6px; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <div style="font-size:13px; font-weight:bold; color:#545454;">DATOS PARA EMISIÓN DE OC:</div>
+                        <div style="font-size:13px; margin-top:3px;" t-out="(doc.company_id.name or '').upper()"/>
+                        <div style="font-size:13px;" t-if="doc.company_id.vat">RUC: <span t-out="doc.company_id.vat"/></div>
+                    </td>
+                    <td style="width:60%; vertical-align:top; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <table class="pc-banco">
+                            <tr>
+                                <td t-foreach="bancos" t-as="b" style="width:33%; height:56px;">
+                                    <img t-att-src="doc._promin_img(b['banco'])" style="max-height:44px; max-width:110px; border:0 none;"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td t-foreach="bancos" t-as="b" style="font-size:10px; padding:10px 4px;">
+                                    <div>Soles: <span t-out="b['soles'] or '-'"/></div>
+                                    <div>Dólares: <span t-out="b['dolares'] or '-'"/></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tbody></table>
+
+            <!-- Pie -->
+            <table style="width:100%; margin-top:12px; border:0 none !important; outline:0 none !important; box-shadow:none !important;" border="0" cellspacing="0" cellpadding="0"><tbody style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                <tr style="border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                    <td style="background-color:#fca311; text-align:center; padding:10px 0; font-size:14px; color:#14213d; border:0 none !important; outline:0 none !important; box-shadow:none !important;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:8px;">
+                            <circle cx="12" cy="12" r="11" fill="#14213d"/>
+                            <g fill="none" stroke="#ffffff" stroke-width="1.3">
+                                <circle cx="12" cy="12" r="6.5"/>
+                                <ellipse cx="12" cy="12" rx="2.8" ry="6.5"/>
+                                <line x1="5.5" y1="12" x2="18.5" y2="12"/>
+                            </g>
+                        </svg>
+                        <span style="vertical-align:middle; font-weight:600;">www.proveedoresmineros.com</span>
+                    </td>
+                </tr>
+            </tbody></table>
+            </div>
+        </div>
+        </div>
+    </template>
+</odoo>

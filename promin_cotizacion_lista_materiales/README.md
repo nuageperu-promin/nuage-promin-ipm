@@ -7,7 +7,7 @@ Lista de materiales (BoM) en la impresión de la cotización. Solicitado por el 
 - Primer nivel de la BoM; no despliega los subensambles. No muestra precios de componentes.
 - La cantidad del componente = cantidad de la BoM × cantidad cotizada (convierte la unidad si la línea usa otra).
 - Productos sin BoM se imprimen normal. Con el check apagado, el PDF no cambia.
-- Si el producto tiene varias BoM, usa la de menor secuencia (la propia de la variante tiene prioridad sobre la de la plantilla).
+- Imprime la **versión de lista de materiales elegida en la línea** (columna opcional «Lista de Materiales» de las líneas de la orden) y muestra su referencia en el encabezado de la tabla. Si la línea no tiene una elegida, usa la BoM por defecto del producto (menor secuencia; la propia de la variante tiene prioridad sobre la de la plantilla).
 - Aplica al PDF estándar de Odoo (también el del portal y el adjunto del correo).
 
 Depende de `sale` y `mrp` (Fabricación). El vendedor no necesita permisos de Fabricación: la BoM se lee internamente.
