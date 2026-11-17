@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-17 — promin_bloqueo_credito (19.0.1.0.0)
+
+- **Motivo:** PROMIN pidió que, cuando un cliente llegó a su límite de crédito, no se pueda grabar ni continuar su cotización/orden de venta (hoy Odoo solo muestra un aviso).
+- **Acción:** módulo nuevo (depende de `sale` y `account`). Agrega en el contacto, bajo «Límites de crédito», el check «Bloquear generación de Cotización/Orden de Venta». Con el check activo y el límite alcanzado, la cotización no se puede grabar, se ocultan Enviar y Confirmar y se rechaza confirmar o enviar por otra vía; cancelar sigue permitido. Instalar desde Aplicaciones.
+
+---
+
 ## 2026-11-17 — promin_cotizacion_formato (19.0.1.0.1) y promin_cotizacion_lista_materiales (19.0.1.1.0)
 
 - **Motivo:** Proveedores Mineros entregó su modelo de cotización y Alex Moreno pidió que la lista de materiales impresa use la versión elegida en la línea del ítem.
