@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_promin_portal_root" name="Portal del Empleado" sequence="76"
+    <menuitem id="menu_promin_portal_root" name="Portal PROMIN" sequence="76"
               web_icon="promin_portal_empleado,static/description/icon.png" groups="hr.group_hr_user"/>
     <menuitem id="menu_promin_portal_datos" name="Datos por aprobar" parent="menu_promin_portal_root"
               sequence="10" action="action_promin_portal_dato"/>
