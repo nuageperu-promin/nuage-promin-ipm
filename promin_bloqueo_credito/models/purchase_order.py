@@ -57,7 +57,7 @@ class PurchaseOrder(models.Model):
             [('partner_id', 'child_of', proveedor.id), ('company_id', '=', company.id),
              ('parent_state', '=', 'posted'), ('account_id.account_type', '=', 'liability_payable')],
             aggregates=['balance:sum'])
-        return -(grupos[0][0] or 0.0) if grupos else 0.0
+        return (-(grupos[0][0] or 0.0) if grupos else 0.0) + 0.0  # evita «-0.00»
 
     def _promin_ordenes_sin_facturar(self, proveedor, company):
         """Órdenes de compra confirmadas, parte aún no facturada, en moneda de la compañía."""
