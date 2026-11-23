@@ -62,7 +62,7 @@ class PortalDato(models.Model):
     name = fields.Char('Resumen', compute='_compute_name', store=True)
     employee_id = fields.Many2one('hr.employee', 'Empleado', required=True, index=True, ondelete='cascade',
                                   tracking=True)
-    department_id = fields.Many2one('hr.department', related='employee_id.department_id', store=True)
+    department_id = fields.Many2one('hr.department', 'Departamento', related='employee_id.department_id', store=True)
     tipo = fields.Selection([(k, v['etiqueta']) for k, v in TIPOS.items()], 'Tipo', required=True,
                             index=True)
     state = fields.Selection(
