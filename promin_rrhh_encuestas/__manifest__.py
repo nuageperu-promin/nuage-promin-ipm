@@ -1,5 +1,5 @@
 {
-    'name': 'PROMIN - Encuestas de RRHH (clima laboral y evaluación de desempeño)',
+    'name': 'Evaluaciones PROMIN',
     'version': '19.0.1.0.0',
     'summary': 'Encuesta de clima laboral y evaluación de desempeño (jefe a subordinado) sobre Encuestas, con resultados por área, evaluado y competencia',
     'author': 'Nuage Peru SAC',

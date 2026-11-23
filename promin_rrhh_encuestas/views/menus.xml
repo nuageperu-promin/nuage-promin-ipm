@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_promin_rrhh_root" name="Evaluaciones RRHH" sequence="75"
+    <menuitem id="menu_promin_rrhh_root" name="Evaluaciones PROMIN" sequence="75"
               web_icon="promin_rrhh_encuestas,static/description/icon.png"
               groups="survey.group_survey_manager"/>
     <menuitem id="menu_promin_desempeno" name="Desempeño" parent="menu_promin_rrhh_root" sequence="10"/>
