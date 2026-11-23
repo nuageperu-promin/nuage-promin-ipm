@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_purchase_order_form_bloqueo" model="ir.ui.view">
+        <field name="name">purchase.order.form.promin.bloqueo.credito</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <field name="promin_compra_bloqueada" invisible="1"/>
+                <div class="alert alert-danger mb-0" role="alert" invisible="not promin_compra_bloqueada">
+                    <strong>Compra bloqueada:</strong>
+                    <field name="promin_compra_aviso" readonly="1" nolabel="1" class="d-inline"/>
+                    No se puede grabar ni continuar esta cotización/orden de compra.
+                </div>
+                <div class="alert alert-warning mb-0" role="alert"
+                     invisible="promin_compra_bloqueada or not promin_compra_aviso">
+                    <strong>Límite de crédito de compras:</strong>
+                    <field name="promin_compra_aviso" readonly="1" nolabel="1" class="d-inline"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
