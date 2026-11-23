@@ -17,7 +17,7 @@ class ResPartner(models.Model):
         'Límite de Crédito Compras', company_dependent=True,
         help='Activa el control del límite de crédito de compras para este proveedor.')
     promin_limite_compras = fields.Float(
-        'Límite de Crédito Compras', company_dependent=True,
+        'Monto del límite de compras', company_dependent=True,
         help='Monto máximo (en la moneda de la compañía) que PROMIN puede deber a este proveedor: '
              'deuda pendiente + órdenes de compra confirmadas sin facturar + la cotización/orden '
              'que se está digitando. Solo se controla si la casilla «Límite de Crédito Compras» está activa.')
