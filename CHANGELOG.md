@@ -5,6 +5,9 @@ Formato por entrada: fecha, módulo(s), motivo, acción.
 
 ---
 
+## 2026-11-23 — promin_portal_empleado (19.0.1.0.0)
+- Nuevo: Portal del Empleado (1.ª entrega). Mis datos (DNI, derechohabientes, estudios, experiencia, CUL) con aprobación de RRHH; Mis documentos (contratos publicados por RRHH y boletas PDF con registro de lectura); accesos al portal desde Empleados.
+
 ## Cómo agregar una entrada nueva
 
 Cuando se reciba una corrección de un módulo de terceros, o se complete una
