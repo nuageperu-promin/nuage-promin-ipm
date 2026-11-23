@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_promin_portal_root" name="Portal PROMIN" sequence="76"
+              web_icon="promin_portal_empleado,static/description/icon.png" groups="hr.group_hr_user"/>
+    <menuitem id="menu_promin_portal_datos" name="Datos por aprobar" parent="menu_promin_portal_root"
+              sequence="10" action="action_promin_portal_dato"/>
+    <menuitem id="menu_promin_portal_documentos" name="Contratos y documentos" parent="menu_promin_portal_root"
+              sequence="20" action="action_promin_portal_documento"/>
+    <menuitem id="menu_promin_portal_boletas" name="Lectura de boletas" parent="menu_promin_portal_root"
+              sequence="30" action="action_promin_payslip_lectura"/>
+    <menuitem id="menu_promin_portal_accesos" name="Accesos al portal" parent="menu_promin_portal_root"
+              sequence="40" action="action_promin_acceso_portal"/>
+</odoo>

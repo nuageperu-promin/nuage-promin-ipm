@@ -31,7 +31,7 @@ class SaleOrderLine(models.Model):
         return bom.filtered(lambda b: b.product_id == producto)[:1] or bom[:1]
 
     def _promin_bom_componentes(self, bom=None):
-        """Componentes (primer nivel) de la BoM elegida: código, descripción, cantidad y unidad.
+        """Componentes (primer nivel) de la BoM elegida con el check «Imp. Cot»: código, descripción, cantidad y unidad.
 
         La cantidad ya está multiplicada por la cantidad cotizada.
         """
@@ -44,7 +44,7 @@ class SaleOrderLine(models.Model):
         factor = cantidad_bom / (bom.product_qty or 1.0)
         resultado = []
         for linea in bom.bom_line_ids:
-            if linea._skip_bom_line(producto):
+            if linea._skip_bom_line(producto) or not linea.promin_imp_cot:
                 continue
             comp = linea.product_id.with_context(display_default_code=False)
             resultado.append({

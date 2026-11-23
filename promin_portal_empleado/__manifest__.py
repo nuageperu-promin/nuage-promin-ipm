@@ -1,0 +1,21 @@
+{
+    'name': 'Portal PROMIN',
+    'version': '19.0.1.0.0',
+    'summary': 'Portal del Empleado: DNI, derechohabientes, CV y CUL con aprobación de RRHH; contratos y boletas de pago con registro de lectura',
+    'author': 'Nuage Peru SAC',
+    'license': 'LGPL-3',
+    'category': 'Human Resources',
+    'depends': ['hr', 'hr_payroll', 'portal', 'mail'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/dato_views.xml',
+        'views/documento_views.xml',
+        'views/hr_payslip_views.xml',
+        'views/hr_employee_views.xml',
+        'views/menus.xml',
+        'data/server_actions.xml',
+        'views/portal_templates.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

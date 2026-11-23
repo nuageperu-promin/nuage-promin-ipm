@@ -5,6 +5,9 @@ Formato por entrada: fecha, módulo(s), motivo, acción.
 
 ---
 
+## 2026-11-23 — promin_portal_empleado (19.0.1.0.0)
+- Nuevo: Portal del Empleado (1.ª entrega). Mis datos (DNI, derechohabientes, estudios, experiencia, CUL) con aprobación de RRHH; Mis documentos (contratos publicados por RRHH y boletas PDF con registro de lectura); accesos al portal desde Empleados.
+
 ## Cómo agregar una entrada nueva
 
 Cuando se reciba una corrección de un módulo de terceros, o se complete una
@@ -14,6 +17,34 @@ versión de un desarrollo propio:
 
 - **Motivo:** <qué se corrigió, mejoró o desarrolló>
 - **Acción:** <qué se hizo: código actualizado, "Actualizar" ejecutado en Aplicaciones, etc.>
+
+---
+
+## 2026-11-23 — promin_rrhh_encuestas (19.0.1.0.0)
+
+- **Motivo:** RRHH de PROMIN envió los modelos de encuesta de clima laboral y evaluación de desempeño (90°) y pidió gestionarlos por formularios con resultados cuantitativos y cualitativos.
+- **Acción:** módulo nuevo sobre `survey`. Carga la encuesta de clima (anónima, con segmentos) y la de desempeño (jefe a subordinado, por invitación); asistente para generar las evaluaciones por jefe y enviarles el enlace; resultados por empleado/área/competencia y por pregunta/segmento. Requiere instalar antes el módulo estándar Encuestas.
+
+---
+
+## 2026-11-22 — promin_cotizacion_lista_materiales (19.0.1.2.0) y promin_cotizacion_formato (19.0.1.0.2)
+
+- **Motivo:** PROMIN pidió elegir, al confeccionar la lista de materiales (BoM), qué componentes se imprimen en la cotización; y la cotización «Cotización PROMIN» separaba en páginas distintas la cabecera y el detalle cuando la lista de materiales era larga.
+- **Acción:** `promin_cotizacion_lista_materiales`: nuevo check «Imp. Cot» en cada componente de la BoM (por defecto desactivado); la cotización imprime solo los componentes con el check activo. `promin_cotizacion_formato`: la lista de materiales se imprime fila por fila dentro de la tabla de ítems, de modo que continúa en la página siguiente en vez de saltar completa y dejar la primera página casi vacía. Actualizar ambos módulos desde Aplicaciones y marcar «Imp. Cot» en las BoM que corresponda.
+
+---
+
+## 2026-11-22 — promin_ejecutivo_tecnico (19.0.1.0.0)
+
+- **Motivo:** PROMIN pidió registrar un «Ejecutivo Técnico» por cotización/orden de venta, además del Vendedor, y verlo en las listas.
+- **Acción:** módulo nuevo (depende de `sale`). Agrega el campo Ejecutivo Técnico (usuario interno) debajo del Vendedor en Otra información, como columna en las listas de cotizaciones y órdenes de venta, y en búsqueda/agrupación. Instalar desde Aplicaciones.
+
+---
+
+## 2026-11-22 — promin_bloqueo_credito (19.0.1.1.0)
+
+- **Motivo:** PROMIN pidió un límite de crédito también para compras: no colocar órdenes de compra a un proveedor por encima del límite establecido, con la misma lógica de aviso y bloqueo que ya existe en ventas.
+- **Acción:** el módulo ahora depende también de `purchase`. En el contacto: «Límite de crédito» pasa a llamarse «Límite de Crédito Ventas» y se agregan «Límite de Crédito Compras» (casilla + monto, como en ventas) y el check «Bloquear Cotización/Orden de Compra»; el check de ventas se renombra «Bloquear Cotización/Orden de Venta». En la cotización/orden de compra aparece un aviso amarillo cuando deuda pendiente al proveedor + órdenes confirmadas sin facturar + la orden actual superan el límite; con el check activo el aviso es rojo, no se puede grabar y se ocultan Enviar, Confirmar y Aprobar (cancelar sigue permitido). Actualizar el módulo desde Aplicaciones.
 
 ---
 

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_desempeno_list" model="ir.ui.view">
+        <field name="name">survey.user_input.list.promin.desempeno</field>
+        <field name="model">survey.user_input</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Evaluaciones de desempeño" create="0" decoration-success="state == 'done'"
+                  decoration-muted="state != 'done'">
+                <field name="survey_id"/>
+                <field name="promin_empleado_id"/>
+                <field name="promin_departamento_id"/>
+                <field name="promin_evaluador_id"/>
+                <field name="state" widget="badge"/>
+                <field name="end_datetime" optional="show"/>
+                <field name="promin_prom_valores" optional="show"/>
+                <field name="promin_prom_generales" optional="show"/>
+                <field name="promin_prom_especificas" optional="show"/>
+                <field name="promin_prom_total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_desempeno_pivot" model="ir.ui.view">
+        <field name="name">survey.user_input.pivot.promin.desempeno</field>
+        <field name="model">survey.user_input</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <pivot string="Resultados de desempeño">
+                <field name="promin_departamento_id" type="row"/>
+                <field name="promin_prom_valores" type="measure"/>
+                <field name="promin_prom_generales" type="measure"/>
+                <field name="promin_prom_especificas" type="measure"/>
+                <field name="promin_prom_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="promin_desempeno_graph" model="ir.ui.view">
+        <field name="name">survey.user_input.graph.promin.desempeno</field>
+        <field name="model">survey.user_input</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <graph string="Promedio por área" type="bar">
+                <field name="promin_departamento_id"/>
+                <field name="promin_prom_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="promin_desempeno_form" model="ir.ui.view">
+        <field name="name">survey.user_input.form.promin.desempeno</field>
+        <field name="model">survey.user_input</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Evaluación de desempeño" create="0">
+                <header>
+                    <button name="action_promin_enviar_enlace" type="object" string="Enviar enlace al jefe"
+                            invisible="state == 'done'"/>
+                    <button name="action_promin_abrir_evaluacion" type="object" string="Abrir evaluación"
+                            invisible="state == 'done'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="survey_id"/>
+                            <field name="promin_empleado_id"/>
+                            <field name="promin_departamento_id"/>
+                            <field name="promin_evaluador_id"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="end_datetime"/>
+                            <field name="promin_prom_valores"/>
+                            <field name="promin_prom_generales"/>
+                            <field name="promin_prom_especificas"/>
+                            <field name="promin_prom_total"/>
+                        </group>
+                    </group>
+                    <field name="user_input_line_ids" readonly="1">
+                        <list>
+                            <field name="question_id"/>
+                            <field name="matrix_row_id"/>
+                            <field name="suggested_answer_id"/>
+                            <field name="value_char_box"/>
+                            <field name="value_text_box"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="promin_desempeno_search" model="ir.ui.view">
+        <field name="name">survey.user_input.search.promin.desempeno</field>
+        <field name="model">survey.user_input</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Evaluaciones de desempeño">
+                <field name="promin_empleado_id"/>
+                <field name="promin_evaluador_id"/>
+                <field name="promin_departamento_id"/>
+                <field name="survey_id"/>
+                <filter string="Pendientes" name="pendientes" domain="[('state', '!=', 'done')]"/>
+                <filter string="Completadas" name="completadas" domain="[('state', '=', 'done')]"/>
+                <group>
+                    <filter string="Evaluación" name="g_survey" context="{'group_by': 'survey_id'}"/>
+                    <filter string="Área del evaluado" name="g_area" context="{'group_by': 'promin_departamento_id'}"/>
+                    <filter string="Jefe evaluador" name="g_jefe" context="{'group_by': 'promin_evaluador_id'}"/>
+                    <filter string="Estado" name="g_estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_desempeno_resultados" model="ir.actions.act_window">
+        <field name="name">Evaluaciones de desempeño</field>
+        <field name="res_model">survey.user_input</field>
+        <field name="view_mode">list,pivot,graph,form</field>
+        <field name="domain">[('survey_id.promin_tipo', '=', 'desempeno'), ('test_entry', '=', False)]</field>
+        <field name="search_view_id" ref="promin_desempeno_search"/>
+        <field name="context">{'search_default_g_survey': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('promin_desempeno_list')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('promin_desempeno_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('promin_desempeno_graph')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('promin_desempeno_form')})]"/>
+    </record>
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_employee_acceso_list" model="ir.ui.view">
+        <field name="name">hr.employee.list.promin.acceso.portal</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Acceso al Portal del Empleado" create="0" delete="0" edit="0">
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="work_email"/>
+                <field name="private_email" optional="hide"/>
+                <field name="promin_portal_user_id"/>
+                <field name="promin_portal_dato_count" string="Datos por aprobar"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_employee_acceso_search" model="ir.ui.view">
+        <field name="name">hr.employee.search.promin.acceso.portal</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Empleados">
+                <field name="name"/>
+                <field name="department_id"/>
+                <filter string="Con acceso al portal" name="con_acceso" domain="[('promin_portal_user_id', '!=', False)]"/>
+                <filter string="Sin acceso al portal" name="sin_acceso" domain="[('promin_portal_user_id', '=', False)]"/>
+                <group>
+                    <filter string="Departamento" name="g_dep" context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_acceso_portal" model="ir.actions.act_window">
+        <field name="name">Accesos al Portal del Empleado</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="promin_employee_acceso_search"/>
+        <field name="context">{'search_default_sin_acceso': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('promin_employee_acceso_list')})]"/>
+    </record>
+</odoo>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_payslip_lectura_list" model="ir.ui.view">
+        <field name="name">hr.payslip.list.promin.lectura</field>
+        <field name="model">hr.payslip</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Lectura de boletas en el portal" create="0" edit="0" delete="0"
+                  decoration-success="promin_primera_lectura" decoration-warning="not promin_primera_lectura">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state" widget="badge"/>
+                <field name="promin_primera_lectura"/>
+                <field name="promin_lecturas"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_payslip_lectura_search" model="ir.ui.view">
+        <field name="name">hr.payslip.search.promin.lectura</field>
+        <field name="model">hr.payslip</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Lectura de boletas">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <filter string="Ya abiertas" name="abiertas" domain="[('promin_primera_lectura', '!=', False)]"/>
+                <filter string="Sin abrir" name="sin_abrir" domain="[('promin_primera_lectura', '=', False)]"/>
+                <group>
+                    <filter string="Empleado" name="g_emp" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Periodo" name="g_periodo" context="{'group_by': 'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_payslip_lectura" model="ir.actions.act_window">
+        <field name="name">Lectura de boletas</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('state', 'in', ('validated', 'paid'))]</field>
+        <field name="search_view_id" ref="promin_payslip_lectura_search"/>
+        <field name="context">{'search_default_sin_abrir': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('promin_payslip_lectura_list')})]"/>
+    </record>
+</odoo>

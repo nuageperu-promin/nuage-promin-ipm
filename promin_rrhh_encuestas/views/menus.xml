@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_promin_rrhh_root" name="Evaluaciones PROMIN" sequence="75"
+              web_icon="promin_rrhh_encuestas,static/description/icon.png"
+              groups="survey.group_survey_manager"/>
+    <menuitem id="menu_promin_desempeno" name="Desempeño" parent="menu_promin_rrhh_root" sequence="10"/>
+    <menuitem id="menu_promin_desempeno_generar" name="Generar evaluaciones" parent="menu_promin_desempeno"
+              sequence="20" action="action_promin_evaluacion_wizard"/>
+    <menuitem id="menu_promin_desempeno_resultados" name="Resultados" parent="menu_promin_desempeno"
+              sequence="10" action="action_promin_desempeno_resultados"/>
+    <menuitem id="menu_promin_clima" name="Clima laboral" parent="menu_promin_rrhh_root" sequence="20"/>
+    <menuitem id="menu_promin_clima_resultados" name="Resultados" parent="menu_promin_clima"
+              sequence="10" action="action_promin_clima_resultados"/>
+</odoo>

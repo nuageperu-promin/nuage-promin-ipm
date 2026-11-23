@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="promin_survey_desempeno" model="survey.survey">
+        <field name="title">Evaluación de Desempeño 2026 - 1er semestre (PROMIN)</field>
+        <field name="promin_tipo">desempeno</field>
+        <field name="survey_type">survey</field>
+        <field name="access_mode">token</field>
+        <field name="users_login_required" eval="False"/>
+        <field name="questions_layout">page_per_section</field>
+        <field name="scoring_type">no_scoring</field>
+        <field name="users_can_go_back" eval="True"/>
+        <field name="description">&lt;p&gt;La presente evaluación busca &lt;b&gt;medir de manera objetiva las competencias blandas del colaborador&lt;/b&gt;. Para una adecuada calificación, los jefes deben recordar situaciones en donde se pongan de manifiesto las conductas descritas en la presente encuesta.&lt;/p&gt;&lt;p&gt;&lt;b&gt;NOTA:&lt;/b&gt; Por ningún motivo se debe calificar en función a la personalidad del colaborador, sino en función a la conducta mostrada.&lt;/p&gt;</field>
+        <field name="description_done">&lt;p&gt;Gracias por completar la evaluación.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_desempeno_sec1" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">1. Datos de la evaluación</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">1</field>
+        <field name="description">&lt;p&gt;Estos datos se completan automáticamente al generar la evaluación.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q2" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Área</field>
+        <field name="question_type">char_box</field>
+        <field name="sequence">2</field>
+        <field name="constr_mandatory" eval="False"/>
+        <field name="promin_precarga">area</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q3" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Nombre del personal evaluado</field>
+        <field name="question_type">char_box</field>
+        <field name="sequence">3</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_precarga">evaluado</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q4" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Nombre del jefe evaluador</field>
+        <field name="question_type">char_box</field>
+        <field name="sequence">4</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_precarga">evaluador</field>
+    </record>
+
+    <record id="promin_survey_desempeno_sec5" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">2. Valores</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">5</field>
+        <field name="description">&lt;p&gt;En el listado se muestran los conceptos de nuestros valores y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q6" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Califique cada valor</field>
+        <field name="question_type">matrix</field>
+        <field name="sequence">6</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
+        <field name="matrix_subtype">simple</field>
+        <field name="promin_bloque">valores</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q6_c1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">1</field>
+        <field name="answer_score">1</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_c2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">2</field>
+        <field name="answer_score">2</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_c3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">3</field>
+        <field name="answer_score">3</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_c4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">4</field>
+        <field name="answer_score">4</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_c5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">5</field>
+        <field name="answer_score">5</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_r1" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">RESPETO: Valora los intereses y necesidades del otro que es diferente a uno.</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_r2" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">COMPROMISO: Asume y transmite los valores institucionales. En su comportamiento demuestra sentido de pertenencia a la empresa.</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_r3" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">TRABAJO EN EQUIPO Y COLABORACIÓN: Coopera con los compañeros en las labores del área y de la empresa en general propiciando un ambiente cordial y de respeto.</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_desempeno_q6_r4" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q6"/>
+        <field name="value">ORIENTACIÓN AL CLIENTE INTERNO Y EXTERNO: Demuestra actitud de servicio y busca satisfacer las necesidades de los clientes.</field>
+        <field name="sequence">4</field>
+    </record>
+
+    <record id="promin_survey_desempeno_sec7" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">3. Competencias generales</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">7</field>
+        <field name="description">&lt;p&gt;En el listado se muestran los conceptos de las competencias que tenemos en la empresa y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q8" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Califique cada competencia</field>
+        <field name="question_type">matrix</field>
+        <field name="sequence">8</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
+        <field name="matrix_subtype">simple</field>
+        <field name="promin_bloque">generales</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q8_c1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">1</field>
+        <field name="answer_score">1</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_c2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">2</field>
+        <field name="answer_score">2</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_c3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">3</field>
+        <field name="answer_score">3</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_c4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">4</field>
+        <field name="answer_score">4</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_c5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">5</field>
+        <field name="answer_score">5</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r1" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">CAPACIDAD DE ANÁLISIS Y TOMA DE DECISIONES: Muestra criterio para tomar decisiones en función de los procesos y procedimientos de la empresa.</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r2" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">ORIENTACIÓN A RESULTADOS: Muestra preocupación y emplea de manera efectiva los recursos para cumplir con las metas establecidas por la empresa.</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r3" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">PLANIFICACIÓN Y ORGANIZACIÓN: Entrega los trabajos de acuerdo a la programación establecida.</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r4" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">CALIDAD: Realiza su trabajo de acuerdo a los requerimientos en términos de contenido, exactitud, presentación y atención.</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r5" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">RESPONSABILIDAD: Realiza las funciones y deberes propios del cargo sin que requiera supervisión y control permanentes y asumiendo las consecuencias que deriven de su trabajo.</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r6" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">CONOCIMIENTO DEL NEGOCIO: Genera credibilidad y confianza frente al manejo de información, aplicando con destreza los conocimientos necesarios para el cumplimiento de las actividades y funciones del empleo.</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r7" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">INICIATIVA Y PROACTIVIDAD: Resuelve los imprevistos de su trabajo y mejora los procedimientos.</field>
+        <field name="sequence">7</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r8" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">COMUNICACIÓN: Expresa sus ideas de manera oportuna y toma en cuenta el impacto que tendrá sus comentarios en los demás.</field>
+        <field name="sequence">8</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r9" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">NEGOCIACIÓN: Busca llegar a acuerdos que beneficien a todas las partes.</field>
+        <field name="sequence">9</field>
+    </record>
+    <record id="promin_survey_desempeno_q8_r10" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q8"/>
+        <field name="value">TRABAJO BAJO PRESIÓN: Mantiene el control de sus emociones en situaciones de elevada presión sin que afecte su productividad y se adapta a los cambios.</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="promin_survey_desempeno_sec9" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">4. Competencias específicas (solo si el evaluado es jefe)</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">9</field>
+        <field name="description">&lt;p&gt;Califique esta sección &lt;b&gt;solo cuando el colaborador evaluado ejerce como jefe&lt;/b&gt;; en caso contrario, déjela en blanco.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q10" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Califique cada competencia específica</field>
+        <field name="question_type">matrix</field>
+        <field name="sequence">10</field>
+        <field name="constr_mandatory" eval="False"/>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
+        <field name="matrix_subtype">simple</field>
+        <field name="promin_bloque">especificas</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q10_c1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">1</field>
+        <field name="answer_score">1</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_c2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">2</field>
+        <field name="answer_score">2</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_c3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">3</field>
+        <field name="answer_score">3</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_c4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">4</field>
+        <field name="answer_score">4</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_c5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">5</field>
+        <field name="answer_score">5</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_r1" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">LIDERAZGO (SOLO PARA JEFES): Establece objetivos a su equipo, identifica oportunidades de mejora y delega de manera adecuada.</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_desempeno_q10_r2" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_desempeno_q10"/>
+        <field name="value">PENSAMIENTO ESTRATÉGICO (SOLO PARA JEFES): Muestra habilidad para comprender los cambios del entorno y generar estrategias que permitan la continuidad del negocio.</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="promin_survey_desempeno_sec11" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">5. Fortaleza y área de mejora</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">11</field>
+    </record>
+
+    <record id="promin_survey_desempeno_q12" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Indique UNA FORTALEZA que tiene el colaborador.</field>
+        <field name="question_type">text_box</field>
+        <field name="sequence">12</field>
+        <field name="constr_mandatory" eval="True"/>
+    </record>
+
+    <record id="promin_survey_desempeno_q13" model="survey.question">
+        <field name="survey_id" ref="promin_survey_desempeno"/>
+        <field name="title">Indique UN ÁREA DE MEJORA que tiene el colaborador.</field>
+        <field name="question_type">text_box</field>
+        <field name="sequence">13</field>
+        <field name="constr_mandatory" eval="True"/>
+    </record>
+
+</odoo>

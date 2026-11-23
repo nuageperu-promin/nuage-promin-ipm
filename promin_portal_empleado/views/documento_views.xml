@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_portal_documento_list" model="ir.ui.view">
+        <field name="name">promin.portal.documento.list</field>
+        <field name="model">promin.portal.documento</field>
+        <field name="arch" type="xml">
+            <list string="Documentos del empleado">
+                <field name="employee_id"/>
+                <field name="tipo"/>
+                <field name="name"/>
+                <field name="fecha"/>
+                <field name="publicado"/>
+                <field name="primera_lectura"/>
+                <field name="lecturas"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_portal_documento_form" model="ir.ui.view">
+        <field name="name">promin.portal.documento.form</field>
+        <field name="model">promin.portal.documento</field>
+        <field name="arch" type="xml">
+            <form string="Documento del empleado">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="tipo"/>
+                            <field name="name"/>
+                            <field name="fecha"/>
+                        </group>
+                        <group>
+                            <field name="archivo" filename="archivo_nombre"/>
+                            <field name="archivo_nombre" invisible="1"/>
+                            <field name="publicado"/>
+                            <field name="primera_lectura"/>
+                            <field name="lecturas"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="promin_portal_documento_search" model="ir.ui.view">
+        <field name="name">promin.portal.documento.search</field>
+        <field name="model">promin.portal.documento</field>
+        <field name="arch" type="xml">
+            <search string="Documentos del empleado">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <filter string="Publicados" name="publicados" domain="[('publicado', '=', True)]"/>
+                <filter string="Sin publicar" name="sin_publicar" domain="[('publicado', '=', False)]"/>
+                <filter string="No abiertos aún" name="no_abiertos"
+                        domain="[('publicado', '=', True), ('primera_lectura', '=', False)]"/>
+                <group>
+                    <filter string="Empleado" name="g_emp" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Tipo" name="g_tipo" context="{'group_by': 'tipo'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_portal_documento" model="ir.actions.act_window">
+        <field name="name">Contratos y documentos</field>
+        <field name="res_model">promin.portal.documento</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="promin_portal_documento_search"/>
+    </record>
+</odoo>

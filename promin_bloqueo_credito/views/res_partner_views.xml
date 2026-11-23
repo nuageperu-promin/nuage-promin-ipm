@@ -6,7 +6,15 @@
         <field name="inherit_id" ref="account.view_partner_property_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='credit_limit']/ancestor::group[1]" position="inside">
+                <field name="currency_id" invisible="1"/>
                 <field name="promin_bloquear_venta"/>
+                <label for="promin_usa_limite_compras"/>
+                <div class="o_row">
+                    <field name="promin_usa_limite_compras"/>
+                    <field name="promin_limite_compras" widget="monetary" options="{'currency_field': 'currency_id'}"
+                           invisible="not promin_usa_limite_compras"/>
+                </div>
+                <field name="promin_bloquear_compra"/>
             </xpath>
         </field>
     </record>

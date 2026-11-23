@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_evaluacion_wizard_form" model="ir.ui.view">
+        <field name="name">promin.evaluacion.wizard.form</field>
+        <field name="model">promin.evaluacion.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar evaluaciones de desempeño">
+                <field name="state" invisible="1"/>
+                <group invisible="state != 'config'">
+                    <group>
+                        <field name="survey_id" options="{'no_create': True}"/>
+                        <field name="enviar_correo"/>
+                    </group>
+                    <group>
+                        <field name="department_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="employee_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <div class="text-muted" invisible="state != 'config'">
+                    Se crea una evaluación por empleado, dirigida a su jefe (campo «Responsable» de la ficha del
+                    empleado). Las evaluaciones ya generadas para ese par evaluado-jefe no se duplican.
+                </div>
+                <group invisible="state != 'done'">
+                    <field name="resultado" nolabel="1" colspan="2"/>
+                </group>
+                <footer>
+                    <button string="Generar evaluaciones" name="action_generar" type="object"
+                            class="btn-primary" invisible="state != 'config'"/>
+                    <button string="Ver evaluaciones" name="action_ver_evaluaciones" type="object"
+                            class="btn-primary" invisible="state != 'done'"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_promin_evaluacion_wizard" model="ir.actions.act_window">
+        <field name="name">Generar evaluaciones de desempeño</field>
+        <field name="res_model">promin.evaluacion.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

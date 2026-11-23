@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_portal_dato_list" model="ir.ui.view">
+        <field name="name">promin.portal.dato.list</field>
+        <field name="model">promin.portal.dato</field>
+        <field name="arch" type="xml">
+            <list string="Datos del Portal del Empleado" decoration-warning="state == 'pendiente'"
+                  decoration-danger="state == 'rechazado'" decoration-muted="state == 'reemplazado'">
+                <field name="employee_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="tipo"/>
+                <field name="name" string="Detalle"/>
+                <field name="create_date" string="Enviado" optional="show"/>
+                <field name="state" widget="badge"/>
+                <field name="revisado_por_id" optional="hide"/>
+                <field name="fecha_revision" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_portal_dato_form" model="ir.ui.view">
+        <field name="name">promin.portal.dato.form</field>
+        <field name="model">promin.portal.dato</field>
+        <field name="arch" type="xml">
+            <form string="Dato del empleado">
+                <header>
+                    <button name="action_aprobar" type="object" string="Aprobar" class="btn-primary"
+                            invisible="state != 'pendiente'"/>
+                    <button name="action_rechazar" type="object" string="Rechazar" invisible="state != 'pendiente'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pendiente,aprobado"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state != 'pendiente'"/>
+                            <field name="tipo" readonly="state != 'pendiente'"/>
+                            <field name="nombre" readonly="state != 'pendiente'"/>
+                            <field name="entidad" readonly="state != 'pendiente'"
+                                   invisible="tipo not in ('estudio', 'experiencia')"/>
+                            <field name="numero" readonly="state != 'pendiente'"
+                                   invisible="tipo not in ('dni', 'derechohabiente', 'cul')"/>
+                            <field name="parentesco" readonly="state != 'pendiente'"
+                                   invisible="tipo != 'derechohabiente'"/>
+                        </group>
+                        <group>
+                            <field name="fecha_documento" readonly="state != 'pendiente'"
+                                   invisible="tipo not in ('derechohabiente', 'cul')"/>
+                            <field name="fecha_inicio" readonly="state != 'pendiente'"
+                                   invisible="tipo not in ('estudio', 'experiencia')"/>
+                            <field name="fecha_fin" readonly="state != 'pendiente'"
+                                   invisible="tipo not in ('estudio', 'experiencia')"/>
+                            <field name="reemplaza_id" readonly="1" invisible="not reemplaza_id"/>
+                            <field name="revisado_por_id"/>
+                            <field name="fecha_revision"/>
+                        </group>
+                    </group>
+                    <group invisible="tipo != 'experiencia'">
+                        <field name="detalle" readonly="state != 'pendiente'"/>
+                    </group>
+                    <group string="Archivos adjuntos">
+                        <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"/>
+                    </group>
+                    <group string="Revisión de RRHH" invisible="state not in ('pendiente', 'rechazado')">
+                        <field name="motivo_rechazo" placeholder="Si rechaza, indique el motivo; el empleado lo verá en su portal."
+                               readonly="state == 'rechazado'"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="promin_portal_dato_search" model="ir.ui.view">
+        <field name="name">promin.portal.dato.search</field>
+        <field name="model">promin.portal.dato</field>
+        <field name="arch" type="xml">
+            <search string="Datos del Portal del Empleado">
+                <field name="employee_id"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <filter string="Pendientes" name="pendientes" domain="[('state', '=', 'pendiente')]"/>
+                <filter string="Aprobados" name="aprobados" domain="[('state', '=', 'aprobado')]"/>
+                <filter string="Rechazados" name="rechazados" domain="[('state', '=', 'rechazado')]"/>
+                <group>
+                    <filter string="Empleado" name="g_emp" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Tipo" name="g_tipo" context="{'group_by': 'tipo'}"/>
+                    <filter string="Estado" name="g_estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_portal_dato" model="ir.actions.act_window">
+        <field name="name">Datos por aprobar</field>
+        <field name="res_model">promin.portal.dato</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="promin_portal_dato_search"/>
+        <field name="context">{'search_default_pendientes': 1}</field>
+    </record>
+</odoo>

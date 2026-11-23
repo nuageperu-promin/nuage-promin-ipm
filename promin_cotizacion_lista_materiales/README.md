@@ -11,3 +11,8 @@ Lista de materiales (BoM) en la impresión de la cotización. Solicitado por el 
 - Aplica al PDF estándar de Odoo (también el del portal y el adjunto del correo).
 
 Depende de `sale` y `mrp` (Fabricación). El vendedor no necesita permisos de Fabricación: la BoM se lee internamente.
+
+## Check «Imp. Cot» en la lista de materiales (1.2.0)
+
+- En la BoM (Fabricación > Listas de materiales), pestaña **Componentes**, columna **Imp. Cot** (por defecto desactivada).
+- La cotización con **Se imprime Lista de Materiales** imprime **solo** los componentes con «Imp. Cot» activo. Si ninguno lo tiene, no se imprime tabla para ese producto.

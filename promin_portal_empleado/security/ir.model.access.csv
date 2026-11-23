@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_promin_portal_dato_user,promin.portal.dato user,model_promin_portal_dato,hr.group_hr_user,1,1,1,0
+access_promin_portal_dato_manager,promin.portal.dato manager,model_promin_portal_dato,hr.group_hr_manager,1,1,1,1
+access_promin_portal_documento_user,promin.portal.documento user,model_promin_portal_documento,hr.group_hr_user,1,1,1,0
+access_promin_portal_documento_manager,promin.portal.documento manager,model_promin_portal_documento,hr.group_hr_manager,1,1,1,1

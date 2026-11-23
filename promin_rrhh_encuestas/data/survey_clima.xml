@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="promin_survey_clima" model="survey.survey">
+        <field name="title">Encuesta de Clima Laboral - Proveedores Mineros</field>
+        <field name="promin_tipo">clima</field>
+        <field name="survey_type">survey</field>
+        <field name="access_mode">public</field>
+        <field name="users_login_required" eval="False"/>
+        <field name="questions_layout">page_per_section</field>
+        <field name="scoring_type">no_scoring</field>
+        <field name="users_can_go_back" eval="True"/>
+        <field name="description">&lt;p&gt;Esta encuesta es &lt;b&gt;confidencial&lt;/b&gt;. Si nos brinda la &lt;b&gt;información real&lt;/b&gt; nos permitirá mejorar. Por favor, lea atentamente y responda con mucha honestidad.&lt;/p&gt;</field>
+        <field name="description_done">&lt;p&gt;Le agradecemos por el tiempo brindado en el llenado de la encuesta.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_clima_sec1" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">1. Información general</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">1</field>
+        <field name="description">&lt;p&gt;Esta encuesta es &lt;b&gt;CONFIDENCIAL&lt;/b&gt;, y si nos brinda la &lt;b&gt;INFORMACIÓN REAL&lt;/b&gt; nos permitirá mejorar. Por favor, &lt;b&gt;LEA ATENTAMENTE&lt;/b&gt; y responda con mucha honestidad.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_clima_q2" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Área</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">2</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_es_area" eval="True"/>
+        <field name="promin_segmento">area</field>
+    </record>
+
+    <record id="promin_survey_clima_q3" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Puesto</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">3</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_segmento">puesto</field>
+    </record>
+
+    <record id="promin_survey_clima_q3_a1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Jefe</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q3_a2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Gestor</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q3_a3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Supervisor</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q3_a4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Coordinador</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q3_a5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Ejecutivo</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_clima_q3_a6" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Asistente</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="promin_survey_clima_q3_a7" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Auxiliar</field>
+        <field name="sequence">7</field>
+    </record>
+    <record id="promin_survey_clima_q3_a8" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q3"/>
+        <field name="value">Operario</field>
+        <field name="sequence">8</field>
+    </record>
+
+    <record id="promin_survey_clima_q4" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Sexo</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">4</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_segmento">sexo</field>
+    </record>
+
+    <record id="promin_survey_clima_q4_a1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q4"/>
+        <field name="value">Femenino</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q4_a2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q4"/>
+        <field name="value">Masculino</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="promin_survey_clima_q5" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Edad</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">5</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_segmento">edad</field>
+    </record>
+
+    <record id="promin_survey_clima_q5_a1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">18 - 20</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q5_a2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">21 - 30</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q5_a3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">31 - 40</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q5_a4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">41 - 50</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q5_a5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">51 - 60</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_clima_q5_a6" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q5"/>
+        <field name="value">61 a más</field>
+        <field name="sequence">6</field>
+    </record>
+
+    <record id="promin_survey_clima_q6" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Nivel máximo de estudios</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">6</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_segmento">estudios</field>
+    </record>
+
+    <record id="promin_survey_clima_q6_a1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Primaria</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q6_a2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Secundaria</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q6_a3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Instituto</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q6_a4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Universitario</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q6_a5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Especialidad o Diplomado</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_clima_q6_a6" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q6"/>
+        <field name="value">Maestría o Doctorado</field>
+        <field name="sequence">6</field>
+    </record>
+
+    <record id="promin_survey_clima_q7" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Antigüedad en la organización</field>
+        <field name="question_type">simple_choice</field>
+        <field name="sequence">7</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="promin_segmento">antiguedad</field>
+    </record>
+
+    <record id="promin_survey_clima_q7_a1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q7"/>
+        <field name="value">Menos de 3 meses</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q7_a2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q7"/>
+        <field name="value">De 3 a 11 meses</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q7_a3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q7"/>
+        <field name="value">De 1 a 5 años</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q7_a4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q7"/>
+        <field name="value">De 5 a 10 años</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q7_a5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q7"/>
+        <field name="value">Más de 10 años</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="promin_survey_clima_sec8" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">2. Clima y cultura organizacional</field>
+        <field name="is_page" eval="True"/>
+        <field name="sequence">8</field>
+        <field name="description">&lt;p&gt;No existen preguntas buenas ni malas, solo requerimos que sean honestas y sinceras para plantear mejoras en la empresa.&lt;/p&gt;</field>
+    </record>
+
+    <record id="promin_survey_clima_q9" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Califique cada afirmación</field>
+        <field name="question_type">matrix</field>
+        <field name="sequence">9</field>
+        <field name="constr_mandatory" eval="True"/>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;1 = Nunca &amp;nbsp; 2 = Casi nunca &amp;nbsp; 3 = Algunas veces &amp;nbsp; 4 = Casi siempre &amp;nbsp; 5 = Siempre&lt;/b&gt;&lt;/p&gt;</field>
+        <field name="matrix_subtype">simple</field>
+    </record>
+
+    <record id="promin_survey_clima_q9_c1" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">1</field>
+        <field name="answer_score">1</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q9_c2" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">2</field>
+        <field name="answer_score">2</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q9_c3" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">3</field>
+        <field name="answer_score">3</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q9_c4" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">4</field>
+        <field name="answer_score">4</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q9_c5" model="survey.question.answer">
+        <field name="question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">5</field>
+        <field name="answer_score">5</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_clima_q9_r1" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">1. ¿Conoce la misión, visión, valores y objetivos de la empresa?</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="promin_survey_clima_q9_r2" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">2. ¿Las personas están dispuestas a hacer un esfuerzo extra para hacer su trabajo?</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="promin_survey_clima_q9_r3" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">3. ¿Mi jefe escucha mis opiniones y me hace partícipe de algunas decisiones del área?</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="promin_survey_clima_q9_r4" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">4. ¿Considera que su jefe inmediato fomenta que exista un clima de armonía en su área?</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="promin_survey_clima_q9_r5" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">5. Cuando ingresas a la organización, ¿se te hace sentir bienvenido?</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="promin_survey_clima_q9_r6" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">6. En mi equipo de trabajo, ¿solucionar el problema es más importante que encontrar algún culpable?</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="promin_survey_clima_q9_r7" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">7. ¿Mantiene una buena relación de trabajo con sus compañeros, donde prima el compañerismo y trabajo colaborativo?</field>
+        <field name="sequence">7</field>
+    </record>
+    <record id="promin_survey_clima_q9_r8" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">8. ¿Considera que la información que recibe para desempeñar su trabajo se le proporciona a través de los medios adecuados?</field>
+        <field name="sequence">8</field>
+    </record>
+    <record id="promin_survey_clima_q9_r9" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">9. ¿Los jefes me mantienen informado acerca de temas y cambios importantes?</field>
+        <field name="sequence">9</field>
+    </record>
+    <record id="promin_survey_clima_q9_r10" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">10. ¿Se alienta a los empleados a buscar nuevas formas de resolver problemas?</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="promin_survey_clima_q9_r11" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">11. ¿Su jefe inmediato le proporciona las instrucciones necesarias para realizar su trabajo de forma autónoma?</field>
+        <field name="sequence">11</field>
+    </record>
+    <record id="promin_survey_clima_q9_r12" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">12. ¿Las palabras de los jefes coinciden con sus acciones?</field>
+        <field name="sequence">12</field>
+    </record>
+    <record id="promin_survey_clima_q9_r13" model="survey.question.answer">
+        <field name="matrix_question_id" ref="promin_survey_clima_q9"/>
+        <field name="value">13. ¿Considera que su jefe se guía del desempeño de cada colaborador más que en rumores que se puedan decir?</field>
+        <field name="sequence">13</field>
+    </record>
+
+    <record id="promin_survey_clima_q10" model="survey.question">
+        <field name="survey_id" ref="promin_survey_clima"/>
+        <field name="title">Comentarios y sugerencias para mejorar el clima laboral (opcional)</field>
+        <field name="question_type">text_box</field>
+        <field name="sequence">10</field>
+        <field name="constr_mandatory" eval="False"/>
+    </record>
+
+    <!-- Carga los departamentos de RRHH como opciones de la pregunta «Área» -->
+    <function model="survey.survey" name="promin_sync_areas" eval="[[ref('promin_survey_clima')]]"/>
+</odoo>
