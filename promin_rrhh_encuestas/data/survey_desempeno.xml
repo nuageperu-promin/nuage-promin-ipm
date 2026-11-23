@@ -9,8 +9,8 @@
         <field name="questions_layout">page_per_section</field>
         <field name="scoring_type">no_scoring</field>
         <field name="users_can_go_back" eval="True"/>
-        <field name="description" type="html"><![CDATA[<p>La presente evaluación busca <b>medir de manera objetiva las competencias blandas del colaborador</b>. Para una adecuada calificación, los jefes deben recordar situaciones en donde se pongan de manifiesto las conductas descritas en la presente encuesta.</p><p><b>NOTA:</b> Por ningún motivo se debe calificar en función a la personalidad del colaborador, sino en función a la conducta mostrada.</p>]]></field>
-        <field name="description_done" type="html"><![CDATA[<p>Gracias por completar la evaluación.</p>]]></field>
+        <field name="description">&lt;p&gt;La presente evaluación busca &lt;b&gt;medir de manera objetiva las competencias blandas del colaborador&lt;/b&gt;. Para una adecuada calificación, los jefes deben recordar situaciones en donde se pongan de manifiesto las conductas descritas en la presente encuesta.&lt;/p&gt;&lt;p&gt;&lt;b&gt;NOTA:&lt;/b&gt; Por ningún motivo se debe calificar en función a la personalidad del colaborador, sino en función a la conducta mostrada.&lt;/p&gt;</field>
+        <field name="description_done">&lt;p&gt;Gracias por completar la evaluación.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_desempeno_sec1" model="survey.question">
@@ -18,7 +18,7 @@
         <field name="title">1. Datos de la evaluación</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">1</field>
-        <field name="description" type="html"><![CDATA[<p>Estos datos se completan automáticamente al generar la evaluación.</p>]]></field>
+        <field name="description">&lt;p&gt;Estos datos se completan automáticamente al generar la evaluación.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_desempeno_q2" model="survey.question">
@@ -53,7 +53,7 @@
         <field name="title">2. Valores</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">5</field>
-        <field name="description" type="html"><![CDATA[<p>En el listado se muestran los conceptos de nuestros valores y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.</p>]]></field>
+        <field name="description">&lt;p&gt;En el listado se muestran los conceptos de nuestros valores y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_desempeno_q6" model="survey.question">
@@ -62,7 +62,7 @@
         <field name="question_type">matrix</field>
         <field name="sequence">6</field>
         <field name="constr_mandatory" eval="True"/>
-        <field name="description" type="html"><![CDATA[<p>Criterio de calificación: <b>Muy bajo = 1 &nbsp; Bajo = 2 &nbsp; Moderado = 3 &nbsp; Alto = 4 &nbsp; Muy alto = 5</b></p>]]></field>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
         <field name="matrix_subtype">simple</field>
         <field name="promin_bloque">valores</field>
     </record>
@@ -123,7 +123,7 @@
         <field name="title">3. Competencias generales</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">7</field>
-        <field name="description" type="html"><![CDATA[<p>En el listado se muestran los conceptos de las competencias que tenemos en la empresa y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.</p>]]></field>
+        <field name="description">&lt;p&gt;En el listado se muestran los conceptos de las competencias que tenemos en la empresa y se debe calificar cómo cada colaborador se ha desempeñado bajo estos lineamientos.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_desempeno_q8" model="survey.question">
@@ -132,7 +132,7 @@
         <field name="question_type">matrix</field>
         <field name="sequence">8</field>
         <field name="constr_mandatory" eval="True"/>
-        <field name="description" type="html"><![CDATA[<p>Criterio de calificación: <b>Muy bajo = 1 &nbsp; Bajo = 2 &nbsp; Moderado = 3 &nbsp; Alto = 4 &nbsp; Muy alto = 5</b></p>]]></field>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
         <field name="matrix_subtype">simple</field>
         <field name="promin_bloque">generales</field>
     </record>
@@ -223,7 +223,7 @@
         <field name="title">4. Competencias específicas (solo si el evaluado es jefe)</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">9</field>
-        <field name="description" type="html"><![CDATA[<p>Califique esta sección <b>solo cuando el colaborador evaluado ejerce como jefe</b>; en caso contrario, déjela en blanco.</p>]]></field>
+        <field name="description">&lt;p&gt;Califique esta sección &lt;b&gt;solo cuando el colaborador evaluado ejerce como jefe&lt;/b&gt;; en caso contrario, déjela en blanco.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_desempeno_q10" model="survey.question">
@@ -232,7 +232,7 @@
         <field name="question_type">matrix</field>
         <field name="sequence">10</field>
         <field name="constr_mandatory" eval="False"/>
-        <field name="description" type="html"><![CDATA[<p>Criterio de calificación: <b>Muy bajo = 1 &nbsp; Bajo = 2 &nbsp; Moderado = 3 &nbsp; Alto = 4 &nbsp; Muy alto = 5</b></p>]]></field>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;Muy bajo = 1 &amp;nbsp; Bajo = 2 &amp;nbsp; Moderado = 3 &amp;nbsp; Alto = 4 &amp;nbsp; Muy alto = 5&lt;/b&gt;&lt;/p&gt;</field>
         <field name="matrix_subtype">simple</field>
         <field name="promin_bloque">especificas</field>
     </record>

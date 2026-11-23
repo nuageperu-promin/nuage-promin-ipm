@@ -9,8 +9,8 @@
         <field name="questions_layout">page_per_section</field>
         <field name="scoring_type">no_scoring</field>
         <field name="users_can_go_back" eval="True"/>
-        <field name="description" type="html"><![CDATA[<p>Esta encuesta es <b>confidencial</b>. Si nos brinda la <b>información real</b> nos permitirá mejorar. Por favor, lea atentamente y responda con mucha honestidad.</p>]]></field>
-        <field name="description_done" type="html"><![CDATA[<p>Le agradecemos por el tiempo brindado en el llenado de la encuesta.</p>]]></field>
+        <field name="description">&lt;p&gt;Esta encuesta es &lt;b&gt;confidencial&lt;/b&gt;. Si nos brinda la &lt;b&gt;información real&lt;/b&gt; nos permitirá mejorar. Por favor, lea atentamente y responda con mucha honestidad.&lt;/p&gt;</field>
+        <field name="description_done">&lt;p&gt;Le agradecemos por el tiempo brindado en el llenado de la encuesta.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_clima_sec1" model="survey.question">
@@ -18,7 +18,7 @@
         <field name="title">1. Información general</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">1</field>
-        <field name="description" type="html"><![CDATA[<p>Esta encuesta es <b>CONFIDENCIAL</b>, y si nos brinda la <b>INFORMACIÓN REAL</b> nos permitirá mejorar. Por favor, <b>LEA ATENTAMENTE</b> y responda con mucha honestidad.</p>]]></field>
+        <field name="description">&lt;p&gt;Esta encuesta es &lt;b&gt;CONFIDENCIAL&lt;/b&gt;, y si nos brinda la &lt;b&gt;INFORMACIÓN REAL&lt;/b&gt; nos permitirá mejorar. Por favor, &lt;b&gt;LEA ATENTAMENTE&lt;/b&gt; y responda con mucha honestidad.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_clima_q2" model="survey.question">
@@ -221,7 +221,7 @@
         <field name="title">2. Clima y cultura organizacional</field>
         <field name="is_page" eval="True"/>
         <field name="sequence">8</field>
-        <field name="description" type="html"><![CDATA[<p>No existen preguntas buenas ni malas, solo requerimos que sean honestas y sinceras para plantear mejoras en la empresa.</p>]]></field>
+        <field name="description">&lt;p&gt;No existen preguntas buenas ni malas, solo requerimos que sean honestas y sinceras para plantear mejoras en la empresa.&lt;/p&gt;</field>
     </record>
 
     <record id="promin_survey_clima_q9" model="survey.question">
@@ -230,7 +230,7 @@
         <field name="question_type">matrix</field>
         <field name="sequence">9</field>
         <field name="constr_mandatory" eval="True"/>
-        <field name="description" type="html"><![CDATA[<p>Criterio de calificación: <b>1 = Nunca &nbsp; 2 = Casi nunca &nbsp; 3 = Algunas veces &nbsp; 4 = Casi siempre &nbsp; 5 = Siempre</b></p>]]></field>
+        <field name="description">&lt;p&gt;Criterio de calificación: &lt;b&gt;1 = Nunca &amp;nbsp; 2 = Casi nunca &amp;nbsp; 3 = Algunas veces &amp;nbsp; 4 = Casi siempre &amp;nbsp; 5 = Siempre&lt;/b&gt;&lt;/p&gt;</field>
         <field name="matrix_subtype">simple</field>
     </record>
 
