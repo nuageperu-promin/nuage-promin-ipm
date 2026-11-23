@@ -14,7 +14,7 @@ class Survey(models.Model):
     def promin_sync_areas(self):
         """Carga como opciones de las preguntas «Área» los departamentos de RRHH (no borra opciones usadas)."""
         Answer = self.env['survey.question.answer']
-        departamentos = self.env['hr.department'].search([('company_id', 'in', [False] + self.env.companies.ids)])
+        departamentos = self.env['hr.department'].sudo().with_context(active_test=True).search([])
         for survey in self:
             for pregunta in survey.question_ids.filtered('promin_es_area'):
                 existentes = set(pregunta.suggested_answer_ids.mapped('value'))
