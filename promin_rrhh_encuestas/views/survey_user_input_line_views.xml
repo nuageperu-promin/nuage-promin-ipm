@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promin_clima_pivot" model="ir.ui.view">
+        <field name="name">survey.user_input.line.pivot.promin.clima</field>
+        <field name="model">survey.user_input.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <pivot string="Resultados de clima laboral">
+                <field name="matrix_row_id" type="row"/>
+                <field name="promin_valor" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="promin_clima_graph" model="ir.ui.view">
+        <field name="name">survey.user_input.line.graph.promin.clima</field>
+        <field name="model">survey.user_input.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <graph string="Promedio por pregunta" type="bar">
+                <field name="matrix_row_id"/>
+                <field name="promin_valor" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="promin_clima_list" model="ir.ui.view">
+        <field name="name">survey.user_input.line.list.promin.clima</field>
+        <field name="model">survey.user_input.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Respuestas de clima laboral" create="0" edit="0">
+                <field name="survey_id"/>
+                <field name="matrix_row_id"/>
+                <field name="suggested_answer_id"/>
+                <field name="promin_valor"/>
+                <field name="promin_seg_area" optional="show"/>
+                <field name="promin_seg_puesto" optional="show"/>
+                <field name="promin_seg_edad" optional="hide"/>
+                <field name="promin_seg_antiguedad" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="promin_clima_search" model="ir.ui.view">
+        <field name="name">survey.user_input.line.search.promin.clima</field>
+        <field name="model">survey.user_input.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Clima laboral">
+                <field name="matrix_row_id"/>
+                <field name="survey_id"/>
+                <field name="promin_seg_area"/>
+                <field name="promin_seg_puesto"/>
+                <group>
+                    <filter string="Encuesta" name="g_survey" context="{'group_by': 'survey_id'}"/>
+                    <filter string="Pregunta" name="g_pregunta" context="{'group_by': 'matrix_row_id'}"/>
+                    <filter string="Área" name="g_area" context="{'group_by': 'promin_seg_area'}"/>
+                    <filter string="Puesto" name="g_puesto" context="{'group_by': 'promin_seg_puesto'}"/>
+                    <filter string="Sexo" name="g_sexo" context="{'group_by': 'promin_seg_sexo'}"/>
+                    <filter string="Edad" name="g_edad" context="{'group_by': 'promin_seg_edad'}"/>
+                    <filter string="Nivel de estudios" name="g_estudios" context="{'group_by': 'promin_seg_estudios'}"/>
+                    <filter string="Antigüedad" name="g_antiguedad" context="{'group_by': 'promin_seg_antiguedad'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_promin_clima_resultados" model="ir.actions.act_window">
+        <field name="name">Resultados de clima laboral</field>
+        <field name="res_model">survey.user_input.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('survey_id.promin_tipo', '=', 'clima'), ('question_id.question_type', '=', 'matrix'),
+                              ('user_input_id.state', '=', 'done')]</field>
+        <field name="search_view_id" ref="promin_clima_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('promin_clima_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('promin_clima_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('promin_clima_list')})]"/>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+{
+    'name': 'PROMIN - Encuestas de RRHH (clima laboral y evaluación de desempeño)',
+    'version': '19.0.1.0.0',
+    'summary': 'Encuesta de clima laboral y evaluación de desempeño (jefe a subordinado) sobre Encuestas, con resultados por área, evaluado y competencia',
+    'author': 'Nuage Peru SAC',
+    'license': 'LGPL-3',
+    'category': 'Human Resources',
+    'depends': ['survey', 'hr'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/survey_user_input_views.xml',
+        'views/survey_user_input_line_views.xml',
+        'wizard/evaluacion_wizard_views.xml',
+        'views/menus.xml',
+        'data/server_actions.xml',
+        'data/survey_clima.xml',
+        'data/survey_desempeno.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

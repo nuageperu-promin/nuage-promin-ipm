@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="server_action_promin_sync_areas" model="ir.actions.server">
+        <field name="name">Sincronizar áreas con departamentos</field>
+        <field name="model_id" ref="survey.model_survey_survey"/>
+        <field name="binding_model_id" ref="survey.model_survey_survey"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">records.promin_sync_areas()</field>
+    </record>
+
+    <record id="server_action_promin_enviar_enlace" model="ir.actions.server">
+        <field name="name">Enviar enlace de evaluación al jefe</field>
+        <field name="model_id" ref="survey.model_survey_user_input"/>
+        <field name="binding_model_id" ref="survey.model_survey_user_input"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_promin_enviar_enlace()</field>
+    </record>
+</odoo>

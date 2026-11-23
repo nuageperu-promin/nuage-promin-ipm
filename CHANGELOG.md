@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-23 — promin_rrhh_encuestas (19.0.1.0.0)
+
+- **Motivo:** RRHH de PROMIN envió los modelos de encuesta de clima laboral y evaluación de desempeño (90°) y pidió gestionarlos por formularios con resultados cuantitativos y cualitativos.
+- **Acción:** módulo nuevo sobre `survey`. Carga la encuesta de clima (anónima, con segmentos) y la de desempeño (jefe a subordinado, por invitación); asistente para generar las evaluaciones por jefe y enviarles el enlace; resultados por empleado/área/competencia y por pregunta/segmento. Requiere instalar antes el módulo estándar Encuestas.
+
+---
+
 ## 2026-11-22 — promin_cotizacion_lista_materiales (19.0.1.2.0) y promin_cotizacion_formato (19.0.1.0.2)
 
 - **Motivo:** PROMIN pidió elegir, al confeccionar la lista de materiales (BoM), qué componentes se imprimen en la cotización; y la cotización «Cotización PROMIN» separaba en páginas distintas la cabecera y el detalle cuando la lista de materiales era larga.
