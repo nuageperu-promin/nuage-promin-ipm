@@ -1,6 +1,6 @@
 {
     'name': 'PROMIN - Formato de cotización',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'summary': 'Reporte «Cotización PROMIN» con el modelo de Proveedores Mineros (logo, tabla, condiciones y datos bancarios)',
     'author': 'Nuage Peru SAC',
     'license': 'LGPL-3',

@@ -1,6 +1,6 @@
 {
     'name': 'PROMIN - Lista de materiales en la cotización',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'summary': 'Check en la cotización para imprimir, bajo cada producto, su lista de materiales (BoM)',
     'author': 'Nuage Peru SAC',
     'license': 'LGPL-3',
@@ -8,6 +8,7 @@
     'depends': ['sale', 'mrp'],
     'data': [
         'views/sale_order_views.xml',
+        'views/mrp_bom_views.xml',
         'report/report_saleorder.xml',
     ],
     'installable': True,

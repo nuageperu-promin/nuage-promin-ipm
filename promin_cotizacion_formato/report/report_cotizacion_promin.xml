@@ -158,10 +158,11 @@
                             <t t-if="doc.promin_imprime_bom and line.product_id">
                                 <t t-set="promin_bom" t-value="line._promin_bom_elegida()"/>
                                 <t t-set="promin_componentes" t-value="line._promin_bom_componentes(promin_bom)"/>
+                                <!-- Una fila por componente (no una tabla anidada): así la lista puede continuar en la página siguiente -->
                                 <tr t-if="promin_componentes">
-                                    <td colspan="8" class="pc-bom">
-                                        <table class="pc-bom-tabla">
-                                            <thead>
+                                    <td colspan="8" class="pc-bom" style="padding-bottom:0;">
+                                        <table class="pc-bom-tabla" style="table-layout:fixed;">
+                                            <tbody>
                                                 <tr>
                                                     <th style="width:20%; text-align:left;">Código</th>
                                                     <th style="text-align:left;">
@@ -171,13 +172,19 @@
                                                     <th style="width:12%; text-align:right;">Cantidad</th>
                                                     <th style="width:12%; text-align:left;">Unidad</th>
                                                 </tr>
-                                            </thead>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr t-foreach="promin_componentes" t-as="comp">
+                                    <td colspan="8" class="pc-bom" style="padding-top:0; padding-bottom:0;">
+                                        <table class="pc-bom-tabla" style="table-layout:fixed;">
                                             <tbody>
-                                                <tr t-foreach="promin_componentes" t-as="comp">
-                                                    <td><span t-out="comp['codigo']"/></td>
+                                                <tr>
+                                                    <td style="width:20%;"><span t-out="comp['codigo']"/></td>
                                                     <td><span t-out="comp['nombre']"/></td>
-                                                    <td style="text-align:right;"><span t-out="comp['cantidad']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/></td>
-                                                    <td><span t-out="comp['unidad']"/></td>
+                                                    <td style="width:12%; text-align:right;"><span t-out="comp['cantidad']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/></td>
+                                                    <td style="width:12%;"><span t-out="comp['unidad']"/></td>
                                                 </tr>
                                             </tbody>
                                         </table>

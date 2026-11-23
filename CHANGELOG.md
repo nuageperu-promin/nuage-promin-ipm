@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-22 — promin_cotizacion_lista_materiales (19.0.1.2.0) y promin_cotizacion_formato (19.0.1.0.2)
+
+- **Motivo:** PROMIN pidió elegir, al confeccionar la lista de materiales (BoM), qué componentes se imprimen en la cotización; y la cotización «Cotización PROMIN» separaba en páginas distintas la cabecera y el detalle cuando la lista de materiales era larga.
+- **Acción:** `promin_cotizacion_lista_materiales`: nuevo check «Imp. Cot» en cada componente de la BoM (por defecto desactivado); la cotización imprime solo los componentes con el check activo. `promin_cotizacion_formato`: la lista de materiales se imprime fila por fila dentro de la tabla de ítems, de modo que continúa en la página siguiente en vez de saltar completa y dejar la primera página casi vacía. Actualizar ambos módulos desde Aplicaciones y marcar «Imp. Cot» en las BoM que corresponda.
+
+---
+
 ## 2026-11-22 — promin_ejecutivo_tecnico (19.0.1.0.0)
 
 - **Motivo:** PROMIN pidió registrar un «Ejecutivo Técnico» por cotización/orden de venta, además del Vendedor, y verlo en las listas.
