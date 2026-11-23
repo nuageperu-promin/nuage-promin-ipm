@@ -9,17 +9,20 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     promin_bloquear_venta = fields.Boolean(
-        'Bloquear generación de Cotización/Orden de Venta', tracking=True,
+        'Bloquear Cotización/Orden de Venta', tracking=True,
         help='Si está activo y el cliente llegó a su límite de crédito, no se podrá grabar ni '
              'continuar una cotización u orden de venta de este cliente. Requiere que el límite '
              'de crédito esté activado en la empresa y en el contacto.')
+    promin_usa_limite_compras = fields.Boolean(
+        'Límite de Crédito Compras', company_dependent=True,
+        help='Activa el control del límite de crédito de compras para este proveedor.')
     promin_limite_compras = fields.Float(
         'Límite de Crédito Compras', company_dependent=True,
         help='Monto máximo (en la moneda de la compañía) que PROMIN puede deber a este proveedor: '
              'deuda pendiente + órdenes de compra confirmadas sin facturar + la cotización/orden '
-             'que se está digitando. Con 0 no se controla.')
+             'que se está digitando. Solo se controla si la casilla «Límite de Crédito Compras» está activa.')
     promin_bloquear_compra = fields.Boolean(
-        'Bloquear generación de Cotización/Orden de Compra', tracking=True,
+        'Bloquear Cotización/Orden de Compra', tracking=True,
         help='Si está activo y el proveedor superaría su límite de crédito de compras, no se podrá '
              'grabar ni continuar una cotización u orden de compra de este proveedor.')
 

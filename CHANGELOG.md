@@ -20,7 +20,7 @@ versión de un desarrollo propio:
 ## 2026-11-22 — promin_bloqueo_credito (19.0.1.1.0)
 
 - **Motivo:** PROMIN pidió un límite de crédito también para compras: no colocar órdenes de compra a un proveedor por encima del límite establecido, con la misma lógica de aviso y bloqueo que ya existe en ventas.
-- **Acción:** el módulo ahora depende también de `purchase`. En el contacto: «Límite de crédito» pasa a llamarse «Límite de Crédito Ventas» y se agregan «Límite de Crédito Compras» (0 = sin control) y el check «Bloquear generación de Cotización/Orden de Compra». En la cotización/orden de compra aparece un aviso amarillo cuando deuda pendiente al proveedor + órdenes confirmadas sin facturar + la orden actual superan el límite; con el check activo el aviso es rojo, no se puede grabar y se ocultan Enviar, Confirmar y Aprobar (cancelar sigue permitido). Actualizar el módulo desde Aplicaciones.
+- **Acción:** el módulo ahora depende también de `purchase`. En el contacto: «Límite de crédito» pasa a llamarse «Límite de Crédito Ventas» y se agregan «Límite de Crédito Compras» (casilla + monto, como en ventas) y el check «Bloquear Cotización/Orden de Compra»; el check de ventas se renombra «Bloquear Cotización/Orden de Venta». En la cotización/orden de compra aparece un aviso amarillo cuando deuda pendiente al proveedor + órdenes confirmadas sin facturar + la orden actual superan el límite; con el check activo el aviso es rojo, no se puede grabar y se ocultan Enviar, Confirmar y Aprobar (cancelar sigue permitido). Actualizar el módulo desde Aplicaciones.
 
 ---
 

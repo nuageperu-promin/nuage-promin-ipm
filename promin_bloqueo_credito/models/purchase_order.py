@@ -15,7 +15,8 @@ class PurchaseOrder(models.Model):
         'Compra bloqueada por crédito', compute='_compute_promin_compra_credito')
 
     @api.depends('partner_id', 'amount_total', 'currency_id', 'state', 'order_line.price_total',
-                 'partner_id.promin_bloquear_compra', 'partner_id.promin_limite_compras')
+                 'partner_id.promin_bloquear_compra', 'partner_id.promin_limite_compras',
+                 'partner_id.promin_usa_limite_compras')
     def _compute_promin_compra_credito(self):
         for order in self:
             aviso = order._promin_aviso_limite()
@@ -30,9 +31,10 @@ class PurchaseOrder(models.Model):
             return ''
         proveedor = self.partner_id.commercial_partner_id
         company = self.company_id or self.env.company
-        limite = proveedor.with_company(company).promin_limite_compras
-        if limite <= 0:
+        proveedor_c = proveedor.with_company(company)
+        if not proveedor_c.promin_usa_limite_compras:
             return ''
+        limite = proveedor_c.promin_limite_compras
         deuda = self._promin_deuda_proveedor(proveedor, company)
         sin_facturar = self._promin_ordenes_sin_facturar(proveedor, company)
         actual = self.currency_id._convert(
