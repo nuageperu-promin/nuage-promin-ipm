@@ -17,6 +17,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-22 — promin_ejecutivo_tecnico (19.0.1.0.0)
+
+- **Motivo:** PROMIN pidió registrar un «Ejecutivo Técnico» por cotización/orden de venta, además del Vendedor, y verlo en las listas.
+- **Acción:** módulo nuevo (depende de `sale`). Agrega el campo Ejecutivo Técnico (usuario interno) debajo del Vendedor en Otra información, como columna en las listas de cotizaciones y órdenes de venta, y en búsqueda/agrupación. Instalar desde Aplicaciones.
+
+---
+
 ## 2026-11-22 — promin_bloqueo_credito (19.0.1.1.0)
 
 - **Motivo:** PROMIN pidió un límite de crédito también para compras: no colocar órdenes de compra a un proveedor por encima del límite establecido, con la misma lógica de aviso y bloqueo que ya existe en ventas.

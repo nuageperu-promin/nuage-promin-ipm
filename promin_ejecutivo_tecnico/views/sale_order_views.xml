@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Formulario: debajo del Vendedor (pestaña Otra información) -->
+    <record id="promin_sale_order_form_ejecutivo_tecnico" model="ir.ui.view">
+        <field name="name">sale.order.form.promin.ejecutivo.tecnico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']//field[@name='user_id']" position="after">
+                <field name="promin_ejecutivo_tecnico_id" widget="many2one_avatar_user"
+                       readonly="state == 'cancel'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Lista de órdenes de venta -->
+    <record id="promin_sale_order_tree_ejecutivo_tecnico" model="ir.ui.view">
+        <field name="name">sale.order.tree.promin.ejecutivo.tecnico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="promin_ejecutivo_tecnico_id" widget="many2one_avatar_user" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Lista de cotizaciones -->
+    <record id="promin_sale_quotation_tree_ejecutivo_tecnico" model="ir.ui.view">
+        <field name="name">sale.quotation.tree.promin.ejecutivo.tecnico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="promin_ejecutivo_tecnico_id" widget="many2one_avatar_user" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Búsqueda y agrupación -->
+    <record id="promin_sale_order_search_ejecutivo_tecnico" model="ir.ui.view">
+        <field name="name">sale.order.search.promin.ejecutivo.tecnico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="promin_ejecutivo_tecnico_id"/>
+                <filter string="Ejecutivo Técnico" name="group_promin_ejecutivo_tecnico"
+                        context="{'group_by': 'promin_ejecutivo_tecnico_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
