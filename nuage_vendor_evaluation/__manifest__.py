@@ -1,0 +1,22 @@
+{
+    'name': 'Evaluación de Proveedores',
+    'summary': 'Calificación periódica de proveedores con criterios ponderados y cumplimiento de entregas',
+    'version': '19.0.1.0.1',
+    'category': 'Inventory/Purchase',
+    'author': 'NUAGE PERU SAC',
+    'website': 'https://nuage.pe',
+    'license': 'LGPL-3',
+    'depends': ['purchase', 'purchase_stock', 'mail'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/sequence_data.xml',
+        'data/criterion_data.xml',
+        'views/vendor_criterion_views.xml',
+        'views/vendor_evaluation_views.xml',
+        'views/res_partner_views.xml',
+        'views/menus.xml',
+    ],
+    'installable': True,
+    'application': False,
+}
