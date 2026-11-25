@@ -5,9 +5,12 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Lugar de entrega: en el bloque ENTREGA, debajo de «Estado de la entrega» -->
+            <xpath expr="//field[@name='delivery_status']" position="after">
+                <field name="promin_lugar_entrega" placeholder="Ej.: Almacén del cliente, Trujillo"/>
+            </xpath>
             <xpath expr="//page[@name='other_information']" position="inside">
                 <group name="promin_cotizacion" string="Cotización PROMIN (se imprime en el reporte)">
-                    <field name="promin_lugar_entrega"/>
                     <field name="promin_tolerancia"/>
                     <field name="promin_terminos_url"/>
                     <field name="promin_importante" placeholder="Una viñeta por línea"/>

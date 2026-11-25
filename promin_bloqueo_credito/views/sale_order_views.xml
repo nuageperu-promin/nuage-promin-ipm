@@ -8,8 +8,8 @@
             <xpath expr="//sheet" position="before">
                 <field name="promin_credito_bloqueado" invisible="1"/>
                 <div class="alert alert-danger mb-0" role="alert" invisible="not promin_credito_bloqueado">
-                    <strong>Venta bloqueada:</strong> el cliente llegó a su límite de crédito y no se puede
-                    grabar ni continuar esta cotización/orden de venta.
+                    <strong>Confirmación bloqueada:</strong> el cliente llegó a su límite de crédito. Puede
+                    editar, imprimir y enviar esta cotización, pero no se puede confirmar como orden de venta.
                 </div>
             </xpath>
         </field>

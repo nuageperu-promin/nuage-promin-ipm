@@ -20,6 +20,20 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-24 — promin_bloqueo_credito (19.0.1.2.0)
+
+- **Motivo:** el área de ventas observó que, al exceder el cliente su línea de crédito, el bloqueo debe aplicarse sobre la generación de la orden de venta: el sistema debe permitir crear e imprimir la cotización, pero no convertirla en orden de venta.
+- **Acción:** con el check activo y el cliente en su límite, la cotización ya se puede crear, editar, imprimir y enviar; solo se bloquea **Confirmar** (se oculta el botón, aparece un aviso rojo y la confirmación por otra vía se rechaza con mensaje). El check de ventas pasa a llamarse «Bloquear Orden de Venta». Compras no cambia. Actualizar el módulo desde Aplicaciones.
+
+---
+
+## 2026-11-24 — promin_cotizacion_formato (19.0.1.0.3)
+
+- **Motivo:** ventas pidió un campo editable de texto «Lugar de entrega» en la cotización, que se imprima en el reporte.
+- **Acción:** el campo «Lugar de entrega» (ya existente e impreso en «Condiciones de venta» de la Cotización PROMIN) se muestra ahora en el bloque **Entrega** de la cotización, debajo de «Estado de la entrega». El módulo depende además de `sale_stock`. Actualizar el módulo desde Aplicaciones.
+
+---
+
 ## 2026-11-23 — promin_rrhh_encuestas (19.0.1.0.0)
 
 - **Motivo:** RRHH de PROMIN envió los modelos de encuesta de clima laboral y evaluación de desempeño (90°) y pidió gestionarlos por formularios con resultados cuantitativos y cualitativos.

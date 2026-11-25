@@ -28,7 +28,8 @@ class SaleOrder(models.Model):
 
     promin_lugar_entrega = fields.Char(
         'Lugar de entrega', default='Sus almacenes de Lima',
-        help='Se imprime en «Condiciones de venta» del reporte Cotización PROMIN.')
+        help='Texto libre. Se edita en el bloque Entrega y se imprime en «Condiciones de venta» '
+             'del reporte Cotización PROMIN.')
     promin_tolerancia = fields.Char(
         'Tolerancia', default='Tolerancia en longitud de cables: +/-10%',
         help='Se imprime en «Condiciones de venta» del reporte Cotización PROMIN.')
