@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nuage_vendor_criterion_user,nuage.vendor.criterion user,model_nuage_vendor_criterion,purchase.group_purchase_user,1,0,0,0
+access_nuage_vendor_criterion_manager,nuage.vendor.criterion manager,model_nuage_vendor_criterion,purchase.group_purchase_manager,1,1,1,1
+access_nuage_vendor_evaluation_user,nuage.vendor.evaluation user,model_nuage_vendor_evaluation,purchase.group_purchase_user,1,1,1,0
+access_nuage_vendor_evaluation_manager,nuage.vendor.evaluation manager,model_nuage_vendor_evaluation,purchase.group_purchase_manager,1,1,1,1
+access_nuage_vendor_evaluation_line_user,nuage.vendor.evaluation.line user,model_nuage_vendor_evaluation_line,purchase.group_purchase_user,1,1,1,1
+access_nuage_vendor_evaluation_line_manager,nuage.vendor.evaluation.line manager,model_nuage_vendor_evaluation_line,purchase.group_purchase_manager,1,1,1,1

@@ -20,6 +20,13 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-25 — nuage_vendor_evaluation (19.0.1.0.1)
+
+- **Motivo:** en la reunión se acordó instalar el módulo de Evaluación de Proveedores (Nuage Peru) para calificar a los proveedores con criterios ponderados, con el cumplimiento de entregas calculado desde las recepciones de compras.
+- **Acción:** módulo nuevo (sobre `purchase`, `purchase_stock` y `mail`): evaluaciones por proveedor y periodo con criterios configurables, cálculo automático de entregas a tiempo, estados borrador/confirmada (solo el responsable de compras puede reabrir una confirmada; los campos quedan bloqueados al confirmar), calificación en la ficha del proveedor y reportes. Incluye pruebas automáticas (11, sin fallos). Instalar desde Aplicaciones (Actualizar lista de aplicaciones → Evaluación de Proveedores → Instalar); ver `nuage_vendor_evaluation/INSTALAR.md`.
+
+---
+
 ## 2026-11-24 — promin_bloqueo_credito (19.0.1.2.0)
 
 - **Motivo:** el área de ventas observó que, al exceder el cliente su línea de crédito, el bloqueo debe aplicarse sobre la generación de la orden de venta: el sistema debe permitir crear e imprimir la cotización, pero no convertirla en orden de venta.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_nuage_vendor_evaluation" name="Evaluación de proveedores"
+              parent="purchase.menu_purchase_root" sequence="45"
+              action="action_nuage_vendor_evaluation" groups="purchase.group_purchase_user"/>
+
+    <menuitem id="menu_nuage_vendor_criterion" name="Criterios de evaluación"
+              parent="purchase.menu_purchase_config" sequence="90"
+              action="action_nuage_vendor_criterion" groups="purchase.group_purchase_manager"/>
+</odoo>
