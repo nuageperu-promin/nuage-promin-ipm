@@ -87,7 +87,7 @@ class PortalEmpleado(http.Controller):
         return ids, errores
 
     # ------------------------------------------------------------ páginas
-    @http.route('/my/empleado/datos', type='http', auth='user')
+    @http.route('/my/empleado/datos', type='http', auth='user', website=True)
     def datos(self, **kw):
         emp = self._empleado()
         datos = request.env['promin.portal.dato'].sudo().search(
@@ -97,14 +97,14 @@ class PortalEmpleado(http.Controller):
             'tipos': TIPOS, 'por_tipo': por_tipo, 'parentescos': dict(PARENTESCOS),
             'aviso': kw.get('aviso')})
 
-    @http.route('/my/empleado/datos/nuevo/<string:tipo>', type='http', auth='user', methods=['GET', 'POST'],
+    @http.route('/my/empleado/datos/nuevo/<string:tipo>', type='http', auth='user', website=True, methods=['GET', 'POST'],
                 csrf=True)
     def nuevo(self, tipo, **post):
         if tipo not in TIPOS:
             return request.redirect('/my/empleado/datos')
         return self._formulario(tipo, None, post)
 
-    @http.route('/my/empleado/datos/<int:dato_id>/editar', type='http', auth='user', methods=['GET', 'POST'],
+    @http.route('/my/empleado/datos/<int:dato_id>/editar', type='http', auth='user', website=True, methods=['GET', 'POST'],
                 csrf=True)
     def editar(self, dato_id, **post):
         dato = self._dato_propio(dato_id)
@@ -112,7 +112,7 @@ class PortalEmpleado(http.Controller):
             return request.redirect('/my/empleado/datos')
         return self._formulario(dato.tipo, dato, post)
 
-    @http.route('/my/empleado/datos/<int:dato_id>/cambio', type='http', auth='user', methods=['GET', 'POST'],
+    @http.route('/my/empleado/datos/<int:dato_id>/cambio', type='http', auth='user', website=True, methods=['GET', 'POST'],
                 csrf=True)
     def cambio(self, dato_id, **post):
         """Solicitud de cambio sobre un dato ya aprobado: crea uno nuevo que lo reemplaza al aprobarse."""
@@ -156,7 +156,7 @@ class PortalEmpleado(http.Controller):
             'errores': errores, 'parentescos': PARENTESCOS,
             'max_mb': MAX_BYTES // (1024 * 1024), 'max_archivos': MAX_ARCHIVOS})
 
-    @http.route('/my/empleado/datos/<int:dato_id>/eliminar', type='http', auth='user', methods=['POST'],
+    @http.route('/my/empleado/datos/<int:dato_id>/eliminar', type='http', auth='user', website=True, methods=['POST'],
                 csrf=True)
     def eliminar(self, dato_id, **post):
         dato = self._dato_propio(dato_id)
@@ -165,7 +165,7 @@ class PortalEmpleado(http.Controller):
             dato.unlink()
         return request.redirect('/my/empleado/datos')
 
-    @http.route('/my/empleado/archivo/<int:dato_id>/<int:att_id>', type='http', auth='user')
+    @http.route('/my/empleado/archivo/<int:dato_id>/<int:att_id>', type='http', auth='user', website=True)
     def archivo_dato(self, dato_id, att_id, **kw):
         dato = self._dato_propio(dato_id)
         att = dato.attachment_ids.filtered(lambda a: a.id == att_id)
@@ -175,7 +175,7 @@ class PortalEmpleado(http.Controller):
             ('Content-Type', att.mimetype or 'application/octet-stream'),
             ('Content-Disposition', 'inline; filename="%s"' % att.name.replace('"', ''))])
 
-    @http.route('/my/empleado/documentos', type='http', auth='user')
+    @http.route('/my/empleado/documentos', type='http', auth='user', website=True)
     def documentos(self, **kw):
         emp = self._empleado()
         docs = request.env['promin.portal.documento'].sudo().search(
@@ -185,7 +185,7 @@ class PortalEmpleado(http.Controller):
             order='date_from desc')
         return self._render('portal_documentos', {'documentos': docs, 'boletas': boletas})
 
-    @http.route('/my/empleado/documento/<int:doc_id>', type='http', auth='user')
+    @http.route('/my/empleado/documento/<int:doc_id>', type='http', auth='user', website=True)
     def documento(self, doc_id, **kw):
         emp = self._empleado()
         doc = request.env['promin.portal.documento'].sudo().browse(doc_id).exists()
@@ -198,7 +198,7 @@ class PortalEmpleado(http.Controller):
             ('Content-Type', 'application/pdf' if nombre.lower().endswith('.pdf') else 'application/octet-stream'),
             ('Content-Disposition', 'inline; filename="%s"' % nombre)])
 
-    @http.route('/my/empleado/boleta/<int:slip_id>', type='http', auth='user')
+    @http.route('/my/empleado/boleta/<int:slip_id>', type='http', auth='user', website=True)
     def boleta(self, slip_id, **kw):
         emp = self._empleado()
         slip = request.env['hr.payslip'].sudo().browse(slip_id).exists()
