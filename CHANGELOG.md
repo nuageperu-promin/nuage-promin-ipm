@@ -20,6 +20,20 @@ versión de un desarrollo propio:
 
 ---
 
+## 2026-11-26 — promin_portal_empleado (19.0.1.0.1)
+
+- **Motivo:** las páginas del trabajador (`/my/empleado/datos`, `/my/empleado/documentos`) devolvían «Internal Server Error» en el staging de PROMIN. Reproducido en NUAGETEST: las rutas no declaraban `website=True` y el diseño del portal fallaba al armar el selector de idioma (`TypeError: object of type 'NoneType' has no len()`).
+- **Acción:** se agregó `website=True` a las 9 rutas del controlador `controllers/portal.py`. Sin cambios de datos ni de vistas: basta actualizar el módulo (Aplicaciones > Portal PROMIN > Actualizar) y reiniciar. Verificado en NUAGETEST: `/my`, `/my/empleado/datos` y `/my/empleado/documentos` responden 200 con un usuario de portal.
+
+---
+
+## 2026-11-25 — nuage_pe_rate_fill y nuage_pe_rate_origen (19.0.1.0.0)
+
+- **Motivo:** Alex Moreno (PROMIN) pidió pasar a PROMIN los módulos de tipo de cambio ya usados por Nuage: consultar el T.C. SUNAT de fechas sin registro y fijar el T.C. de las notas de crédito/débito según su comprobante de origen.
+- **Acción:** `nuage_pe_rate_fill` (nuevo, depende de `account` y `solse_pe_rate_api`): en comprobantes en USD consulta en línea el T.C. de la fecha al cambiar fecha/moneda y al confirmar; si es fin de semana o no hay dato usa el último día hábil anterior (hasta 7 días) sin crear filas falsas, recalcula borradores cuando entra una tasa nueva y el botón «Actualizar T.C.» rellena los días hábiles faltantes de los últimos 30 días. `nuage_pe_rate_origen` (nuevo, depende de `account`, `solse_pe_accountant` y `solse_pe_rate_api`): en NC/ND en borrador (ventas y compras) toma del comprobante de origen la fecha del T.C., el T.C. mostrado, el T.C. interno (PLE/SIRE) y la tasa del asiento; no modifica notas confirmadas. Instalar ambos desde Aplicaciones (Actualizar lista de aplicaciones).
+
+---
+
 ## 2026-11-25 — nuage_vendor_evaluation (19.0.1.0.1)
 
 - **Motivo:** en la reunión se acordó instalar el módulo de Evaluación de Proveedores (Nuage Peru) para calificar a los proveedores con criterios ponderados, con el cumplimiento de entregas calculado desde las recepciones de compras.
